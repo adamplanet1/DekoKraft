@@ -50,6 +50,7 @@ img{max-width:100%; display:block}
   align-items:center;
   justify-content:space-between;
   gap:14px;
+  flex-wrap: wrap; /* مهم للموبايل */
 }
 
 .brand{
@@ -79,6 +80,18 @@ img{max-width:100%; display:block}
   margin:0;
   color: var(--muted);
   font-size: 12px;
+}
+
+/* زر القائمة */
+.menu-btn{
+  display:none; /* يظهر فقط على الموبايل */
+  border:1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  padding:10px 12px;
+  border-radius: 12px;
+  font-size: 18px;
+  cursor:pointer;
 }
 
 .menu{
@@ -245,7 +258,37 @@ img{max-width:100%; display:block}
   flex-wrap:wrap;
 }
 
-@media (max-width: 860px){
-  .card{grid-column: span 12;}
-  .hero h2{font-size: 24px;}
+/* ===== تحسين الموبايل ===== */
+@media (max-width: 780px){
+  .menu-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .menu{
+    display:none;           /* مخفية افتراضيًا */
+    width:100%;
+    margin-top:12px;
+    padding:10px;
+    border:1px solid var(--border);
+    background: rgba(0,0,0,.25);
+    border-radius: 16px;
+    flex-direction: column;
+    gap:10px;
+  }
+
+  .menu.open{ display:flex; } /* تظهر عند الضغط */
+
+  .menu a{
+    text-align:center;
+    padding:12px 14px;
+    font-size:14px;
+  }
+
+  .hero{ padding: 18px; }
+  .hero h2{ font-size: 22px; }
+
+  .card{ grid-column: span 12; }
+  .card-media{ height: 190px; }
 }
