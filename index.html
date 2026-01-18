@@ -2,23 +2,16 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>DekoKraft</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 
 <body>
-
-  <!-- NAVBAR -->
+  <!-- NAV -->
   <div class="nav">
     <div class="nav-inner">
-
-      <!-- Mobile menu button -->
-      <button class="menu-btn" aria-label="القائمة">☰</button>
-
-      <a class="brand" href="index.html">
+      <a class="brand" href="index.html" aria-label="DekoKraft Home">
         <div class="logo">D</div>
         <div>
           <h1>DekoKraft</h1>
@@ -36,12 +29,25 @@
         <a href="articles.html">المقالات</a>
       </div>
 
+      <!-- زر القائمة للموبايل -->
+      <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة" aria-expanded="false">
+        ☰
+      </button>
+    </div>
+
+    <!-- قائمة الموبايل -->
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <a href="index.html">الرئيسية</a>
+      <a href="collections.html">المجموعات</a>
+      <a href="candles.html">الشموع</a>
+      <a href="decor.html">الديكور</a>
+      <a href="gifts.html">الهدايا</a>
+      <a href="gallery.html">معرض الصور</a>
+      <a href="articles.html">المقالات</a>
     </div>
   </div>
 
-  <!-- CONTENT -->
   <div class="container">
-
     <!-- HERO -->
     <section class="hero">
       <h2>مرحباً بكم في DekoKraft</h2>
@@ -60,80 +66,103 @@
     <section class="grid" aria-label="الأقسام">
 
       <a class="card" href="collections.html">
-        <div class="card-media" style="background-image:url('assets/images/collections.jpg')">
+        <div class="card-media">
+          <img src="assets/images/home/collections.webp" alt="المجموعات" loading="lazy" decoding="async">
           <span class="badge">⭐ المجموعات</span>
         </div>
         <div class="card-body">
           <h3>المجموعات</h3>
           <p>صفحات مجموعات جاهزة: شموع تزيينية، هدايا، ديكور…</p>
+          <div class="meta"><span>اضغط للدخول</span></div>
         </div>
       </a>
 
       <a class="card" href="candles.html">
-        <div class="card-media" style="background-image:url('assets/images/candles.jpg')">
+        <div class="card-media">
+          <img src="assets/images/home/candles.webp" alt="الشموع" loading="lazy" decoding="async">
           <span class="badge">🕯️ الشموع</span>
         </div>
         <div class="card-body">
           <h3>الشموع</h3>
-          <p>تشكيلة الشموع وروائحها وأحجامها.</p>
+          <p>تشكيلة الشموع وروائحها وأحجامها، مع عرض جميل للمنتجات.</p>
+          <div class="meta"><span>اضغط للدخول</span></div>
         </div>
       </a>
 
       <a class="card" href="decor.html">
-        <div class="card-media" style="background-image:url('assets/images/decor.jpg')">
+        <div class="card-media">
+          <img src="assets/images/home/decor.webp" alt="الديكور" loading="lazy" decoding="async">
           <span class="badge">🏠 الديكور</span>
         </div>
         <div class="card-body">
           <h3>الديكور</h3>
-          <p>قطع ديكور بسيطة وأنيقة لكل مساحة.</p>
+          <p>قطع ديكور بسيطة وأنيقة تناسب كل غرفة.</p>
+          <div class="meta"><span>اضغط للدخول</span></div>
         </div>
       </a>
 
       <a class="card" href="gifts.html">
-        <div class="card-media" style="background-image:url('assets/images/gifts.jpg')">
+        <div class="card-media">
+          <img src="assets/images/home/gifts.webp" alt="الهدايا" loading="lazy" decoding="async">
           <span class="badge">🎁 الهدايا</span>
         </div>
         <div class="card-body">
           <h3>الهدايا</h3>
-          <p>أفكار هدايا جاهزة للمناسبات.</p>
+          <p>أفكار هدايا جاهزة (تغليف + اقتراحات) لأجمل المناسبات.</p>
+          <div class="meta"><span>اضغط للدخول</span></div>
         </div>
       </a>
 
       <a class="card" href="gallery.html">
-        <div class="card-media" style="background-image:url('assets/images/gallery.jpg')">
+        <div class="card-media">
+          <img src="assets/images/home/gallery.webp" alt="معرض الصور" loading="lazy" decoding="async">
           <span class="badge">🖼️ معرض الصور</span>
         </div>
         <div class="card-body">
           <h3>معرض الصور</h3>
-          <p>صور المنتجات والمشاريع.</p>
+          <p>صور منتجات ومشاريع وتجارب — اضغط لمشاهدة المعرض.</p>
+          <div class="meta"><span>اضغط للدخول</span></div>
         </div>
       </a>
 
       <a class="card" href="articles.html">
-        <div class="card-media" style="background-image:url('assets/images/articles.jpg')">
+        <div class="card-media">
+          <img src="assets/images/home/articles.webp" alt="المقالات" loading="lazy" decoding="async">
           <span class="badge">📝 المقالات</span>
         </div>
         <div class="card-body">
           <h3>المقالات</h3>
-          <p>نصائح وأفكار عن الشموع والديكور.</p>
+          <p>نصائح عن الشموع والروائح، والعناية بالديكور، وأفكار تصميم.</p>
+          <div class="meta"><span>اضغط للدخول</span></div>
         </div>
       </a>
 
     </section>
 
-    <!-- FOOTER -->
     <div class="footer">
       <div>©️ <span id="y"></span> DekoKraft</div>
       <div>Instagram • WhatsApp • Email</div>
     </div>
-
   </div>
 
-  <!-- JS -->
-  <script src="script.js?v=10"></script>
   <script>
+    // سنة الحقوق
     document.getElementById("y").textContent = new Date().getFullYear();
-  </script>
 
+    // قائمة الموبايل (زر ☰)
+    const btn = document.getElementById("menuBtn");
+    const menu = document.getElementById("mobileMenu");
+
+    btn.addEventListener("click", () => {
+      const isOpen = !menu.hasAttribute("hidden");
+      if (isOpen) {
+        menu.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", "false");
+      } else {
+        menu.removeAttribute("hidden");
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+  </script>
 </body>
 </html>
