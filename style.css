@@ -10,11 +10,7 @@
 
   function setOpen(isOpen) {
     menuBtn.setAttribute("aria-expanded", String(isOpen));
-    if (isOpen) {
-      mobileMenu.hidden = false;
-    } else {
-      mobileMenu.hidden = true;
-    }
+    mobileMenu.hidden = !isOpen;
   }
 
   menuBtn.addEventListener("click", () => {
