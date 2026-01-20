@@ -48,4 +48,147 @@
 
     <div class="mobile-menu" id="mobileMenu" hidden>
       <div class="container mobile-menu-inner">
-        <a class="mobile-link active"
+        <a class="mobile-link active" href="index.html">الرئيسية</a>
+        <a class="mobile-link" href="gifts.html">هدايا</a>
+        <a class="mobile-link" href="decor.html">ديكور</a>
+        <a class="mobile-link" href="kids.html">هدايا للأطفال</a>
+        <a class="mobile-link" href="service.html">خدمات</a>
+        <a class="mobile-link" href="gallery.html">معرض الصور</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>مرحباً بكم في <span class="accent">DekoKraft</span></h1>
+        <p>
+          هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة، هدايا للأطفال، وخدمات متنوعة.
+          اختر قسماً وشاهد التفاصيل.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn primary" href="collections.html">استعرض المجموعات</a>
+          <a class="btn" href="gallery.html">شاهد معرض الصور</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="الأقسام">
+
+      <a class="card" href="gifts.html" aria-label="Geschenke - هدايا">
+        <div class="card-media">
+          <picture>
+            <source
+              type="image/webp"
+              srcset="
+                assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp 600w,
+                assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp 1200w
+              "
+              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 50vw"
+            />
+            <img
+              src="assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp"
+              alt="هدايا - Geschenke"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <div class="pill">🎁 هدايا</div>
+        </div>
+        <div class="card-body">
+          <h2>هدايا</h2>
+          <p>أفكار هدايا متنوعة ومميزة لكل المناسبات.</p>
+        </div>
+      </a>
+
+      <a class="card" href="decor.html" aria-label="Dekoration - ديكور">
+        <div class="card-media">
+          <picture>
+            <source
+              type="image/webp"
+              srcset="
+                assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp 600w,
+                assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp 1200w
+              "
+              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 50vw"
+            />
+            <img
+              src="assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp"
+              alt="ديكور - Dekoration"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <div class="pill">🏠 ديكور</div>
+        </div>
+        <div class="card-body">
+          <h2>ديكور</h2>
+          <p>لمسات ديكور وزخرفة تضيف جمالاً للمكان.</p>
+        </div>
+      </a>
+
+      <a class="card" href="kids.html" aria-label="Kinder-Geschenke - هدايا للأطفال">
+        <div class="card-media">
+          <picture>
+            <source
+              type="image/webp"
+              srcset="
+                assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-600.webp 600w,
+                assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-1200.webp 1200w
+              "
+              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 50vw"
+            />
+            <img
+              src="assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-1200.webp"
+              alt="هدايا للأطفال - Kinder-Geschenke"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <div class="pill">🧸 للأطفال</div>
+        </div>
+        <div class="card-body">
+          <h2>هدايا للأطفال</h2>
+          <p>هدايا لطيفة وأفكار ممتعة للأطفال.</p>
+        </div>
+      </a>
+
+      <a class="card" href="service.html" aria-label="Service - خدمات">
+        <div class="card-media">
+          <picture>
+            <source
+              type="image/webp"
+              srcset="
+                assets/images/Homepage/Service-SV-P/SV-P01-600.webp 600w,
+                assets/images/Homepage/Service-SV-P/SV-P01-1200.webp 1200w
+              "
+              sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 50vw"
+            />
+            <img
+              src="assets/images/Homepage/Service-SV-P/SV-P01-1200.webp"
+              alt="خدمات - Service"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <div class="pill">🛠️ خدمات</div>
+        </div>
+        <div class="card-body">
+          <h2>خدمات</h2>
+          <p>خدمات متنوعة حسب طلبكم.</p>
+        </div>
+      </a>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <small>©️ <span id="year">2026</span> DekoKraft</small>
+    </div>
+  </footer>
+
+  <script src="script.js?v=4003"></script>
+</body>
+</html>
