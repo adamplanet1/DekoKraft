@@ -1,23 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0c0b14" />
   <title>DekoKraft</title>
 
-  <meta name="theme-color" content="#1e1b2e" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
 
+<body>
   <!-- Header -->
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="العودة للرئيسية">
-        <div class="brand-avatar">D</div>
+      <a class="brand" href="index.html" aria-label="DekoKraft">
+        <div class="brand-avatar" aria-hidden="true">D</div>
         <div class="brand-text">
           <strong>DekoKraft</strong>
-          <small>شموع • ديكور • هدايا</small>
+          <small>هدايا • ديكور • خدمات</small>
         </div>
       </a>
 
@@ -25,120 +25,149 @@
       <nav class="nav-desktop" aria-label="القائمة الرئيسية">
         <a class="nav-link active" href="index.html">الرئيسية</a>
         <a class="nav-link" href="gifts.html">هدايا</a>
-        <a class="nav-link" href="decor.html">زينة وزخرفة</a>
-        <a class="nav-link" href="kids-gifts.html">هدايا للأطفال</a>
-        <a class="nav-link" href="service.html">خدمات</a>
+        <a class="nav-link" href="decor.html">ديكور</a>
+        <a class="nav-link" href="collections.html">المجموعات</a>
+        <a class="nav-link" href="gallery.html">معرض الصور</a>
       </nav>
 
       <!-- Mobile button -->
-      <button class="menu-btn" id="menuBtn" type="button"
-              aria-label="فتح القائمة"
-              aria-expanded="false"
-              aria-controls="mobileMenu">
-        <span class="menu-icon">☰</span>
+      <button
+        id="menuBtn"
+        class="menu-btn"
+        type="button"
+        aria-label="فتح القائمة"
+        aria-expanded="false"
+        aria-controls="mobileMenu"
+      >
+        <span class="menu-icon" aria-hidden="true">≡</span>
       </button>
     </div>
 
     <!-- Mobile menu -->
-    <div class="mobile-menu" id="mobileMenu" hidden>
+    <div id="mobileMenu" class="mobile-menu" hidden>
       <div class="container mobile-menu-inner">
         <a class="mobile-link active" href="index.html">الرئيسية</a>
         <a class="mobile-link" href="gifts.html">هدايا</a>
-        <a class="mobile-link" href="decor.html">زينة وزخرفة</a>
-        <a class="mobile-link" href="kids-gifts.html">هدايا للأطفال</a>
-        <a class="mobile-link" href="service.html">خدمات</a>
+        <a class="mobile-link" href="decor.html">ديكور</a>
+        <a class="mobile-link" href="collections.html">المجموعات</a>
+        <a class="mobile-link" href="gallery.html">معرض الصور</a>
       </div>
     </div>
   </header>
 
+  <!-- Hero -->
   <main class="container">
-
-    <!-- Hero -->
     <section class="hero">
       <div class="hero-card">
         <h1>مرحباً بكم في <span class="accent">DekoKraft</span></h1>
-        <p>اختر مجموعة وشاهد الصور والتفاصيل.</p>
+        <p>
+          هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة، وخدمات متنوعة.
+          اختر قسمًا وشاهد التفاصيل.
+        </p>
 
         <div class="hero-actions">
-          <a class="btn primary" href="gifts.html">استعرض الهدايا</a>
-          <a class="btn" href="service.html">تواصل للخدمات</a>
+          <a class="btn primary" href="collections.html">استعرض المجموعات</a>
+          <a class="btn" href="gallery.html">شاهد معرض الصور</a>
         </div>
       </div>
     </section>
 
-    <!-- Grid cards -->
-    <section class="grid" aria-label="المجموعات">
+    <!-- Cards (Homepage groups) -->
+    <section class="grid" aria-label="مجموعات الصفحة الرئيسية">
 
-      <!-- 1. هدايا -->
-      <a class="card" href="gifts.html" aria-label="هدايا">
+      <!-- 1) Geschenke -->
+      <a class="card" href="gifts.html">
         <div class="card-media">
           <img
-            src="assets/images/gifts-600.webp"
-            srcset="assets/images/gifts-600.webp 600w, assets/images/gifts-1200.webp 1200w"
+            src="assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp"
+            srcset="
+              assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp 600w,
+              assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp 1200w
+            "
             sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            loading="eager"
-            fetchpriority="high"
+            width="1200"
+            height="800"
+            loading="lazy"
             decoding="async"
-            alt="هدايا">
-          <span class="pill">🎁 هدايا</span>
+            alt="هدايا - Geschenke"
+          />
+          <div class="pill">🎁 هدايا</div>
         </div>
         <div class="card-body">
           <h2>هدايا</h2>
-          <p>هدايا جميلة للمناسبات المختلفة.</p>
+          <p>أفكار هدايا متنوعة ومميزة لكل المناسبات.</p>
         </div>
       </a>
 
-      <!-- 2. زينة وزخرفة -->
-      <a class="card" href="decor.html" aria-label="زينة وزخرفة">
+      <!-- 2) Dekoration -->
+      <a class="card" href="decor.html">
         <div class="card-media">
           <img
-            src="assets/images/decor-600.webp"
-            srcset="assets/images/decor-600.webp 600w, assets/images/decor-1200.webp 1200w"
+            src="assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp"
+            srcset="
+              assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp 600w,
+              assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp 1200w
+            "
             sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            width="1200"
+            height="800"
             loading="lazy"
             decoding="async"
-            alt="زينة وزخرفة">
-          <span class="pill">🏠 زينة وزخرفة</span>
+            alt="ديكور - Dekoration"
+          />
+          <div class="pill">🏡 ديكور</div>
         </div>
         <div class="card-body">
-          <h2>زينة وزخرفة</h2>
-          <p>قطع ديكور منزلية أنيقة وبسيطة.</p>
+          <h2>ديكور</h2>
+          <p>لمسات ديكور وزخرفة تضيف جمالًا للمكان.</p>
         </div>
       </a>
 
-      <!-- 3. هدايا للأطفال -->
-      <a class="card" href="kids-gifts.html" aria-label="هدايا للأطفال">
+      <!-- 3) Kinder-Geschenke -->
+      <a class="card" href="kinder-geschenke.html">
         <div class="card-media">
           <img
-            src="assets/images/collections-600.webp"
-            srcset="assets/images/collections-600.webp 600w, assets/images/collections-1200.webp 1200w"
+            src="assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-600.webp"
+            srcset="
+              assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-600.webp 600w,
+              assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-1200.webp 1200w
+            "
             sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            width="1200"
+            height="800"
             loading="lazy"
             decoding="async"
-            alt="هدايا للأطفال">
-          <span class="pill">🧸 هدايا للأطفال</span>
+            alt="هدايا للأطفال - Kinder-Geschenke"
+          />
+          <div class="pill">🧸 هدايا للأطفال</div>
         </div>
         <div class="card-body">
           <h2>هدايا للأطفال</h2>
-          <p>هدايا وألعاب تعليمية للأطفال.</p>
+          <p>هدايا لطيفة وأفكار تناسب الأطفال.</p>
         </div>
       </a>
 
-      <!-- 4. خدمات -->
-      <a class="card" href="service.html" aria-label="خدمات">
+      <!-- 4) Service -->
+      <a class="card" href="service.html">
         <div class="card-media">
           <img
-            src="assets/images/collections-600.webp"
-            srcset="assets/images/collections-600.webp 600w, assets/images/collections-1200.webp 1200w"
+            src="assets/images/Homepage/Service-SV-P/SV-P01-600.webp"
+            srcset="
+              assets/images/Homepage/Service-SV-P/SV-P01-600.webp 600w,
+              assets/images/Homepage/Service-SV-P/SV-P01-1200.webp 1200w
+            "
             sizes="(max-width: 760px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            width="1200"
+            height="800"
             loading="lazy"
             decoding="async"
-            alt="خدمات">
-          <span class="pill">🛠️ خدمات</span>
+            alt="خدمات - Service"
+          />
+          <div class="pill">🛠️ خدمات</div>
         </div>
         <div class="card-body">
           <h2>خدمات</h2>
-          <p>خدمات مخصصة وأعمال حسب الطلب.</p>
+          <p>خدمات متنوعة حسب طلبكم.</p>
         </div>
       </a>
 
@@ -146,10 +175,9 @@
 
     <footer class="footer">
       <div class="container">
-        ©️ <span id="year"></span> DekoKraft
+        <small>©️ <span id="year"></span> DekoKraft</small>
       </div>
     </footer>
-
   </main>
 
   <script src="script.js"></script>
