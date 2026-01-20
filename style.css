@@ -19,9 +19,15 @@ body{
   background: radial-gradient(1100px 500px at 70% 10%, rgba(124,92,255,.25), transparent 60%),
               linear-gradient(180deg, #0b0a12 0%, #0c0b14 100%);
   color:var(--text);
+  overflow-x:hidden;
 }
 
-.container{max-width:1100px;margin:0 auto;padding:0 16px}
+.container{
+  max-width:1100px;
+  margin-inline:auto;     /* ✅ مهم للـRTL + centering */
+  margin-block:0;
+  padding:0 16px;
+}
 
 /* Header */
 .site-header{
@@ -122,11 +128,9 @@ body{
   border-radius: var(--radius);
   padding:22px;
   box-shadow: var(--shadow);
+  margin-inline:auto;   /* ✅ مركز دائمًا */
 }
-.hero h1{
-  margin:0 0 10px 0;
-  font-size:32px;
-}
+.hero h1{margin:0 0 10px 0; font-size:32px}
 .hero p{
   margin:0;
   color:var(--muted);
@@ -134,4 +138,71 @@ body{
   max-width:64ch;
 }
 .accent{color:var(--accent)}
-.hero-actions{display:flex; gap:12px; margin-top:18px; flex
+.hero-actions{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  color:var(--text);
+  padding:12px 18px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.03);
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+.btn:hover{transform: translateY(-1px)}
+.btn.primary{
+  background: rgba(124,92,255,.85);
+  border-color: rgba(124,92,255,1);
+  box-shadow: 0 12px 28px rgba(124,92,255,.22);
+}
+
+/* ✅ Grid: على الكمبيوتر 2×2 بقوة */
+.grid{
+  width:100%; /* ✅ مهم */
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:22px;
+  padding:18px 0 34px;
+}
+
+/* Card */
+.card{
+  width:100%; /* ✅ مهم */
+  display:block;
+  text-decoration:none;
+  color:var(--text);
+  background: rgba(255,255,255,.02);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  overflow:hidden;
+  box-shadow: var(--shadow);
+  transform: translateZ(0);
+  transition: transform .18s ease, border-color .2s ease, background .2s ease;
+}
+.card:hover{
+  transform: translateY(-3px);
+  border-color: rgba(124,92,255,.35);
+  background: rgba(255,255,255,.03);
+}
+
+/* ✅ الصورة تظهر كاملة */
+.card-media{
+  position:relative;
+  height:280px;
+  background: rgba(255,255,255,.03);
+}
+.card-media img{
+  width:100%;
+  height:100%;
+  object-fit: contain;
+  object-position: center;
+  padding:12px;
+  background: rgba(0,0,0,.20);
+}
+.card-media::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.35));
