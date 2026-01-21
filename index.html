@@ -5,25 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DekoKraft | الرئيسية</title>
 
-  <!-- منع الكاش (مهم جدًا للهاتف و GitHub Pages) -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-
-  <!-- CSS -->
+  <!-- CSS (مع نسخة للكاش) -->
   <link rel="stylesheet" href="style.css?v=4003">
 </head>
 
 <body>
   <div class="container">
 
-    <!-- NAVBAR (بدون Gruppen-Fotos) -->
-    <header class="topnav">
-      <a href="index.html">الرئيسية</a>
-      <a href="Geschenke.html">Geschenke</a>
-      <a href="Dekoration.html">Dekoration</a>
-      <a href="Kinder-Geschenke.html">Kinder-Geschenke</a>
-      <a href="service.html">Service</a>
+    <!-- NAVBAR -->
+    <header class="topnav" id="topnav">
+
+      <!-- Brand / Logo -->
+      <a class="brand" href="index.html" aria-label="DekoKraft Home">
+        <picture>
+          <source srcset="assets/images/logo/logo-dekokraft-600.webp" type="image/webp">
+          <img src="assets/images/logo/logo-dekokraft.png" alt="DekoKraft Logo">
+        </picture>
+        <span>DekoKraft</span>
+      </a>
+
+      <!-- Menu button (mobile) -->
+      <button class="menu-btn" type="button" id="menuBtn" aria-label="Menu">
+        ☰ <span>Menu</span>
+      </button>
+
+      <!-- Links (بدون Gruppen-Fotos) -->
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">الرئيسية</a>
+        <a href="Geschenke.html">Geschenke</a>
+        <a href="Dekoration.html">Dekoration</a>
+        <a href="Kinder-Geschenke.html">Kinder-Geschenke</a>
+        <a href="service.html">Service</a>
+      </nav>
+
     </header>
 
     <!-- HERO -->
@@ -65,5 +79,7 @@
     </section>
 
   </div>
+
+  <script src="script.js?v=4003"></script>
 </body>
 </html>
