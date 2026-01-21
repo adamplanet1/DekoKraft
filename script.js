@@ -1,11 +1,14 @@
-(() => {
-  const topnav = document.getElementById("topnav");
+document.addEventListener("DOMContentLoaded", () => {
+
   const menuBtn = document.getElementById("menuBtn");
+  const navLinks = document.querySelector(".nav-links");
 
-  if (!topnav || !menuBtn) return;
+  if (!menuBtn || !navLinks) {
+    return;
+  }
 
-  menuBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    topnav.classList.toggle("open");
+  menuBtn.addEventListener("click", () => {
+    navLinks.classList.toggle("open");
   });
-})();
+
+});
