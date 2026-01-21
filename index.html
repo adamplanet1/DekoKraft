@@ -8,6 +8,45 @@
 
   <!-- Cache buster -->
   <link rel="stylesheet" href="style.css?v=4006" />
+
+  <!-- ✅ إصلاح سريع للبراند حتى لو style.css فيه مشكلة -->
+  <style>
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      text-decoration:none !important;
+      color: inherit;
+      min-width: 0;
+    }
+    .brand:visited{ color: inherit; }
+    .brand-text{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+    .brand-text strong{ font-size:1.05rem; white-space:nowrap; }
+    .brand-text small{ opacity:.85; white-space:nowrap; }
+
+    .brand-logo{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      object-fit:contain;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      padding:4px;
+      flex: 0 0 auto;
+    }
+    .brand-avatar{
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      background: rgba(124,92,255,.18);
+      border: 1px solid rgba(124,92,255,.25);
+      flex: 0 0 auto;
+    }
+  </style>
 </head>
 
 <body>
@@ -16,9 +55,18 @@
   <header class="site-header">
     <div class="container header-inner">
 
-      <!-- ✅ رجعنا البراند كما كان (بدون صورة لوجو حتى لا تختفي الأشياء) -->
+      <!-- ✅ Brand مع Logo + Fallback -->
       <a class="brand" href="index.html" aria-label="DekoKraft Home">
-        <div class="brand-avatar" aria-hidden="true">D</div>
+        <img
+          class="brand-logo"
+          src="assets/images/logo-dekokraft.png"
+          alt="شعار DekoKraft"
+          loading="eager"
+          decoding="async"
+          onerror="this.hidden=true; document.getElementById('brandAvatar').hidden=false;"
+        />
+        <div class="brand-avatar" id="brandAvatar" aria-hidden="true" hidden>D</div>
+
         <div class="brand-text">
           <strong>DekoKraft</strong>
           <small>هدايا • ديكور • خدمات</small>
@@ -59,9 +107,7 @@
   <main class="container">
     <section class="hero">
       <div class="hero-card">
-        <!-- ✅ هنا فقط حذفنا التكرار -->
         <h1>مرحباً بكم في <span class="accent">DekoKraft</span></h1>
-
         <p>
           هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة، وخدمات متنوعة.
           اختر قسماً وشاهد التفاصيل.
