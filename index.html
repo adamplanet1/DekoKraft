@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DekoKraft | كوكب آدم</title>
 
-  <link rel="stylesheet" href="style.css?v=4012">
-  <meta name="theme-color" content="#070818" />
+  <link rel="stylesheet" href="styles.css?v=4011" />
+
+  <!-- تحسين تحميل الخطوط إن كانت محلية عندك لاحقاً -->
 </head>
 
 <body>
@@ -15,185 +16,174 @@
   <header class="site-header">
     <div class="header-inner">
 
-      <!-- Brand -->
-      <a class="brand" href="index.html" aria-label="العودة إلى الرئيسية">
-        <img
-          class="brand-logo"
-          src="assets/images/Logo/logo-dekokraft-600.webp"
-          srcset="
-            assets/images/Logo/logo-dekokraft-600.webp 600w,
-            assets/images/Logo/logo-dekokraft-1200.webp 1200w
-          "
-          sizes="44px"
-          alt="شعار DekoKraft"
-          loading="eager"
-          decoding="async"
-        />
-        <div class="brand-text">
-          <div class="brand-title">DekoKraft</div>
-          <div class="brand-sub">هدايا · ديكور · خدمات</div>
-        </div>
-      </a>
-
-      <!-- Mobile menu button -->
-      <button class="menu-toggle" id="menuToggle" aria-label="فتح القائمة" aria-expanded="false">
-        <span></span><span></span><span></span>
+      <button class="menu-btn" aria-label="القائمة" aria-expanded="false" aria-controls="mobileMenu">
+        <span class="menu-icon"></span>
       </button>
 
-      <!-- Desktop nav -->
-      <nav class="nav" aria-label="القائمة الرئيسية">
-        <a class="nav-link active" href="index.html">الرئيسية</a>
-        <a class="nav-link" href="geschenke.html">هدايا</a>
-        <a class="nav-link" href="dekor.html">ديكور</a>
-        <a class="nav-link" href="kinder.html">هدايا للأطفال</a>
-        <a class="nav-link" href="services.html">خدمات</a>
-        <a class="nav-link" href="gallery.html">معرض الصور</a>
-      </nav>
+      <div class="brand">
+        <div class="brand-text">
+          <div class="brand-name">DekoKraft</div>
+          <div class="brand-sub">هدايا · ديكور · خدمات</div>
+        </div>
+
+        <a class="brand-logo" href="index.html" aria-label="الشعار">
+          <img
+            src="assets/images/Logo/logo-dekokraft-600.webp"
+            srcset="
+              assets/images/Logo/logo-dekokraft-600.webp 600w,
+              assets/images/Logo/logo-dekokraft-1200.webp 1200w
+            "
+            sizes="48px"
+            width="48"
+            height="48"
+            alt="DekoKraft Logo"
+            loading="eager"
+          />
+        </a>
+      </div>
 
     </div>
 
-    <!-- Mobile nav panel -->
-    <div class="mobile-nav" id="mobileNav" hidden>
-      <a class="mobile-link active" href="index.html">الرئيسية</a>
-      <a class="mobile-link" href="geschenke.html">هدايا</a>
-      <a class="mobile-link" href="dekor.html">ديكور</a>
-      <a class="mobile-link" href="kinder.html">هدايا للأطفال</a>
-      <a class="mobile-link" href="services.html">خدمات</a>
-      <a class="mobile-link" href="gallery.html">معرض الصور</a>
-    </div>
+    <!-- MOBILE MENU -->
+    <nav id="mobileMenu" class="mobile-menu" hidden>
+      <a href="#home" class="nav-item active">الرئيسية</a>
+      <a href="#gifts" class="nav-item">هدايا</a>
+      <a href="#decor" class="nav-item">ديكور</a>
+      <a href="#kids" class="nav-item">هدايا للأطفال</a>
+      <a href="#service" class="nav-item">خدمات</a>
+      <a href="#gallery" class="nav-item">معرض الصور</a>
+    </nav>
   </header>
 
-  <!-- MAIN -->
-  <main class="page">
-
-    <!-- HERO -->
+  <!-- HERO -->
+  <main id="home" class="page">
     <section class="hero">
       <div class="hero-card">
         <h1 class="hero-title">
-          مرحباً بكم في <span class="hero-brand">DekoKraft</span>
+          مرحباً بكم في <span class="brand-highlight">DekoKraft</span>
         </h1>
 
-        <p class="hero-text">
-          هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة،
-          هدايا للأطفال، وخدمات متنوعة. اختر قسماً وشاهد التفاصيل.
+        <p class="hero-desc">
+          هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة، هدايا للأطفال، وخدمات متنوعة.
+          اختر قسمًا وشاهد التفاصيل.
         </p>
 
         <div class="hero-actions">
           <a class="btn btn-primary" href="#collections">استعرض المجموعات</a>
-          <a class="btn btn-ghost" href="gallery.html">شاهد معرض الصور</a>
+          <a class="btn btn-ghost" href="#gallery">شاهد معرض الصور</a>
         </div>
       </div>
     </section>
 
     <!-- COLLECTIONS -->
-    <section class="collections" id="collections" aria-label="المجموعات">
+    <section id="collections" class="section">
       <div class="section-head">
         <h2 class="section-title">المجموعات</h2>
       </div>
 
-      <div class="collections-grid">
+      <div class="cards-grid">
 
-        <!-- Gifts -->
-        <a class="card" href="geschenke.html" aria-label="قسم الهدايا">
-          <div class="card-media">
-            <img
-              src="assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp"
-              alt="هدايا"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="chip">🎁 هدايا</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">هدايا</h3>
-            <p class="card-text">أفكار هدايا متنوعة ومميزة لكل المناسبات.</p>
-          </div>
-        </a>
+        <!-- GIFTS (عدّل المسار حسب مشروعك الحقيقي) -->
+        <article id="gifts" class="card">
+          <a class="card-link" href="gifts.html" aria-label="هدايا">
+            <div class="card-media">
+              <img
+                src="assets/images/Homepage/Gifts-GH-P/GH-P01-1200.webp"
+                alt="هدايا"
+                loading="lazy"
+                onerror="this.closest('.card').classList.add('img-missing')"
+              />
+              <div class="card-chip">🎁 هدايا</div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">هدايا</h3>
+              <p class="card-desc">أفكار هدايا متنوعة ومميزة لكل المناسبات.</p>
+            </div>
+          </a>
+        </article>
 
-        <!-- Decor -->
-        <a class="card" href="dekor.html" aria-label="قسم الديكور">
-          <div class="card-media">
-            <img
-              src="assets/images/Homepage/Dekor-DK-P/DK-P01-1200.webp"
-              alt="ديكور"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="chip">🏠 ديكور</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">ديكور</h3>
-            <p class="card-text">لمسات ديكور وزخرفة تضيف جمالاً للمكان.</p>
-          </div>
-        </a>
+        <!-- DECOR (عدّل المسار حسب مشروعك الحقيقي) -->
+        <article id="decor" class="card">
+          <a class="card-link" href="decor.html" aria-label="ديكور">
+            <div class="card-media">
+              <img
+                src="assets/images/Homepage/Decor-DK-P/DK-P01-1200.webp"
+                alt="ديكور"
+                loading="lazy"
+                onerror="this.closest('.card').classList.add('img-missing')"
+              />
+              <div class="card-chip">🏠 ديكور</div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">ديكور</h3>
+              <p class="card-desc">لمسات ديكور وزخرفة تضيف جمالاً للمكان.</p>
+            </div>
+          </a>
+        </article>
 
-        <!-- Kids (✅ KG correct) -->
-        <a class="card" href="kinder.html" aria-label="قسم هدايا الأطفال">
-          <div class="card-media">
-            <img
-              src="assets/images/Homepage/Kinder-KG-P/KG-P01-1200.webp"
-              alt="هدايا للأطفال"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="chip">🧸 للأطفال</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">هدايا للأطفال</h3>
-            <p class="card-text">هدايا ممتعة وذكية تناسب الأطفال.</p>
-          </div>
-        </a>
+        <!-- KIDS (✅ المسار الصحيح حسب كلامك) -->
+        <article id="kids" class="card">
+          <a class="card-link" href="kids.html" aria-label="هدايا للأطفال">
+            <div class="card-media">
+              <img
+                src="assets/images/Homepage/Kinder-KG-P/KG-P01-1200.webp"
+                alt="هدايا للأطفال"
+                loading="lazy"
+                onerror="this.closest('.card').classList.add('img-missing')"
+              />
+              <div class="card-chip">🧸 للأطفال</div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">هدايا للأطفال</h3>
+              <p class="card-desc">هدايا ممتعة وتعليمية للأطفال.</p>
+            </div>
+          </a>
+        </article>
 
-        <!-- Services (✅ SV correct) -->
-        <a class="card" href="services.html" aria-label="قسم الخدمات">
-          <div class="card-media">
-            <img
-              src="assets/images/Homepage/Services-SV-P/SV-P01-1200.webp"
-              alt="خدمات"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="chip">✨ خدمات</div>
-          </div>
-          <div class="card-body">
-            <h3 class="card-title">خدمات</h3>
-            <p class="card-text">خدمات متنوعة حسب الطلب وبجودة عالية.</p>
-          </div>
-        </a>
+        <!-- SERVICE (✅ Service وليس Services) -->
+        <article id="service" class="card">
+          <a class="card-link" href="services.html" aria-label="خدمات">
+            <div class="card-media">
+              <img
+                src="assets/images/Homepage/Service-SV-P/SV-P01-1200.webp"
+                alt="خدمات"
+                loading="lazy"
+                onerror="this.closest('.card').classList.add('img-missing')"
+              />
+              <div class="card-chip">✨ خدمات</div>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">خدمات</h3>
+              <p class="card-desc">خدمات وتصميمات حسب الطلب.</p>
+            </div>
+          </a>
+        </article>
 
       </div>
     </section>
 
+    <!-- GALLERY placeholder -->
+    <section id="gallery" class="section">
+      <div class="section-head">
+        <h2 class="section-title">معرض الصور</h2>
+      </div>
+      <p class="muted">سيتم إضافة معرض الصور هنا.</p>
+    </section>
+
+    <footer class="footer">
+      <small>©️ DekoKraft | كوكب آدم</small>
+    </footer>
   </main>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <span>©️ <span id="year"></span> DekoKraft | كوكب آدم</span>
-    </div>
-  </footer>
-
   <script>
-    // Year
-    document.getElementById("year").textContent = new Date().getFullYear();
+    const btn = document.querySelector('.menu-btn');
+    const menu = document.getElementById('mobileMenu');
 
-    // Mobile menu
-    const btn = document.getElementById("menuToggle");
-    const panel = document.getElementById("mobileNav");
-
-    btn.addEventListener("click", () => {
-      const isOpen = btn.getAttribute("aria-expanded") === "true";
-      btn.setAttribute("aria-expanded", String(!isOpen));
-      panel.hidden = isOpen;
-      document.body.classList.toggle("no-scroll", !isOpen);
-    });
-
-    // Close menu when clicking a link
-    panel.querySelectorAll("a").forEach(a => {
-      a.addEventListener("click", () => {
-        btn.setAttribute("aria-expanded", "false");
-        panel.hidden = true;
-        document.body.classList.remove("no-scroll");
-      });
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      menu.hidden = expanded;
+      document.body.classList.toggle('menu-open', !expanded);
     });
   </script>
 
