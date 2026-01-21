@@ -6,12 +6,16 @@
 html, body { height: 100%; }
 
 body{
-  margin:0;
+  margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   direction: rtl;
+
+  /* الحل الأساسي للمشكلة */
+  overflow-x: hidden;
+
   background: radial-gradient(1200px 700px at 30% 0%, #2a3dff33 0%, transparent 60%),
               linear-gradient(180deg, #0b1030 0%, #0a0f28 45%, #070b1c 100%);
-  color:#fff;
+  color: #fff;
 }
 
 a{ color: inherit; text-decoration: none; }
