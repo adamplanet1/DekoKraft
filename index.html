@@ -5,15 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DekoKraft | الرئيسية</title>
 
-  <!-- IMPORTANT: cache busting -->
+  <!-- منع الكاش (مهم للهاتف) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- كسر الكاش للستايل -->
   <link rel="stylesheet" href="style.css?v=4003">
 </head>
 
 <body>
-
   <div class="container">
 
-    <!-- ====== NAV ====== -->
+    <!-- NAV -->
     <header class="topnav">
       <a href="index.html">الرئيسية</a>
       <a href="Geschenke.html">Geschenke</a>
@@ -23,7 +27,7 @@
       <a href="Grupen-Fotos.html">Grupen-Fotos</a>
     </header>
 
-    <!-- ====== HERO ====== -->
+    <!-- HERO -->
     <section class="hero">
       <h1>مرحبًا بكم في <strong>DekoKraft</strong></h1>
       <p>
@@ -32,7 +36,7 @@
       </p>
     </section>
 
-    <!-- ====== GRID SECTIONS ====== -->
+    <!-- GRID (بدون Gruppen-Fotos) -->
     <section class="grid">
 
       <div class="grid-card">
@@ -59,15 +63,8 @@
         <a href="service.html">عرض القسم →</a>
       </div>
 
-      <div class="grid-card">
-        <h2>📷 Grupen-Fotos</h2>
-        <p>صور المجموعات والأعمال.</p>
-        <a href="Grupen-Fotos.html">عرض الصور →</a>
-      </div>
-
     </section>
 
   </div>
-
 </body>
 </html>
