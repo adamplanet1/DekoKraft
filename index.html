@@ -1,245 +1,76 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DekoKraft</title>
-  <meta name="theme-color" content="#0c0b14" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DekoKraft | كوكب آدم</title>
 
-  <!-- Cache buster -->
-  <link rel="stylesheet" href="style.css?v=4006" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- ✅ إصلاح سريع للبراند حتى لو style.css فيه مشكلة -->
   <style>
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      text-decoration:none !important;
-      color: inherit;
-      min-width: 0;
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1b1b3a, #070711);
+      color: #ffffff;
     }
-    .brand:visited{ color: inherit; }
-    .brand-text{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
-    .brand-text strong{ font-size:1.05rem; white-space:nowrap; }
-    .brand-text small{ opacity:.85; white-space:nowrap; }
 
-    .brand-logo{
-      width:44px;
-      height:44px;
-      border-radius:12px;
-      object-fit:contain;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.10);
-      padding:4px;
-      flex: 0 0 auto;
+    /* ================= HEADER ================= */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(6, 6, 24, 0.85);
+      backdrop-filter: blur(10px);
     }
-    .brand-avatar{
-      width:44px;
-      height:44px;
-      border-radius:12px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:800;
-      background: rgba(124,92,255,.18);
-      border: 1px solid rgba(124,92,255,.25);
-      flex: 0 0 auto;
+
+    .nav-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-  </style>
-</head>
 
-<body>
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+    }
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="container header-inner">
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+    }
 
-      <!-- ✅ Brand مع Logo + Fallback -->
-      <a class="brand" href="index.html" aria-label="DekoKraft Home">
-        <img
-          class="brand-logo"
-          src="assets/images/logo-dekokraft.png"
-          alt="شعار DekoKraft"
-          loading="eager"
-          decoding="async"
-          onerror="this.hidden=true; document.getElementById('brandAvatar').hidden=false;"
-        />
-        <div class="brand-avatar" id="brandAvatar" aria-hidden="true" hidden>D</div>
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 18px;
+      margin: 0;
+      padding: 0;
+    }
 
-        <div class="brand-text">
-          <strong>DekoKraft</strong>
-          <small>هدايا • ديكور • خدمات</small>
-        </div>
-      </a>
+    nav a {
+      text-decoration: none;
+      color: #e0e0e0;
+      font-size: 15px;
+      transition: color 0.2s ease;
+    }
 
-      <!-- Desktop nav -->
-      <nav class="nav-desktop" aria-label="Main navigation">
-        <a class="nav-link active" href="index.html">الرئيسية</a>
-        <a class="nav-link" href="gifts.html">هدايا</a>
-        <a class="nav-link" href="decor.html">ديكور</a>
-        <a class="nav-link" href="kids.html">هدايا للأطفال</a>
-        <a class="nav-link" href="service.html">خدمات</a>
-        <a class="nav-link" href="gallery.html">معرض الصور</a>
-      </nav>
+    nav a:hover {
+      color: #8a86ff;
+    }
 
-      <!-- Mobile button -->
-      <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة" aria-expanded="false">
-        <span class="menu-icon">☰</span>
-      </button>
-
-    </div>
-
-    <!-- Mobile menu -->
-    <div class="mobile-menu" id="mobileMenu" hidden>
-      <div class="container mobile-menu-inner">
-        <a class="mobile-link active" href="index.html">الرئيسية</a>
-        <a class="mobile-link" href="gifts.html">هدايا</a>
-        <a class="mobile-link" href="decor.html">ديكور</a>
-        <a class="mobile-link" href="kids.html">هدايا للأطفال</a>
-        <a class="mobile-link" href="service.html">خدمات</a>
-        <a class="mobile-link" href="gallery.html">معرض الصور</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Hero -->
-  <main class="container">
-    <section class="hero">
-      <div class="hero-card">
-        <h1>مرحباً بكم في <span class="accent">DekoKraft</span></h1>
-        <p>
-          هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة، وخدمات متنوعة.
-          اختر قسماً وشاهد التفاصيل.
-        </p>
-
-        <div class="hero-actions">
-          <a class="btn primary" href="collections.html">استعرض المجموعات</a>
-          <a class="btn" href="gallery.html">شاهد معرض الصور</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Grid -->
-    <section class="grid" aria-label="الأقسام">
-
-      <!-- 1) Geschenke -->
-      <a class="card" href="gifts.html" aria-label="Geschenke - هدايا">
-        <div class="card-media">
-          <picture>
-            <source
-              type="image/webp"
-              srcset="
-                assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp 600w,
-                assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp 1200w
-              "
-              sizes="(max-width: 760px) 100vw, 33vw"
-            />
-            <img
-              src="assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp"
-              alt="هدايا - Geschenke"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <div class="pill">🎁 هدايا</div>
-        </div>
-        <div class="card-body">
-          <h2>هدايا</h2>
-          <p>أفكار هدايا متنوعة ومميزة لكل المناسبات.</p>
-        </div>
-      </a>
-
-      <!-- 2) Dekoration -->
-      <a class="card" href="decor.html" aria-label="Dekoration - ديكور">
-        <div class="card-media">
-          <picture>
-            <source
-              type="image/webp"
-              srcset="
-                assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp 600w,
-                assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp 1200w
-              "
-              sizes="(max-width: 760px) 100vw, 33vw"
-            />
-            <img
-              src="assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp"
-              alt="ديكور - Dekoration"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <div class="pill">🏠 ديكور</div>
-        </div>
-        <div class="card-body">
-          <h2>ديكور</h2>
-          <p>لمسات ديكور وزخرفة تضيف جمالاً للمكان.</p>
-        </div>
-      </a>
-
-      <!-- 3) Kinder-Geschenke -->
-      <a class="card" href="kids.html" aria-label="Kinder-Geschenke - هدايا للأطفال">
-        <div class="card-media">
-          <picture>
-            <source
-              type="image/webp"
-              srcset="
-                assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-600.webp 600w,
-                assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-1200.webp 1200w
-              "
-              sizes="(max-width: 760px) 100vw, 33vw"
-            />
-            <img
-              src="assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-1200.webp"
-              alt="هدايا للأطفال - Kinder-Geschenke"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <div class="pill">🧸 للأطفال</div>
-        </div>
-        <div class="card-body">
-          <h2>هدايا للأطفال</h2>
-          <p>هدايا لطيفة وأفكار ممتعة للأطفال.</p>
-        </div>
-      </a>
-
-      <!-- 4) Service -->
-      <a class="card" href="service.html" aria-label="Service - خدمات">
-        <div class="card-media">
-          <picture>
-            <source
-              type="image/webp"
-              srcset="
-                assets/images/Homepage/Service-SV-P/SV-P01-600.webp 600w,
-                assets/images/Homepage/Service-SV-P/SV-P01-1200.webp 1200w
-              "
-              sizes="(max-width: 760px) 100vw, 33vw"
-            />
-            <img
-              src="assets/images/Homepage/Service-SV-P/SV-P01-1200.webp"
-              alt="خدمات - Service"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
-          <div class="pill">🛠️ خدمات</div>
-        </div>
-        <div class="card-body">
-          <h2>خدمات</h2>
-          <p>خدمات متنوعة حسب طلبكم.</p>
-        </div>
-      </a>
-
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container">
-      <small>©️ <span id="year">2026</span> DekoKraft</small>
-    </div>
-  </footer>
-
-  <script src="script.js?v=4006"></script>
-</body>
-</html>
+    /* ================= HERO ================= */
+    .hero {
+      max-width: 1100px;
+      margin: 64px auto;
+      padding: 36px 28px;
+      background: linear-gradient(135deg, #2c2f8a, #3f3fb1);
