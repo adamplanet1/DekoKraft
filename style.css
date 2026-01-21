@@ -13,3 +13,13 @@ body{
 }
 
 a{ color: inherit; text-decoration: none; }
+/* =========================
+   Fix images overflow (CRITICAL)
+========================= */
+img,
+picture,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
