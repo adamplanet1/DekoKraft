@@ -5,346 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DekoKraft | كوكب آدم</title>
 
-  <!-- ملف CSS الرئيسي (اتركه كما هو في مشروعك) -->
-  <link rel="stylesheet" href="style.css?v=4008" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css?v=4010">
 
-  <!-- تحسين: خط عربي افتراضي جيد (بدون تحميل خارجي) -->
-  <style>
-    :root{
-      --bg:#070818;
-      --bg2:#0b0d24;
-      --card:#20235a;
-      --card2:#2a2f7a;
-      --text:#e9ecff;
-      --muted:#c7cbffcc;
-      --brand:#6f78ff;
-      --outline:#ffffff33;
-      --shadow: 0 20px 60px rgba(0,0,0,.35);
-      --r:22px;
-    }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
-      background: radial-gradient(1200px 700px at 30% 10%, #101348 0%, var(--bg) 55%, #050613 100%);
-      color: var(--text);
-    }
-    a{color:inherit;text-decoration:none}
-
-    /* ===== Header ===== */
-    .site-header{
-      position: sticky;
-      top:0;
-      z-index:1000;
-      background: linear-gradient(180deg, rgba(10,12,30,.92), rgba(10,12,30,.75));
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .header-inner{
-      max-width:1100px;
-      margin:0 auto;
-      padding:10px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-    }
-
-    /* Brand (Logo + Text) */
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 220px;
-    }
-    .brand img{
-      width:40px;
-      height:40px;
-      border-radius:12px;
-      object-fit:cover;
-      box-shadow: 0 10px 24px rgba(0,0,0,.35);
-      background:#fff; /* لو الصورة فيها شفافية */
-    }
-    .brand .brand-text{
-      display:flex;
-      flex-direction:column;
-      line-height:1.1;
-    }
-    .brand .brand-title{
-      font-weight:800;
-      letter-spacing:.2px;
-      font-size:18px;
-    }
-    .brand .brand-sub{
-      font-size:12px;
-      color: var(--muted);
-    }
-
-    /* Desktop nav */
-    .nav-links{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      font-size:14px;
-      color: var(--muted);
-    }
-    .nav-links a{
-      padding:8px 10px;
-      border-radius:12px;
-    }
-    .nav-links a.active,
-    .nav-links a:hover{
-      background: rgba(111,120,255,.14);
-      color: var(--text);
-    }
-
-    /* Hamburger (Mobile) */
-    .menu-btn{
-      display:none;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      width:42px;height:42px;
-      border-radius:14px;
-      cursor:pointer;
-      align-items:center;
-      justify-content:center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.22);
-    }
-    .menu-btn span{
-      display:block;
-      width:18px;
-      height:2px;
-      background: var(--text);
-      position:relative;
-    }
-    .menu-btn span::before,
-    .menu-btn span::after{
-      content:"";
-      position:absolute;
-      left:0;
-      width:18px;
-      height:2px;
-      background: var(--text);
-    }
-    .menu-btn span::before{ top:-6px; }
-    .menu-btn span::after{ top:6px; }
-
-    /* Mobile menu panel */
-    .mobile-menu{
-      display:none;
-      padding:12px 14px 16px;
-      border-top:1px solid rgba(255,255,255,.06);
-    }
-    .mobile-menu a{
-      display:block;
-      padding:12px 12px;
-      border-radius:14px;
-      color: var(--text);
-      background: rgba(255,255,255,.04);
-      margin-top:10px;
-    }
-    .mobile-menu a.active{
-      background: rgba(111,120,255,.18);
-    }
-
-    /* ===== Main ===== */
-    main{
-      max-width:1100px;
-      margin:0 auto;
-      padding:22px 14px 60px;
-    }
-
-    /* Hero card */
-    .hero{
-      margin-top:10px;
-      display:flex;
-      justify-content:center;
-    }
-    .hero-card{
-      width:min(860px, 100%);
-      background: linear-gradient(180deg, rgba(47,66,196,.9), rgba(40,52,160,.55));
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: var(--r);
-      padding: 26px 22px;
-      box-shadow: var(--shadow);
-      text-align:center;
-    }
-    .hero-title{
-      margin:0 0 10px;
-      font-weight:900;
-      font-size: clamp(24px, 3.2vw, 40px);
-      letter-spacing:.2px;
-      display:flex;
-      align-items:baseline;
-      justify-content:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .hero-title .dk{
-      color: #9aa2ff;
-      font-weight:900;
-    }
-    .hero-desc{
-      margin: 0 auto 18px;
-      color: var(--muted);
-      line-height:1.9;
-      max-width: 60ch;
-      font-size: 15px;
-    }
-    .hero-actions{
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top: 14px;
-    }
-    .btn{
-      border:none;
-      cursor:pointer;
-      padding:12px 18px;
-      border-radius: 18px;
-      font-weight:700;
-      font-size:15px;
-    }
-    .btn-primary{
-      background: #6f78ff;
-      color:#fff;
-      box-shadow: 0 12px 30px rgba(111,120,255,.25);
-    }
-    .btn-ghost{
-      background: transparent;
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,.20);
-    }
-
-    /* ===== Groups ===== */
-    .section-title{
-      margin: 28px 0 14px;
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--text);
-    }
-    .groups-grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:16px;
-    }
-
-    .group-card{
-      position:relative;
-      border-radius: 22px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      box-shadow: 0 16px 40px rgba(0,0,0,.28);
-    }
-    .group-card .imgwrap{
-      width:100%;
-      aspect-ratio: 16/10;
-      overflow:hidden;
-      background:#0b0d24;
-    }
-    .group-card img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      display:block;
-      transform: scale(1.02);
-    }
-    .group-card .badge{
-      position:absolute;
-      top:12px;
-      inset-inline-start:12px;
-      background: rgba(0,0,0,.55);
-      border: 1px solid rgba(255,255,255,.14);
-      padding:6px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .group-card .content{
-      padding:14px 14px 16px;
-      background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.35));
-    }
-    .group-card h3{
-      margin: 2px 0 6px;
-      font-size: 20px;
-    }
-    .group-card p{
-      margin:0;
-      color: var(--muted);
-      line-height:1.8;
-      font-size:14px;
-    }
-
-    /* ===== Responsive ===== */
-    @media (min-width: 900px){
-      .groups-grid{ grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 820px){
-      .nav-links{ display:none; }
-      .menu-btn{ display:flex; }
-      .mobile-menu{ display:block; }
-      .mobile-menu[hidden]{ display:none; }
-    }
-  </style>
+  <!-- تحسين عرض الخط العربي -->
+  <meta name="theme-color" content="#070818" />
 </head>
 
 <body>
 
-  <!-- Header -->
+  <!-- =========================
+       Header
+       ========================= -->
   <header class="site-header">
     <div class="header-inner">
 
-      <!-- زر القائمة (هاتف) -->
-      <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة">
-        <span></span>
-      </button>
-
-      <!-- روابط سطح المكتب -->
-      <nav class="nav-links" aria-label="القائمة الرئيسية">
-        <a class="active" href="#home">الرئيسية</a>
-        <a href="#gifts">هدايا</a>
-        <a href="#decor">ديكور</a>
-        <a href="#kids">هدايا للأطفال</a>
-        <a href="#services">خدمات</a>
-        <a href="#gallery">معرض الصور</a>
-      </nav>
-
-      <!-- Brand + Logo (مهم: المسار الصحيح logo بحروف صغيرة) -->
-      <a class="brand" href="#home" aria-label="العودة للرئيسية">
+      <!-- Brand -->
+      <a class="brand" href="index.html">
         <img
-          src="assets/images/logo/logo-dekokraft-600.webp"
-          srcset="assets/images/logo/logo-dekokraft-600.webp 600w, assets/images/logo/logo-dekokraft-1200.webp 1200w"
+          src="assets/images/Logo/logo-dekokraft-600.webp"
+          srcset="
+            assets/images/Logo/logo-dekokraft-600.webp 600w,
+            assets/images/Logo/logo-dekokraft-1200.webp 1200w
+          "
           sizes="40px"
           alt="شعار DekoKraft"
           loading="eager"
         />
-        <span class="brand-text">
-          <span class="brand-title">DekoKraft</span>
-          <span class="brand-sub">هدايا · ديكور · خدمات</span>
-        </span>
+        <div class="brand-text">
+          <div class="brand-title">DekoKraft</div>
+          <div class="brand-sub">هدايا • ديكور • خدمات</div>
+        </div>
       </a>
+
+      <!-- Desktop nav -->
+      <nav class="nav-links" aria-label="القائمة الرئيسية">
+        <a class="active" href="#top">الرئيسية</a>
+        <a href="#geschenke">هدايا</a>
+        <a href="#deko">ديكور</a>
+        <a href="#kinder">هدايا للأطفال</a>
+        <a href="#services">خدمات</a>
+        <a href="#gallery">معرض الصور</a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة" aria-expanded="false">
+        <span></span>
+      </button>
+
     </div>
 
-    <!-- قائمة الهاتف -->
-    <nav class="mobile-menu" id="mobileMenu" hidden>
-      <a class="active" href="#home">الرئيسية</a>
-      <a href="#gifts">هدايا</a>
-      <a href="#decor">ديكور</a>
-      <a href="#kids">هدايا للأطفال</a>
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <a class="active" href="#top">الرئيسية</a>
+      <a href="#geschenke">هدايا</a>
+      <a href="#deko">ديكور</a>
+      <a href="#kinder">هدايا للأطفال</a>
       <a href="#services">خدمات</a>
       <a href="#gallery">معرض الصور</a>
-    </nav>
+    </div>
   </header>
 
-  <!-- Main -->
-  <main id="home">
+  <!-- =========================
+       Main
+       ========================= -->
+  <main id="top">
+
     <!-- Hero -->
     <section class="hero">
       <div class="hero-card">
@@ -355,7 +81,7 @@
 
         <p class="hero-desc">
           هنا ستجدون هدايا مصنوعة بعناية، أفكار ديكور جميلة، هدايا للأطفال، وخدمات متنوعة.
-          اختر قسماً وشاهد التفاصيل.
+          اختر قسمًا وشاهد التفاصيل.
         </p>
 
         <div class="hero-actions">
@@ -371,137 +97,136 @@
 
       <div class="groups-grid">
 
-        <!-- هدايا -->
-        <a class="group-card" id="gifts" href="#gallery" aria-label="قسم الهدايا">
+        <!-- 1: Geschenke -->
+        <a class="group-card" id="geschenke" href="#" aria-label="هدايا">
           <div class="badge">🎁 <span>هدايا</span></div>
+
+          <!-- ✅ مهم: img داخل imgwrap -->
           <div class="imgwrap">
-            <picture>
-              <source
-                type="image/webp"
-                srcset="
-                  assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp 600w,
-                  assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp 1200w
-                "
-                sizes="(min-width: 900px) 540px, 92vw"
-              />
-              <img
-                src="assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp"
-                alt="هدايا"
-                loading="lazy"
-              />
-            </picture>
+            <img
+              src="assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp"
+              srcset="
+                assets/images/Homepage/Geschenke-GH-P/GH-P01-600.webp 600w,
+                assets/images/Homepage/Geschenke-GH-P/GH-P01-1200.webp 1200w
+              "
+              sizes="(min-width: 900px) 520px, 92vw"
+              alt="هدايا"
+              loading="lazy"
+            />
           </div>
+
           <div class="content">
             <h3>هدايا</h3>
             <p>أفكار هدايا متنوعة ومميزة لكل المناسبات.</p>
           </div>
         </a>
 
-        <!-- ديكور -->
-        <a class="group-card" id="decor" href="#gallery" aria-label="قسم الديكور">
+        <!-- 2: Deko -->
+        <a class="group-card" id="deko" href="#" aria-label="ديكور">
           <div class="badge">🏠 <span>ديكور</span></div>
+
           <div class="imgwrap">
-            <picture>
-              <source
-                type="image/webp"
-                srcset="
-                  assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp 600w,
-                  assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp 1200w
-                "
-                sizes="(min-width: 900px) 540px, 92vw"
-              />
-              <img
-                src="assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp"
-                alt="ديكور"
-                loading="lazy"
-              />
-            </picture>
+            <img
+              src="assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp"
+              srcset="
+                assets/images/Homepage/Dekoration-DK-P/DK-P01-600.webp 600w,
+                assets/images/Homepage/Dekoration-DK-P/DK-P01-1200.webp 1200w
+              "
+              sizes="(min-width: 900px) 520px, 92vw"
+              alt="ديكور"
+              loading="lazy"
+            />
           </div>
+
           <div class="content">
             <h3>ديكور</h3>
             <p>لمسات ديكور وزخرفة تضيف جمالاً للمكان.</p>
           </div>
         </a>
 
-        <!-- للأطفال -->
-        <a class="group-card" id="kids" href="#gallery" aria-label="قسم هدايا الأطفال">
+        <!-- 3: Kinder -->
+        <a class="group-card" id="kinder" href="#" aria-label="هدايا للأطفال">
           <div class="badge">🧸 <span>للأطفال</span></div>
+
           <div class="imgwrap">
-            <picture>
-              <source
-                type="image/webp"
-                srcset="
-                  assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-600.webp 600w,
-                  assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-1200.webp 1200w
-                "
-                sizes="(min-width: 900px) 540px, 92vw"
-              />
-              <img
-                src="assets/images/Homepage/Kinder-Geschenke-KG-P/KG-P01-600.webp"
-                alt="هدايا للأطفال"
-                loading="lazy"
-              />
-            </picture>
+            <img
+              src="assets/images/Homepage/Kinder-KD-P/KD-P01-600.webp"
+              srcset="
+                assets/images/Homepage/Kinder-KD-P/KD-P01-600.webp 600w,
+                assets/images/Homepage/Kinder-KD-P/KD-P01-1200.webp 1200w
+              "
+              sizes="(min-width: 900px) 520px, 92vw"
+              alt="هدايا للأطفال"
+              loading="lazy"
+            />
           </div>
+
           <div class="content">
             <h3>هدايا للأطفال</h3>
-            <p>هدايا لطيفة وأفكار ممتعة للأطفال.</p>
+            <p>هدايا تعليمية وأفكار ممتعة للأطفال.</p>
           </div>
         </a>
 
-        <!-- خدمات -->
-        <a class="group-card" id="services" href="#gallery" aria-label="قسم الخدمات">
+        <!-- 4: Services -->
+        <a class="group-card" id="services" href="#" aria-label="خدمات">
           <div class="badge">✨ <span>خدمات</span></div>
+
           <div class="imgwrap">
-            <picture>
-              <source
-                type="image/webp"
-                srcset="
-                  assets/images/Homepage/Service-SV-P/SV-P01-600.webp 600w,
-                  assets/images/Homepage/Service-SV-P/SV-P01-1200.webp 1200w
-                "
-                sizes="(min-width: 900px) 540px, 92vw"
-              />
-              <img
-                src="assets/images/Homepage/Service-SV-P/SV-P01-600.webp"
-                alt="خدمات"
-                loading="lazy"
-              />
-            </picture>
+            <img
+              src="assets/images/Homepage/Services-SR-P/SR-P01-600.webp"
+              srcset="
+                assets/images/Homepage/Services-SR-P/SR-P01-600.webp 600w,
+                assets/images/Homepage/Services-SR-P/SR-P01-1200.webp 1200w
+              "
+              sizes="(min-width: 900px) 520px, 92vw"
+              alt="خدمات"
+              loading="lazy"
+            />
           </div>
+
           <div class="content">
             <h3>خدمات</h3>
-            <p>خدمات متنوّعة حسب طلبكم.</p>
+            <p>خدمات متنوعة حسب طلبكم.</p>
           </div>
         </a>
 
       </div>
     </section>
 
-    <!-- Gallery (مكان مبدئي) -->
+    <!-- Gallery placeholder -->
     <section id="gallery">
       <h2 class="section-title">معرض الصور</h2>
-      <p style="color: var(--muted); line-height: 1.9; margin: 0;">
-        (يمكنك لاحقاً وضع معرض صور هنا أو صفحة منفصلة.)
+      <p style="color: var(--muted); line-height: 1.9;">
+        (سنضيف هنا معرض الصور لاحقاً)
       </p>
     </section>
 
   </main>
 
+  <!-- =========================
+       JS: Mobile Menu
+       ========================= -->
   <script>
-    // قائمة الهاتف
-    const menuBtn = document.getElementById('menuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
+    const btn = document.getElementById("menuBtn");
+    const menu = document.getElementById("mobileMenu");
 
-    menuBtn?.addEventListener('click', () => {
-      const isHidden = mobileMenu.hasAttribute('hidden');
-      if (isHidden) mobileMenu.removeAttribute('hidden');
-      else mobileMenu.setAttribute('hidden', '');
+    btn.addEventListener("click", () => {
+      const isOpen = !menu.hasAttribute("hidden");
+      if (isOpen) {
+        menu.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", "false");
+      } else {
+        menu.removeAttribute("hidden");
+        btn.setAttribute("aria-expanded", "true");
+      }
     });
 
-    // إغلاق القائمة عند الضغط على رابط
-    mobileMenu?.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => mobileMenu.setAttribute('hidden', ''));
+    // اغلاق القائمة عند الضغط على رابط
+    menu.querySelectorAll("a").forEach(a => {
+      a.addEventListener("click", () => {
+        menu.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", "false");
+      });
     });
   </script>
 
