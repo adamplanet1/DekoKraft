@@ -1,7 +1,20 @@
 import Header from "../../admin/components/Header";
 import LocalizedText from "../../components/LocalizedText";
 import ProductGallery from "../../admin/components/ProductGallery";
-import { loadProduct } from "../../data/loadProduct";
+import {
+  loadCategories,
+  loadCategoryProducts,
+  loadProduct,
+} from "../../data/loadProduct";
+
+export function generateStaticParams() {
+  return loadCategories().flatMap((category) =>
+    loadCategoryProducts(category.slug).map((product) => ({
+      category: category.slug,
+      product: product.id,
+    }))
+  );
+}
 
 export default async function ProductPage({
   params,

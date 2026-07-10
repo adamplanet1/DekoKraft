@@ -13,6 +13,7 @@ import {
   type DemandPredictionResult,
   type DemandReasonId,
   type EstimatedTimeToPublishId,
+  type FastSaleChance,
   type FastSalePredictionResult,
   type FastSaleReasonId,
   type MagicConfidenceLevel,

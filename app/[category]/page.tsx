@@ -23,6 +23,12 @@ const categoryPreviewContent: Record<
   },
 };
 
+export function generateStaticParams() {
+  return categories.map((category) => ({
+    category: category.slug,
+  }));
+}
+
 export default async function CategoryPage({
   params,
 }: {

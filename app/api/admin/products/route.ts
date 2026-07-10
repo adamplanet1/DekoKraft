@@ -3,6 +3,8 @@ import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
 
+export const dynamic = "force-static";
+
 const filePath = path.join(process.cwd(), "app", "data", "products.xlsx");
 
 type ProductRow = Record<string, string | number | boolean | null | undefined>;
@@ -40,7 +42,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as ProductRow;
     const rows = readRows();
 
-    const product = {
+    const product: ProductRow = {
       ...body,
       imageCount: Number(body.imageCount || 0),
       extension: body.extension || "webp",

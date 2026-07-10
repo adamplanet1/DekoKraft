@@ -33,6 +33,7 @@ export default function ProductGallery({
   const [customBoxNotice, setCustomBoxNotice] = useState("");
 
   const currentImage = product.images[currentIndex];
+  const hasImages = Boolean(currentImage);
   const textAlign = lang === "ar" ? "right" : "left";
   const customBoxDimensionFields = [
     { key: "length", label: t.product.dimensions.length },
@@ -47,10 +48,18 @@ export default function ProductGallery({
     product.tags?.toLowerCase().split(",").includes("box");
 
   function nextImage() {
+    if (product.images.length === 0) {
+      return;
+    }
+
     setCurrentIndex((currentIndex + 1) % product.images.length);
   }
 
   function previousImage() {
+    if (product.images.length === 0) {
+      return;
+    }
+
     setCurrentIndex(
       (currentIndex - 1 + product.images.length) % product.images.length
     );
@@ -164,19 +173,25 @@ export default function ProductGallery({
               width: "100%",
             }}
           >
-            <Image
-              src={currentImage}
-              alt={product.title}
-              width={1400}
-              height={1400}
-              className="mainProductImage"
-              style={{
-                display: "block",
-                height: "auto",
-                marginInline: "auto",
-                width: "100%",
-              }}
-            />
+            {hasImages ? (
+              <Image
+                src={currentImage}
+                alt={product.title}
+                width={1400}
+                height={1400}
+                className="mainProductImage"
+                style={{
+                  display: "block",
+                  height: "auto",
+                  marginInline: "auto",
+                  width: "100%",
+                }}
+              />
+            ) : (
+              <div className="mainProductImage productImagePlaceholder">
+                {product.title}
+              </div>
+            )}
 
             <button className="galleryButton left" onClick={previousImage}>
               ‹
@@ -420,13 +435,19 @@ export default function ProductGallery({
     <section className="gallery">
       <div style={{ marginInline: "auto", maxWidth: "720px" }}>
         <div className="mainImageBox">
-          <Image
-            src={currentImage}
-            alt={product.title}
-            width={1200}
-            height={1200}
-            className="mainProductImage"
-          />
+          {hasImages ? (
+            <Image
+              src={currentImage}
+              alt={product.title}
+              width={1200}
+              height={1200}
+              className="mainProductImage"
+            />
+          ) : (
+            <div className="mainProductImage productImagePlaceholder">
+              {product.title}
+            </div>
+          )}
 
           <button className="galleryButton left" onClick={previousImage}>
             ‹

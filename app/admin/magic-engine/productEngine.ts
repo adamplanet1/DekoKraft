@@ -229,10 +229,7 @@ function getStepStatuses(
     productCard: productCardStatus,
     productBlueprint: productCardStatus === "ready" ? "waiting" : "notStarted",
     productContent: productContentStatus,
-    seo:
-      productContentStatus === "waiting" || productContentStatus === "ready"
-        ? "waiting"
-        : "notStarted",
+    seo: productContentStatus === "waiting" ? "waiting" : "notStarted",
     aiImages: hasImages && hasSpecifications ? "waiting" : "notStarted",
     readyToPublish: "notStarted",
   };

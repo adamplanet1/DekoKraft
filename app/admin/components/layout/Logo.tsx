@@ -1,10 +1,12 @@
 "use client";
 
+import { publicPath } from "../../../lib/publicPath";
+
 export default function Logo() {
   return (
     <div className="dkLogoCard">
       <img
-        src="/logo-dekokraft-1200.webp"
+        src={publicPath("/logo-dekokraft-1200.webp")}
         alt="DekoKraft"
         className="dkLogoImage"
       />

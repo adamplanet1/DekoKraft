@@ -50,6 +50,19 @@
   margin: 0 auto 12px;
 }
 
+.productImagePlaceholder {
+  align-items: center;
+  background: #eef3ff;
+  color: #17213c;
+  display: flex;
+  font-size: 18px;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 260px;
+  padding: 24px;
+  text-align: center;
+}
+
 .dkLogoCard h2 {
   margin: 0;
   font-size: 30px;

@@ -1,5 +1,6 @@
 // app/admin/components/AdminTopbar.tsx
-import { cmsTabs, type CmsTabId } from '../config/cmsTabs';
+import { cmsTabs, type CmsTabId } from "../../../config/cmsTabs";
+import { translations } from "../../../config/translations";
 
 type Props = {
   activeTab: CmsTabId;
@@ -7,12 +8,13 @@ type Props = {
 
 export default function AdminTopbar({ activeTab }: Props) {
   const active = cmsTabs.find((tab) => tab.id === activeTab);
+  const t = translations.ar;
 
   return (
     <header className="studioTopbar">
       <div>
         <h1>
-          {active?.icon} {active?.ar}
+          {active?.icon} {active ? t.sidebar[active.id] : ""}
         </h1>
         <p>DekoKraft CMS — منصة إدارة المتجر ومنصة الحرفيين</p>
       </div>

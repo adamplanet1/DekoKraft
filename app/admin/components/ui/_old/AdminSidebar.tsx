@@ -1,5 +1,5 @@
-import { cmsTabs, type CmsTabId } from "../config/cmsTabs";
-import { type Lang } from "../config/translations";
+import { cmsTabs, type CmsTabId } from "../../../config/cmsTabs";
+import { translations, type Lang } from "../../../config/translations";
 
 type Props = {
   activeTab: CmsTabId;
@@ -12,6 +12,8 @@ export default function Sidebar({
   setActiveTab,
   lang,
 }: Props) {
+  const t = translations[lang];
+
   return (
     <aside className="dkSidebar">
       <div className="dkLogoBox">
@@ -34,15 +36,7 @@ export default function Sidebar({
                 : "dkNavBtn"
             }
           >
-            <span>
-              {lang === "ar"
-                ? tab.ar
-                : lang === "de"
-                ? tab.de
-                : lang === "fr"
-                ? tab.fr
-                : tab.en}
-            </span>
+            <span>{t.sidebar[tab.id]}</span>
 
             <span className="dkNavIcon">
               {tab.icon}

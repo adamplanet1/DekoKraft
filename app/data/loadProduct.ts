@@ -1,6 +1,7 @@
 import "server-only";
 import fs from "fs";
 import path from "path";
+import { publicPath } from "../lib/publicPath";
 
 export interface CategoryData {
   slug: string;
@@ -106,7 +107,10 @@ export function loadProduct(
   productId: string
 ): ProductData {
   const products = loadCategoryProducts(categorySlug);
-  const product = products.find((item) => item.id === productId);
+  const decodedProductId = decodeURIComponent(productId);
+  const product = products.find(
+    (item) => item.id === productId || item.id === decodedProductId
+  );
 
   if (!product) {
     throw new Error("Product not found");
@@ -135,11 +139,15 @@ function completeProduct(
     const number = String(i).padStart(2, "0");
 
     images.push(
-      `/images/homepage/${folder}/${product.id}/${product.id}-${number}-1200.${extension}`
+      publicPath(
+        `/images/homepage/${folder}/${product.id}/${product.id}-${number}-1200.${extension}`
+      )
     );
 
     thumbnails.push(
-      `/images/homepage/${folder}/${product.id}/${product.id}-${number}-600.${extension}`
+      publicPath(
+        `/images/homepage/${folder}/${product.id}/${product.id}-${number}-600.${extension}`
+      )
     );
   }
 
@@ -156,5 +164,7 @@ function completeProduct(
 }
 
 export function firstProductImage(product: ProductData): string {
-  return `/images/homepage/${product.folder}/${product.id}/${product.thumbnail}`;
+  return publicPath(
+    `/images/homepage/${product.folder}/${product.id}/${product.thumbnail}`
+  );
 }

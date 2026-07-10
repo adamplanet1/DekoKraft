@@ -1,6 +1,5 @@
-import { cmsTabs, type CmsTabId } from "../config/cmsTabs";
-
-type Lang = "ar" | "fr" | "de" | "en";
+import { cmsTabs, type CmsTabId } from "../../../config/cmsTabs";
+import { translations, type Lang } from "../../../config/translations";
 
 type Props = {
   activeTab: CmsTabId;
@@ -18,12 +17,13 @@ export default function AdminHeader({
   setShowLangMenu,
 }: Props) {
   const active = cmsTabs.find((tab) => tab.id === activeTab);
+  const t = translations[lang];
 
   return (
     <header className="dkHeader">
       <div>
         <h1>
-          {active?.ar} {active?.icon}
+          {active ? t.sidebar[active.id] : ""} {active?.icon}
         </h1>
         <p>DekoKraft CMS — منصة إدارة المتجر ومنصة الحرفيين</p>
       </div>
