@@ -1,0 +1,62 @@
+[
+  {
+    "id": "Box - Baden",
+    "category": "services",
+    "title": "Box   Baden",
+    "description": "",
+    "imageCount": 0,
+    "extension": "webp"
+  },
+  {
+    "id": "Box- vorbeschtelt",
+    "category": "services",
+    "title": "Box  Vorbeschtelt",
+    "description": "",
+    "imageCount": 0,
+    "extension": "webp"
+  },
+  {
+    "id": "service-01",
+    "category": "services",
+    "title": "خدمة خاصة",
+    "description": "خدمة تصليح أو طباعة حسب الطلب",
+    "imageCount": 1,
+    "extension": "jpg",
+    "title_ar": "خدمة خاصة",
+    "title_de": "Service 01",
+    "title_en": "Service 01",
+    "description_ar": "خدمة تصليح أو طباعة حسب الطلب",
+    "description_de": "Reparatur, Druck oder Custom Service",
+    "description_en": "Repair, print, or custom service",
+    "price": 0,
+    "old_price": 0,
+    "currency": "EUR",
+    "status": "active",
+    "featured": "no",
+    "stock": 0,
+    "weight_g": 0,
+    "size_cm": "Custom",
+    "material": "Service",
+    "color": "Custom",
+    "fragrance": "None",
+    "shape": "Service",
+    "brand": "DekoKraft",
+    "tags": "service,repair,custom"
+  },
+  {
+    "id": "service-02",
+    "category": "services",
+    "title": "Service 02",
+    "description": "",
+    "imageCount": 0,
+    "extension": "webp"
+  },
+  {
+    "id": "service-03",
+    "category": "services",
+    "title": "Service 03",
+    "description": "",
+    "imageCount": 0,
+    "extension": "webp"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "candles",
+    "title": "الشموع",
+    "description": "شموع مميزة ومعطرة للتزيين",
+    "folder": "candles"
+  },
+  {
+    "slug": "gift",
+    "title": "الهدايا",
+    "description": "هدايا جميلة للتزيين والمناسبات",
+    "folder": "gift"
+  },
+  {
+    "slug": "kids",
+    "title": "الألعاب التعليمية",
+    "description": "امنح أولادك هدية تعليمية",
+    "folder": "kids"
+  },
+  {
+    "slug": "services",
+    "title": "الخدمات",
+    "description": "طلبات خاصة، تصميم، طباعة، تطريز",
+    "folder": "services"
+  }
+]
