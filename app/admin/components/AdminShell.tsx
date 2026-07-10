@@ -17,6 +17,7 @@ export default function AdminShell() {
   const { lang, setLang } = useLanguage();
 
   const isArabic = lang === "ar";
+  const direction = isArabic ? "rtl" : "ltr";
   const active = cmsTabs.find((tab) => tab.id === activeTab);
   const t = translations[lang];
 
@@ -28,8 +29,8 @@ export default function AdminShell() {
   return (
     <main
       className="dkAdminLayout"
-      dir={isArabic ? "rtl" : "ltr"}
-      data-dir={isArabic ? "rtl" : "ltr"}
+      dir="ltr"
+      data-dir={direction}
     >
       <Sidebar
         activeTab={activeTab}
@@ -37,7 +38,7 @@ export default function AdminShell() {
         lang={lang}
       />
 
-      <section className="dkMain">
+      <section className="dkMain" dir={direction}>
         <Header
           activeTab={activeTab}
           lang={lang}

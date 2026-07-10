@@ -3,6 +3,7 @@
 .dkAdminLayout {
   min-height: 100vh;
   display: grid;
+  direction: ltr;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas: "sidebar main";
   background:
@@ -140,7 +141,6 @@
   align-items: center;
   gap: 18px;
   padding: 12px 22px 28px;
-  direction: ltr;
 }
 
 .dkHeader h1 {
@@ -163,7 +163,18 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   max-width: 100%;
-  direction: ltr;
+}
+
+.dkMain[dir="rtl"] .dkHeaderActions .dkLangBox {
+  order: 1;
+}
+
+.dkMain[dir="rtl"] .dkHeaderActions .dkHeaderAddProduct {
+  order: 2;
+}
+
+.dkMain[dir="rtl"] .dkHeaderActions .dkSettings {
+  order: 3;
 }
 
 .dkHeaderAddProduct {
@@ -1386,35 +1397,44 @@
   min-width: 0;
 }
 
-.dkAdminLayout[data-dir="ltr"] .dkHeaderTitle,
-.dkAdminLayout[data-dir="ltr"] .dkLangMenu {
+.dkMain[dir="ltr"] .dkHeaderTitle,
+.dkMain[dir="ltr"] .dkLangMenu {
   direction: ltr;
   text-align: start;
 }
 
-.dkAdminLayout[data-dir="rtl"] .dkHeaderTitle,
-.dkAdminLayout[data-dir="rtl"] .dkLangMenu {
+.dkMain[dir="rtl"] .dkHeaderTitle,
+.dkMain[dir="rtl"] .dkLangMenu {
   direction: rtl;
   text-align: start;
 }
 
-.dkAdminLayout[data-dir="rtl"] .dkHeroCard,
-.dkAdminLayout[data-dir="rtl"] .dkStatCard,
-.dkAdminLayout[data-dir="rtl"] .dkQuickCard,
-.dkAdminLayout[data-dir="rtl"] .dkQuickButton,
-.dkAdminLayout[data-dir="rtl"] .dkFooter {
+.dkMain[dir="rtl"] .dkHeaderTitle {
+  text-align: right;
+}
+
+.dkMain[dir="rtl"] .dkHeroCard,
+.dkMain[dir="rtl"] .dkHeroCard h2,
+.dkMain[dir="rtl"] .dkHeroCard p {
+  text-align: right;
+}
+
+.dkMain[dir="rtl"] .dkStatCard,
+.dkMain[dir="rtl"] .dkQuickCard,
+.dkMain[dir="rtl"] .dkQuickButton,
+.dkMain[dir="rtl"] .dkFooter {
   direction: rtl;
   text-align: start;
 }
 
-.dkAdminLayout[data-dir="rtl"] .dkContent p {
+.dkMain[dir="rtl"] .dkContent p {
   text-align: right;
   line-height: 1.9;
   word-spacing: 0.04em;
 }
 
-.dkAdminLayout[data-dir="rtl"] .dkContent h2,
-.dkAdminLayout[data-dir="rtl"] .dkContent h3 {
+.dkMain[dir="rtl"] .dkContent h2,
+.dkMain[dir="rtl"] .dkContent h3 {
   text-align: right;
 }
 
