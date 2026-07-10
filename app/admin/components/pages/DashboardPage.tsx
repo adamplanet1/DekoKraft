@@ -15,11 +15,13 @@ export default function DashboardPage({
   setActiveTab,
   onAddProduct,
 }: Props) {
+  const dir = lang === "ar" ? "rtl" : "ltr";
+
   return (
-    <>
-      <HeroCard lang={lang} onAddProduct={onAddProduct} />
-      <Statistics lang={lang} />
-      <QuickAccess lang={lang} setActiveTab={setActiveTab} />
-    </>
+    <div className="dkDashboardPage" dir={dir}>
+      <HeroCard lang={lang} dir={dir} onAddProduct={onAddProduct} />
+      <Statistics lang={lang} dir={dir} />
+      <QuickAccess lang={lang} dir={dir} setActiveTab={setActiveTab} />
+    </div>
   );
 }

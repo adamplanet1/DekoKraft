@@ -2,10 +2,11 @@ type Lang = "ar" | "fr" | "de" | "en";
 
 type Props = {
   lang: Lang;
+  dir: "rtl" | "ltr";
   onAddProduct: () => void;
 };
 
-export default function HeroCard({ lang, onAddProduct }: Props) {
+export default function HeroCard({ lang, dir, onAddProduct }: Props) {
   const text = {
     ar: "DekoKraft CMS — منصة إدارة المتجر ومنصة الحرفيين. من هنا ستدير المنتجات، المعرض، الخلفيات، الألوان، العروض، العملاء والطلبات.",
     de: "DekoKraft CMS — Verwalten Sie Produkte, Galerie, Hintergründe, Farben, Angebote, Kunden und Bestellungen.",
@@ -15,7 +16,7 @@ export default function HeroCard({ lang, onAddProduct }: Props) {
   const addProductLabel = lang === "ar" ? "إضافة منتج" : "Add Product";
 
   return (
-    <section className="dkHeroCard">
+    <section className="dkHeroCard" dir={dir}>
       <h2>🏠 DekoKraft Creator Studio</h2>
       <p>{text[lang]}</p>
 

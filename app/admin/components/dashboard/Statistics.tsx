@@ -2,9 +2,10 @@ import { translations, type Lang } from "../../config/translations";
 
 type Props = {
   lang: Lang;
+  dir: "rtl" | "ltr";
 };
 
-export default function Statistics({ lang }: Props) {
+export default function Statistics({ lang, dir }: Props) {
   const t = translations[lang];
 
   const items = [
@@ -31,7 +32,7 @@ export default function Statistics({ lang }: Props) {
   ];
 
   return (
-    <section className="dkStatsGrid">
+    <section className="dkStatsGrid" dir={dir}>
       {items.map((item) => (
         <article key={item.label} className="dkStatCard">
           <div className="dkStatIcon">{item.icon}</div>

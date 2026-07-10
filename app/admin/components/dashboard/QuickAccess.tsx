@@ -3,11 +3,13 @@ import { type CmsTabId } from "../../config/cmsTabs";
 
 type Props = {
   lang: Lang;
+  dir: "rtl" | "ltr";
   setActiveTab: (tab: CmsTabId) => void;
 };
 
 export default function QuickAccess({
   lang,
+  dir,
   setActiveTab,
 }: Props) {
   const t = translations[lang];
@@ -36,7 +38,7 @@ export default function QuickAccess({
   ];
 
   return (
-    <section className="dkQuickSection">
+    <section className="dkQuickSection" dir={dir}>
       <h3>{t.dashboard.quickTitle}</h3>
 
       <div className="dkQuickGrid">
