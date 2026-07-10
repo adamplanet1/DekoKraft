@@ -28,6 +28,7 @@ export default function AdminShell() {
   return (
     <main
       className="dkAdminLayout"
+      dir={isArabic ? "rtl" : "ltr"}
       data-dir={isArabic ? "rtl" : "ltr"}
     >
       <Sidebar
