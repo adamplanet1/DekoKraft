@@ -25,7 +25,6 @@ export default function Header({
   const langBoxRef = useRef<HTMLDivElement>(null);
   const safeLang = lang ?? "ar";
   const active = cmsTabs.find((tab) => tab.id === activeTab);
-  const isArabic = safeLang === "ar";
   const activeLabel = translations[safeLang].sidebar[activeTab];
   const currentLanguage = languageOptions.find(
     (option) => option.value === safeLang
@@ -46,11 +45,6 @@ export default function Header({
 
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.lang = safeLang;
-    document.documentElement.dir = isArabic ? "rtl" : "ltr";
-  }, [isArabic, safeLang]);
 
   function selectLanguage(nextLang: Lang) {
     setLang(nextLang);

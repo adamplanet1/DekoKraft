@@ -10,6 +10,7 @@ import {
 } from "react";
 import {
   getStoredLanguage,
+  getTextDirection,
   languageStorageKey,
   translations,
   type Lang,
@@ -23,16 +24,26 @@ type LanguageContextValue = {
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
+const initialLanguage: Lang = "ar";
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>(getStoredLanguage);
+  const [lang, setLang] = useState<Lang>(initialLanguage);
+  const [hasHydrated, setHasHydrated] = useState(false);
   const t = translations[lang];
 
   useEffect(() => {
-    localStorage.setItem(languageStorageKey, lang);
+    setLang(getStoredLanguage());
+    setHasHydrated(true);
+  }, []);
+
+  useEffect(() => {
     document.documentElement.lang = lang;
-    document.documentElement.dir = t.dir;
-  }, [lang, t.dir]);
+    document.documentElement.dir = getTextDirection(lang);
+
+    if (hasHydrated) {
+      localStorage.setItem(languageStorageKey, lang);
+    }
+  }, [hasHydrated, lang]);
 
   const value = useMemo(
     () => ({

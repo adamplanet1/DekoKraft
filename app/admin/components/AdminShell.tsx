@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cmsTabs, type CmsTabId } from "../config/cmsTabs";
-import { translations, type Lang } from "../config/translations";
-import { getStoredLanguage, languageStorageKey } from "../../../locales";
+import { translations } from "../config/translations";
+import { useLanguage } from "../../components/LanguageProvider";
 
 import Sidebar from "./layout/Sidebar";
 import Header from "./layout/Header";
@@ -13,8 +13,8 @@ import ProductModal from "./products/ProductModal";
 
 export default function AdminShell() {
   const [activeTab, setActiveTab] = useState<CmsTabId>("dashboard");
-  const [lang, setLang] = useState<Lang>(getStoredLanguage);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const { lang, setLang } = useLanguage();
 
   const isArabic = lang === "ar";
   const active = cmsTabs.find((tab) => tab.id === activeTab);
@@ -24,12 +24,6 @@ export default function AdminShell() {
     setActiveTab("products");
     setIsProductModalOpen(true);
   };
-
-  useEffect(() => {
-    localStorage.setItem(languageStorageKey, lang);
-    document.documentElement.lang = lang;
-    document.documentElement.dir = isArabic ? "rtl" : "ltr";
-  }, [isArabic, lang]);
 
   return (
     <main className="dkAdminLayout" dir={isArabic ? "rtl" : "ltr"}>
