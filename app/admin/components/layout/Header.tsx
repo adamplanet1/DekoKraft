@@ -23,12 +23,17 @@ export default function Header({
 }: Props) {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const langBoxRef = useRef<HTMLDivElement>(null);
+
   const safeLang = lang ?? "ar";
+  const isRtl = safeLang === "ar";
+
   const active = cmsTabs.find((tab) => tab.id === activeTab);
   const activeLabel = translations[safeLang].sidebar[activeTab];
+
   const currentLanguage = languageOptions.find(
     (option) => option.value === safeLang
   );
+
   const addProductLabel = translations[safeLang].addProduct;
 
   useEffect(() => {
@@ -43,7 +48,9 @@ export default function Header({
 
     document.addEventListener("mousedown", handlePointerDown);
 
-    return () => document.removeEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
   }, []);
 
   function selectLanguage(nextLang: Lang) {
@@ -51,12 +58,16 @@ export default function Header({
     setShowLangMenu(false);
   }
 
+  const addProductIcon = <span aria-hidden="true">+</span>;
+  const addProductText = <span>{addProductLabel}</span>;
+
   return (
     <header className="dkHeader">
       <div className="dkHeaderTitle">
         <h1>
           {active?.icon} {activeLabel}
         </h1>
+
         <p>{localeTranslations[safeLang].header.cmsDescription}</p>
       </div>
 
@@ -66,25 +77,37 @@ export default function Header({
           className="dkPrimaryButton dkHeaderAddProduct"
           onClick={onAddProduct}
         >
-          <span aria-hidden="true">+</span>
-          {addProductLabel}
+          {isRtl ? (
+            <>
+              {addProductText}
+              {addProductIcon}
+            </>
+          ) : (
+            <>
+              {addProductIcon}
+              {addProductText}
+            </>
+          )}
         </button>
 
         <div className="dkLangBox" ref={langBoxRef}>
           <button
             type="button"
             className="dkLangMain"
+            aria-haspopup="menu"
+            aria-expanded={showLangMenu}
             onClick={() => setShowLangMenu((isOpen) => !isOpen)}
           >
             {currentLanguage?.label ?? "العربية 🇸🇦"}
           </button>
 
           {showLangMenu && (
-            <div className="dkLangMenu">
+            <div className="dkLangMenu" role="menu">
               {languageOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
+                  role="menuitem"
                   onClick={() => selectLanguage(option.value)}
                 >
                   {option.value === safeLang ? "✓ " : ""}
@@ -95,7 +118,13 @@ export default function Header({
           )}
         </div>
 
-        <button type="button" className="dkSettings">
+        <button
+          type="button"
+          className="dkSettings"
+          aria-label={
+            isRtl ? "فتح إعدادات لوحة التحكم" : "Open dashboard settings"
+          }
+        >
           ⚙️
         </button>
       </div>

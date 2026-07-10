@@ -26,7 +26,10 @@ export default function AdminShell() {
   };
 
   return (
-    <main className="dkAdminLayout" dir={isArabic ? "rtl" : "ltr"}>
+    <main
+      className="dkAdminLayout"
+      data-dir={isArabic ? "rtl" : "ltr"}
+    >
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}

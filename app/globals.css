@@ -2,7 +2,9 @@
 
 .dkAdminLayout {
   min-height: 100vh;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas: "sidebar main";
   background:
     radial-gradient(circle at top left, rgba(91, 124, 255, 0.16), transparent 32%),
     radial-gradient(circle at bottom right, rgba(255, 202, 111, 0.14), transparent 30%),
@@ -11,17 +13,10 @@
   font-family: Arial, sans-serif;
 }
 
-/* تغيير اتجاه القالب حسب اللغة */
-.dkAdminLayout[dir="ltr"] {
-  flex-direction: row;
-}
-.dkAdminLayout[dir="rtl"] {
-  flex-direction: row-reverse;
-}
-
 /* ===== الشريط الجانبي ===== */
 
 .dkSidebar {
+  grid-area: sidebar;
   width: 280px;
   flex-shrink: 0;
   margin: 24px;
@@ -129,6 +124,7 @@
 /* ===== المنطقة الرئيسية ===== */
 
 .dkMain {
+  grid-area: main;
   flex: 1;
   min-width: 0;
   padding: 22px;
@@ -138,11 +134,13 @@
 
 .dkHeader {
   min-height: 118px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "title actions";
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
   padding: 12px 22px 28px;
+  direction: ltr;
 }
 
 .dkHeader h1 {
@@ -158,11 +156,14 @@
 }
 
 .dkHeaderActions {
+  grid-area: actions;
   display: flex;
   align-items: flex-start;
   gap: 12px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  max-width: 100%;
+  direction: ltr;
 }
 
 .dkHeaderAddProduct {
@@ -190,19 +191,14 @@
 
 .dkLangMenu {
   position: absolute;
-  top: 58px;
-  left: 0;
+  inset-block-start: 58px;
+  inset-inline-end: 0;
   min-width: 170px;
   background: white;
   border-radius: 18px;
   box-shadow: 0 18px 45px rgba(70, 90, 160, 0.18);
   overflow: hidden;
   z-index: 5;
-}
-
-[dir="rtl"] .dkLangMenu {
-  right: 0;
-  left: auto;
 }
 
 .dkLangMenu button {
@@ -213,7 +209,7 @@
   padding: 14px;
   cursor: pointer;
   font-weight: 900;
-  text-align: inherit;
+  text-align: start;
   white-space: nowrap;
 }
 
@@ -380,7 +376,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.dkPrimaryButton span {
+.dkPrimaryButton span[aria-hidden="true"] {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -1276,13 +1272,10 @@
 /* ===== استجابة للشاشات الصغيرة ===== */
 
 @media (max-width: 900px) {
-  .dkAdminLayout {
-    flex-direction: column;
-  }
-
   .dkSidebar {
-    width: 100%;
+    width: auto;
     margin: 12px;
+    padding: 18px;
   }
 
   .dkMain {
@@ -1297,11 +1290,6 @@
 
   .dkNavButton {
     min-width: 160px;
-  }
-
-  .dkHeader {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .dkStatsGrid,
@@ -1389,29 +1377,71 @@
   .boxActions {
     grid-template-columns: 1fr;
   }
-}/* FINAL SIDEBAR POSITION FIX */
-.dkAdminLayout {
-  display: flex !important;
-  direction: ltr !important;
-  flex-direction: row !important;
 }
 
-.dkAdminLayout[dir="rtl"] .dkSidebar {
-  order: 2 !important;
-  direction: rtl !important;
+/* ===== اتجاه محتوى لوحة الإدارة ===== */
+
+.dkHeaderTitle {
+  grid-area: title;
+  min-width: 0;
 }
 
-.dkAdminLayout[dir="rtl"] .dkMain {
-  order: 1 !important;
-  direction: rtl !important;
+.dkAdminLayout[data-dir="ltr"] .dkHeaderTitle,
+.dkAdminLayout[data-dir="ltr"] .dkLangMenu {
+  direction: ltr;
+  text-align: start;
 }
 
-.dkAdminLayout[dir="ltr"] .dkSidebar {
-  order: 1 !important;
-  direction: ltr !important;
+.dkAdminLayout[data-dir="rtl"] .dkHeaderTitle,
+.dkAdminLayout[data-dir="rtl"] .dkLangMenu {
+  direction: rtl;
+  text-align: start;
 }
 
-.dkAdminLayout[dir="ltr"] .dkMain {
-  order: 2 !important;
-  direction: ltr !important;
+.dkAdminLayout[data-dir="rtl"] .dkHeroCard,
+.dkAdminLayout[data-dir="rtl"] .dkStatCard,
+.dkAdminLayout[data-dir="rtl"] .dkQuickCard,
+.dkAdminLayout[data-dir="rtl"] .dkQuickButton,
+.dkAdminLayout[data-dir="rtl"] .dkFooter {
+  direction: rtl;
+  text-align: start;
+}
+
+.dkAdminLayout[data-dir="rtl"] .dkContent p {
+  text-align: right;
+  line-height: 1.9;
+  word-spacing: 0.04em;
+}
+
+.dkAdminLayout[data-dir="rtl"] .dkContent h2,
+.dkAdminLayout[data-dir="rtl"] .dkContent h3 {
+  text-align: right;
+}
+
+/* ===== تثبيت ترتيب الهاتف بعد قواعد الاتجاه ===== */
+
+@media (max-width: 900px) {
+  .dkAdminLayout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "sidebar"
+      "main";
+  }
+
+  .dkHeader {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "actions";
+    align-items: stretch;
+  }
+
+  .dkHeaderTitle,
+  .dkHeaderActions {
+    width: 100%;
+  }
+
+  .dkHeaderActions {
+    justify-content: flex-start;
+  }
 }

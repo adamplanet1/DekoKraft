@@ -10,7 +10,6 @@ import {
 } from "react";
 import {
   getStoredLanguage,
-  getTextDirection,
   languageStorageKey,
   translations,
   type Lang,
@@ -38,7 +37,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    document.documentElement.dir = getTextDirection(lang);
 
     if (hasHydrated) {
       localStorage.setItem(languageStorageKey, lang);

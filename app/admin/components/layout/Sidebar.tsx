@@ -12,9 +12,10 @@ type Props = {
 
 export default function Sidebar({ activeTab, setActiveTab, lang }: Props) {
   const t = translations[lang];
+  const dir = lang === "ar" ? "rtl" : "ltr";
 
   return (
-    <aside className="dkSidebar">
+    <aside className="dkSidebar" dir={dir}>
       <Logo />
 
       <nav className="dkNavigation">
