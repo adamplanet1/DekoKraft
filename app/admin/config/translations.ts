@@ -4,6 +4,7 @@ import {
 } from "../../../locales";
 
 export type { Lang };
+export { magicEngineTranslations } from "./magicEngineTranslations";
 
 export const translations = {
   ar: localeTranslations.ar.admin,

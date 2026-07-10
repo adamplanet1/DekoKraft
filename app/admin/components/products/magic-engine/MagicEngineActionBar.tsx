@@ -1,6 +1,6 @@
-const secondaryActions = ["استيراد", "تصدير", "مساعدة AI", "معاينة"];
+import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-export default function MagicEngineActionBar() {
+export default function MagicEngineActionBar({ text }: { text: MagicEngineWorkspaceText["quickActions"] }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -8,11 +8,11 @@ export default function MagicEngineActionBar() {
           type="button"
           className="rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
         >
-          منتج جديد
+          {text.primary}
         </button>
 
         <div className="flex flex-wrap gap-2">
-          {secondaryActions.map((action) => (
+          {text.secondary.map((action) => (
             <button
               key={action}
               type="button"

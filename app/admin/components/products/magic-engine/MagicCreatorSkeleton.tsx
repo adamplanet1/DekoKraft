@@ -21,33 +21,34 @@ import {
   isWizardStepLocked,
   magicCreatorWizardSteps,
 } from "./wizardEngine";
+import { magicEngineTranslations, type Lang } from "../../../config/translations";
 
 // First data binding layer between the UI and the Magic Creator reference model.
 // This component reads reference data only and never mutates the source objects.
-const magicCreatorStepDescriptions: Record<string, string> = {
-  "choose-sample": `${woodenLaserBoxSample.name} هو نموذج البداية الحالي.`,
-  configuration: `${woodenLaserBoxDefaultConfiguration.selectedOptions.width} x ${woodenLaserBoxDefaultConfiguration.selectedOptions.height} x ${woodenLaserBoxDefaultConfiguration.selectedOptions.depth} ${woodenLaserBoxDefaultConfiguration.selectedOptions.unit}، مادة ${woodenLaserBoxDefaultConfiguration.materialKind}، والكمية ${woodenLaserBoxDefaultConfiguration.quantity}.`,
-  decoration: "الزخرفة مضبوطة كقيمة افتراضية بدون نص مخصص.",
-  preview: "معاينة إنتاج العلبة الخشبية جاهزة كمسودة.",
-  price: `السعر الظاهر هو ${woodenLaserBoxPrice.visibleTotal} ${woodenLaserBoxPrice.currency}.`,
-  "customer-offer": `عرض العميل في حالة ${woodenLaserBoxCustomerOffer.status} ولم يتم إرسال عرض بعد.`,
-  production: `حزمة التصنيع في حالة ${woodenLaserBoxManufacturingPackage.status} للورشة.`,
-  "confirm-order": `الطلب في حالة ${woodenLaserBoxOrder.status} والدفع والإنتاج لم يبدآ بعد.`,
-};
-
-const magicCreatorStepTitles: Record<string, string> = {
-  "choose-sample": "اختيار النموذج",
-  configuration: "الإعدادات",
-  decoration: "الزخرفة",
-  preview: "المعاينة",
-  price: "السعر",
-  "customer-offer": "عرض العميل",
-  production: "الإنتاج",
-  "confirm-order": "تأكيد الطلب",
-};
+function fillTemplate(
+  template: string,
+  values: Record<string, string | number | undefined>
+) {
+  return Object.entries(values).reduce(
+    (result, [key, value]) => result.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
 
 // This component defines the visual journey for Magic Creator v1 only.
-export function MagicCreatorSkeleton() {
+export function MagicCreatorSkeleton({ lang }: { lang: Lang }) {
+  const text = magicEngineTranslations[lang].creator;
+  const dimensions = `${woodenLaserBoxDefaultConfiguration.selectedOptions.width} x ${woodenLaserBoxDefaultConfiguration.selectedOptions.height} x ${woodenLaserBoxDefaultConfiguration.selectedOptions.depth} ${woodenLaserBoxDefaultConfiguration.selectedOptions.unit}`;
+  const magicCreatorStepDescriptions: Record<string, string> = {
+    "choose-sample": fillTemplate(text.stepDescriptions["choose-sample"], { sample: woodenLaserBoxSample.name }),
+    configuration: fillTemplate(text.stepDescriptions.configuration, { dimensions, material: woodenLaserBoxDefaultConfiguration.materialKind, quantity: woodenLaserBoxDefaultConfiguration.quantity }),
+    decoration: text.stepDescriptions.decoration,
+    preview: text.stepDescriptions.preview,
+    price: fillTemplate(text.stepDescriptions.price, { price: woodenLaserBoxPrice.visibleTotal, currency: woodenLaserBoxPrice.currency }),
+    "customer-offer": fillTemplate(text.stepDescriptions["customer-offer"], { status: woodenLaserBoxCustomerOffer.status }),
+    production: fillTemplate(text.stepDescriptions.production, { status: woodenLaserBoxManufacturingPackage.status }),
+    "confirm-order": fillTemplate(text.stepDescriptions["confirm-order"], { status: woodenLaserBoxOrder.status }),
+  };
   const currentStep = getCurrentWizardStep(magicCreatorWizardSteps);
   const nextStep = getNextWizardStep(magicCreatorWizardSteps, currentStep.id);
   const previousStep = getPreviousWizardStep(
@@ -61,24 +62,24 @@ export function MagicCreatorSkeleton() {
   const visiblePrice = getVisiblePrice(woodenLaserBoxPrice);
   const minimumPrice = getMinimumPrice(woodenLaserBoxPrice);
   const currentStepTitle =
-    magicCreatorStepTitles[currentStep.id] ?? currentStep.title;
+    text.stepTitles[currentStep.id] ?? currentStep.title;
   const nextStepTitle = nextStep
-    ? magicCreatorStepTitles[nextStep.id] ?? nextStep.title
-    : "لا يوجد";
+    ? text.stepTitles[nextStep.id] ?? nextStep.title
+    : text.none;
   const previousStepTitle = previousStep
-    ? magicCreatorStepTitles[previousStep.id] ?? previousStep.title
-    : "لا يوجد";
-  const configurationSummaryText = `${Object.keys(woodenLaserBoxDefaultConfiguration.selectedOptions).length} خيارات، مادة ${woodenLaserBoxDefaultConfiguration.materialKind}، زخرفة ${woodenLaserBoxDefaultConfiguration.decorationKind}، الكمية ${woodenLaserBoxDefaultConfiguration.quantity}.`;
+    ? text.stepTitles[previousStep.id] ?? previousStep.title
+    : text.none;
+  const configurationSummaryText = fillTemplate(text.configurationSummaryTemplate, { count: Object.keys(woodenLaserBoxDefaultConfiguration.selectedOptions).length, material: woodenLaserBoxDefaultConfiguration.materialKind, decoration: woodenLaserBoxDefaultConfiguration.decorationKind, quantity: woodenLaserBoxDefaultConfiguration.quantity });
   const decisionStatusLabel =
     decisionStatus === "Ready"
-      ? "جاهز"
+      ? text.ready
       : decisionStatus === "Blocked"
-        ? "محجوب"
-        : "بانتظار";
+        ? text.blocked
+        : text.waiting;
   const decisionSummaryText = configurationComplete
-    ? "الإعدادات مكتملة وجاهزة للخطوة التالية."
-    : "الإعدادات غير مكتملة، لذلك القرار محجوب.";
-  const pricingSummaryText = `السعر الظاهر: ${visiblePrice} ${woodenLaserBoxPrice.currency}. الحد الأدنى: ${minimumPrice} ${woodenLaserBoxPrice.currency}.`;
+    ? text.configurationReady
+    : text.configurationBlocked;
+  const pricingSummaryText = fillTemplate(text.pricingSummaryTemplate, { visible: visiblePrice, minimum: minimumPrice, currency: woodenLaserBoxPrice.currency });
 
   return (
     <section
@@ -99,32 +100,13 @@ export function MagicCreatorSkeleton() {
         }}
       >
         <p style={{ margin: 0 }}>
-          <strong>الحالي:</strong> {currentStepTitle}
+          <strong>{text.current}:</strong> {currentStepTitle}
         </p>
         <p style={{ margin: 0 }}>
-          <strong>السابق:</strong> {previousStepTitle}
+          <strong>{text.previous}:</strong> {previousStepTitle}
         </p>
         <p style={{ margin: 0 }}>
-          <strong>التالي:</strong> {nextStepTitle}
-        </p>
-      </div>
-
-      <div
-        style={{
-          border: "1px solid #d7dde8",
-          borderRadius: "8px",
-          padding: "12px 16px",
-          background: "#f8fafc",
-          color: "#334155",
-          fontSize: "14px",
-          lineHeight: 1.6,
-        }}
-      >
-        <p style={{ margin: 0 }}>
-          <strong>ملخص الإعدادات:</strong> {configurationSummaryText}
-        </p>
-        <p style={{ margin: 0 }}>
-          <strong>مكتمل:</strong> {configurationComplete ? "نعم" : "لا"}
+          <strong>{text.next}:</strong> {nextStepTitle}
         </p>
       </div>
 
@@ -139,20 +121,11 @@ export function MagicCreatorSkeleton() {
           lineHeight: 1.6,
         }}
       >
-        <h3
-          style={{
-            margin: "0 0 8px",
-            fontSize: "15px",
-            lineHeight: 1.3,
-          }}
-        >
-          القرار
-        </h3>
         <p style={{ margin: 0 }}>
-          <strong>الحالة:</strong> {decisionStatusLabel}
+          <strong>{text.configurationSummary}:</strong> {configurationSummaryText}
         </p>
         <p style={{ margin: 0 }}>
-          <strong>الملخص:</strong> {decisionSummaryText}
+          <strong>{text.complete}:</strong> {configurationComplete ? text.yes : text.no}
         </p>
       </div>
 
@@ -174,31 +147,59 @@ export function MagicCreatorSkeleton() {
             lineHeight: 1.3,
           }}
         >
-          التسعير
+          {text.decision}
         </h3>
         <p style={{ margin: 0 }}>
-          <strong>السعر الظاهر:</strong> {visiblePrice}{" "}
+          <strong>{text.status}:</strong> {decisionStatusLabel}
+        </p>
+        <p style={{ margin: 0 }}>
+          <strong>{text.summary}:</strong> {decisionSummaryText}
+        </p>
+      </div>
+
+      <div
+        style={{
+          border: "1px solid #d7dde8",
+          borderRadius: "8px",
+          padding: "12px 16px",
+          background: "#f8fafc",
+          color: "#334155",
+          fontSize: "14px",
+          lineHeight: 1.6,
+        }}
+      >
+        <h3
+          style={{
+            margin: "0 0 8px",
+            fontSize: "15px",
+            lineHeight: 1.3,
+          }}
+        >
+          {text.pricing}
+        </h3>
+        <p style={{ margin: 0 }}>
+          <strong>{text.visiblePrice}:</strong> {visiblePrice}{" "}
           {woodenLaserBoxPrice.currency}
         </p>
         <p style={{ margin: 0 }}>
-          <strong>الحد الأدنى:</strong> {minimumPrice}{" "}
+          <strong>{text.minimumPrice}:</strong> {minimumPrice}{" "}
           {woodenLaserBoxPrice.currency}
         </p>
         <p style={{ margin: 0 }}>
-          <strong>الملخص:</strong> {pricingSummaryText}
+          <strong>{text.summary}:</strong> {pricingSummaryText}
         </p>
       </div>
 
       {/* Wizard steps are now rendered from the Wizard Engine reference data. */}
       {magicCreatorWizardSteps.map((step) => {
         const statusLabel = isWizardStepAvailable(step)
-          ? "متاح"
+          ? text.available
           : isWizardStepCompleted(step)
-            ? "مكتمل"
+            ? text.completed
             : isWizardStepLocked(step)
-              ? "مغلق"
+              ? text.locked
               : step.status;
-        const stepTitle = magicCreatorStepTitles[step.id] ?? step.title;
+        const stepTitle = text.stepTitles[step.id] ?? step.title;
 
         return (
           <article

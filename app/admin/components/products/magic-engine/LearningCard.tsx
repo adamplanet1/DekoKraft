@@ -1,26 +1,22 @@
-const learningTips = [
-  "استخدم خلفية نظيفة",
-  "اعرض المنتج من عدة زوايا",
-  "أضف صورة استخدام واقعية",
-];
+import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-export default function LearningCard() {
+export default function LearningCard({ text }: { text: MagicEngineWorkspaceText["learning"] }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-5">
         <p className="text-sm font-medium text-slate-500">
-          تعلم المبدع
+          {text.eyebrow}
         </p>
         <h2 className="mt-1 text-xl font-semibold text-slate-950">
-          نصيحة تعليمية
+          {text.title}
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          صور المنتج الأفضل تزيد ثقة العملاء وتحسن التحويل.
+          {text.description}
         </p>
       </div>
 
       <div className="grid gap-3">
-        {learningTips.map((tip, index) => (
+        {text.tips.map((tip, index) => (
           <div
             key={tip}
             className="flex items-center gap-3 rounded-md border border-slate-100 bg-slate-50 px-3 py-3"
@@ -37,7 +33,7 @@ export default function LearningCard() {
         type="button"
         className="mt-5 w-full rounded-md bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
       >
-        فتح مركز التعلم
+        {text.action}
       </button>
     </section>
   );

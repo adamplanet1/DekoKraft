@@ -3543,7 +3543,7 @@ export default function ProductModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="product-modal-title"
-        dir={lang === "ar" ? "rtl" : undefined}
+        dir={lang === "ar" ? "rtl" : "ltr"}
       >
         <h2 id="product-modal-title">{text.title}</h2>
 
@@ -3909,7 +3909,7 @@ export default function ProductModal({
           </section>
 
           <div className="mb-4 space-y-4">
-            <CreatorWorkspacePreview />
+            <CreatorWorkspacePreview lang={lang} />
           </div>
 
           <div className="dkProductCardPreview">
@@ -3926,7 +3926,7 @@ export default function ProductModal({
               {text.rerunMagicEngine}
             </button>
 
-            <MagicCreatorSkeleton />
+            <MagicCreatorSkeleton lang={lang} />
 
             <MagicDashboard
               completionScore={completionScore}

@@ -1,39 +1,25 @@
-const healthIndicators = [
-  {
-    label: "الجودة",
-    score: 92,
-  },
-  {
-    label: "التسليم",
-    score: 88,
-  },
-  {
-    label: "المراجعات",
-    score: 96,
-  },
-  {
-    label: "النمو",
-    score: 74,
-  },
-];
+import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-export default function StudioHealthCard() {
+const healthScores = [92, 88, 96, 74];
+
+export default function StudioHealthCard({ text }: { text: MagicEngineWorkspaceText["studioHealth"] }) {
+  const healthIndicators = text.indicators.map((label, index) => ({ label, score: healthScores[index] }));
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-slate-500">
-            استوديو المبدع
+            {text.eyebrow}
           </p>
           <h2 className="mt-1 text-xl font-semibold text-slate-950">
-            صحة الاستوديو
+            {text.title}
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            مساحة المبدع في حالة جيدة.
+            {text.description}
           </p>
         </div>
         <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-          صحي
+          {text.badge}
         </span>
       </div>
 

@@ -1,15 +1,10 @@
-const statusItems = [
-  { label: "المحرك", value: "جاهز" },
-  { label: "الوصفات", value: "متزامنة" },
-  { label: "الحارس", value: "نشط" },
-  { label: "السوق", value: "يراقب" },
-];
+import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-export default function MagicEngineStatusStrip() {
+export default function MagicEngineStatusStrip({ items }: { items: MagicEngineWorkspaceText["statusItems"] }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm">
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        {statusItems.map((item) => (
+        {items.map((item) => (
           <div
             key={item.label}
             className="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2"

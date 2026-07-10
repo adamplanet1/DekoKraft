@@ -1,27 +1,17 @@
-const projects = [
-  {
-    name: "علبة خاتم",
-    progress: 80,
-  },
-  {
-    name: "علبة مجوهرات",
-    progress: 55,
-  },
-  {
-    name: "علبة ذكريات",
-    progress: 30,
-  },
-];
+import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-export default function ProjectProgressCard() {
+const projectProgress = [80, 55, 30];
+
+export default function ProjectProgressCard({ text }: { text: MagicEngineWorkspaceText["projects"] }) {
+  const projects = text.names.map((name, index) => ({ name, progress: projectProgress[index] }));
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-5">
         <h2 className="text-xl font-semibold text-slate-950">
-          المشاريع النشطة
+          {text.title}
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          تابع مشاريع المبدع المتجهة نحو الجاهزية للسوق.
+          {text.description}
         </p>
       </div>
 

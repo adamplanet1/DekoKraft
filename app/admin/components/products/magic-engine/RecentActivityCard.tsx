@@ -1,27 +1,22 @@
-const recentActivities = [
-  "تم إنشاء وصفة منتج جديدة",
-  "تم اجتياز تحقق الوصفة",
-  "تم اكتشاف فرصة في السوق",
-  "تم تحديث صحة الاستوديو",
-];
+import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-export default function RecentActivityCard() {
+export default function RecentActivityCard({ text }: { text: MagicEngineWorkspaceText["recentActivity"] }) {
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-5">
         <p className="text-sm font-medium text-slate-500">
-          مساحة المبدع
+          {text.eyebrow}
         </p>
         <h2 className="mt-1 text-xl font-semibold text-slate-950">
-          النشاط الأخير
+          {text.title}
         </h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
-          تابع آخر التحديثات في مساحة المبدع.
+          {text.description}
         </p>
       </div>
 
       <div className="grid gap-3">
-        {recentActivities.map((activity, index) => (
+        {text.items.map((activity, index) => (
           <div
             key={activity}
             className="flex items-center gap-3 rounded-md border border-slate-100 bg-slate-50 px-3 py-3"

@@ -12,25 +12,27 @@ import {
   RecentActivityCard,
   WorkspaceOverviewSection,
 } from ".";
+import { magicEngineTranslations, type Lang } from "../../../config/translations";
 
-export default function CreatorWorkspacePreview() {
+export default function CreatorWorkspacePreview({ lang }: { lang: Lang }) {
+  const text = magicEngineTranslations[lang];
   return (
     <div className="space-y-4">
-      <MagicEngineHeader />
+      <MagicEngineHeader text={text.header} />
       <MagicEngineSectionTitle
-        title="مساحة المبدع"
-        description="إدارة إنشاء المنتجات، ومراجعة التقدم، ومراقبة نشاط محرك Magic."
+        title={text.workspace.title}
+        description={text.workspace.description}
       />
-      <QuickActionsSection />
-      <MagicEngineStatusStrip />
-      <AssistantSection />
-      <WorkspaceOverviewSection />
-      <CreatorTodayFocusCard />
-      <ProjectProgressCard />
-      <OpportunityCard />
-      <StudioHealthCard />
-      <LearningCard />
-      <RecentActivityCard />
+      <QuickActionsSection text={text.quickActions} />
+      <MagicEngineStatusStrip items={text.statusItems} />
+      <AssistantSection text={text.assistant} />
+      <WorkspaceOverviewSection text={text} />
+      <CreatorTodayFocusCard text={text.focus} />
+      <ProjectProgressCard text={text.projects} />
+      <OpportunityCard text={text.opportunity} />
+      <StudioHealthCard text={text.studioHealth} />
+      <LearningCard text={text.learning} />
+      <RecentActivityCard text={text.recentActivity} />
     </div>
   );
 }
