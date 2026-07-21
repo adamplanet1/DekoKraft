@@ -1,4 +1,5 @@
 import type { DekoCleanSeverity } from "./types.ts";
+import type { MemoryIntegrityDiagnostics } from "./memoryIntegrity.ts";
 
 export type DekoDomainKey = "health" | "performance" | "security" | "ai" | "memory";
 export type DekoScoreStatus = "excellent" | "very-good" | "good" | "needs-attention" | "warning" | "critical" | "unavailable";
@@ -21,6 +22,7 @@ export interface DekoDomainScore {
   measuredAt?: string;
   sourceUpdatedAt?: string;
   contributingFactors: DekoDomainFactor[];
+  memoryIntegrityDiagnostics?: MemoryIntegrityDiagnostics;
   unavailableReason?: string;
 }
 

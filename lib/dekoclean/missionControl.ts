@@ -4,6 +4,7 @@ import path from "node:path";
 import { createLocalStructuredReportConnector } from "../dekoradar/securityAlertAdapter.ts";
 import { readFindings } from "./findingStore.ts";
 import { calculateHealthScore, readHealthScoreHistory } from "./healthScore.ts";
+import { calculateMemoryIntegrity } from "./memoryIntegrity.ts";
 import { readSecurityMemory } from "./securityMemory.ts";
 import { readMaintenanceTimeline } from "./timeline.ts";
 import type { DekoCleanFinding, DekoCleanSeverity } from "./types.ts";
@@ -78,11 +79,13 @@ async function adaptSecurity(projectRoot: string, findings: DekoCleanFinding[]):
   const securityFindings = selectSecurityFindings(findings);
   const scoreExplanation = calculateSecurityScore(findings);
   const memory = readSecurityMemory(projectRoot);
-  const hasTrustedEvidence = connectorStatus.available || securityFindings.length > 0 || memory.length > 0;
+  const protectedIntegrity = calculateMemoryIntegrity(projectRoot);
+  const hasTrustedEvidence = connectorStatus.available || securityFindings.length > 0 || memory.length > 0 || protectedIntegrity.scannedSourceFiles > 0;
   const factors = [
     { id: "connector", label: "موصل الحماية", value: connectorStatus.available, impact: 0, explanation: connectorStatus.available ? "تقرير حماية محلي منظم متاح." : "لا يوجد موصل حماية محلي متصل؛ لا يُصنف ذلك وحده كفشل سلامة." },
     { id: "findings", label: "نتائج الأمان المفتوحة", value: securityFindings.length, impact: -(scoreExplanation.criticalPenalty + scoreExplanation.highPenalty + scoreExplanation.mediumPenalty), explanation: `الأساس 100؛ critical -${scoreExplanation.criticalPenalty}، high -${scoreExplanation.highPenalty}، medium -${scoreExplanation.mediumPenalty}. تغييرات info لا تخصم مباشرة.` },
     { id: "memory", label: "Security Memory موثقة", value: memory.filter((entry) => entry.enabled && entry.validationPassed).length, impact: 0, explanation: "وصفات دفاعية مؤكدة وناجحة فقط." },
+    { id: "protected-integrity", label: "Baseline الملفات المحمية", value: protectedIntegrity.score, impact: 0, explanation: `${protectedIntegrity.scannedSourceFiles} ملف مصدر محمي مقاس مقابل baseline وGit HEAD.` },
   ];
   if (!hasTrustedEvidence) return { key: "security", score: null, status: "unavailable", trend: "unknown", contributingFactors: factors, unavailableReason: "الأدلة الأمنية الحالية غير كافية لحساب درجة موثقة." };
   const score = scoreExplanation.finalScore;
@@ -112,24 +115,16 @@ async function adaptAI(): Promise<DekoDomainScore> {
   ] };
 }
 
-function readableJson(target: string): "available" | "missing" | "invalid" {
-  if (!fs.existsSync(target)) return "missing";
-  try { JSON.parse(fs.readFileSync(target, "utf8")); return "available"; } catch { return "invalid"; }
-}
-
 function adaptMemory(projectRoot: string, findings: DekoCleanFinding[]): DekoDomainScore {
-  const sources = [
-    { id: "security-memory", label: "Security Memory", state: readableJson(path.join(projectRoot, ".dekoclean", "state", "security-memory.json")) },
-    { id: "echo-memory", label: "Echo Learning", state: readableJson(path.join(projectRoot, "data", "echo-guide-accepted-memory.json")) },
-    { id: "product-source", label: "Product DNA source", state: fs.existsSync(path.join(projectRoot, "app", "data", "products.xlsx")) ? "available" as const : "missing" as const },
-  ];
-  const available = sources.filter((source) => source.state === "available").length;
-  const invalid = sources.filter((source) => source.state === "invalid").length;
+  const diagnostics = calculateMemoryIntegrity(projectRoot);
   const ownership = findings.filter((finding) => finding.type === "ownership-inconsistency" && !["resolved", "ignored"].includes(finding.status)).length;
-  if (available === 0) return { key: "memory", score: null, status: "unavailable", trend: "unknown", contributingFactors: [], unavailableReason: "لا توجد مخازن معرفة قابلة للقياس من الخادم حاليًا. هذا لا يشير إلى ذاكرة الجهاز." };
-  const score = clampDomainScore(100 - invalid * 30 - ownership * 12 - (3 - available) * 8);
-  return { key: "memory", score, status: scoreStatus(score), trend: "unknown", measuredAt: new Date().toISOString(), contributingFactors: [
-    ...sources.map((source) => ({ id: source.id, label: source.label, value: source.state, impact: source.state === "invalid" ? -30 : source.state === "missing" ? -8 : 0, explanation: "سلامة بنية مخزن معرفة المنصة وقابليته للاستعادة؛ ليست ذاكرة RAM للهاتف أو الجهاز." })),
+  if (diagnostics.score === null) return { key: "memory", score: null, status: "unavailable", trend: "unknown", contributingFactors: [], memoryIntegrityDiagnostics: diagnostics, unavailableReason: "لا يوجد baseline لملفات المصدر المحمية يمكن قياسه حاليًا. هذا لا يشير إلى ذاكرة الجهاز." };
+  const score = clampDomainScore(diagnostics.score - ownership * 12);
+  return { key: "memory", score, status: scoreStatus(score), trend: "unknown", measuredAt: diagnostics.calculatedAt, memoryIntegrityDiagnostics: diagnostics, contributingFactors: [
+    { id: "protected-files", label: "ملفات المصدر المحمية السليمة", value: diagnostics.healthyFiles, impact: 0, explanation: diagnostics.formula },
+    { id: "expected-changes", label: "تغييرات موثقة في Git", value: diagnostics.changedExpectedFiles, impact: 0, explanation: "تطابق محتوى الملف الحالي مع Git HEAD، ولذلك لا يُعامل كتلف." },
+    { id: "unexpected-changes", label: "تغييرات غير متوقعة", value: diagnostics.unexpectedChangedFiles, impact: diagnostics.score - 100, explanation: "ملفات محمية لا تطابق baseline ولا Git HEAD." },
+    { id: "missing-files", label: "ملفات محمية مفقودة", value: diagnostics.missingFiles, impact: 0, explanation: "ملفات يتوقعها Git أو baseline الموثوق لكنها غير موجودة." },
     { id: "ownership", label: "اتساق مراجع Product DNA", value: ownership, impact: -(ownership * 12), explanation: "عدم اتساق الملكية أو المراجع المؤكد بواسطة DekoRadar." },
   ] };
 }
