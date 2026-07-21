@@ -29,6 +29,7 @@ export function canonicalStatus(finding: DekoCleanFinding): string {
 function increment(target: Record<string, number>, key: string): void { target[key || "unknown"] = (target[key || "unknown"] ?? 0) + 1; }
 
 export function isActionableFinding(finding: DekoCleanFinding): boolean {
+  if (finding.status === "approved" || finding.status === "reviewing" || ["RESOLVED", "IGNORED"].includes(canonicalStatus(finding))) return false;
   return finding.severity !== "info" || finding.recommendedActions.some((action) => ["repair", "restore", "recreate", "quarantine"].includes(action));
 }
 
