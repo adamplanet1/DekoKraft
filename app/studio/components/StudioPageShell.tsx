@@ -29,7 +29,7 @@ export default function StudioPageShell({ title, description, status, children }
             <p>{description}</p>
           </div>
           <DkButton
-            href={routes.studio}
+            href={routes.echo}
             variant="glass"
             size="sm"
             icon={<BackIcon size={18} />}

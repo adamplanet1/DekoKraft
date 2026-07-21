@@ -38,6 +38,11 @@ jobs:
       - name: Build static site
         run: npm run build
 
+      - name: Verify Echo export and base-path link
+        run: |
+          test -f out/echo/index.html
+          grep -q 'href="/DekoKraft/echo/"' out/welcome/index.html
+
       - name: Upload static export
         uses: actions/upload-pages-artifact@v3
         with:
