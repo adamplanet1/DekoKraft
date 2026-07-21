@@ -9,6 +9,7 @@ import type { DekoScanDetectorId, DekoScanDetectorResult, DekoScanProfileId } fr
 import type { DekoRadarScanResult } from "../../dekoradar/types.ts";
 import { detectNavigationIntegrity } from "../detectors/navigationIntegrityDetector.ts";
 import { detectUIInspectorFindings } from "../detectors/uiInspectorDetector.ts";
+import { parseBuildPerformanceReport } from "../performance.ts";
 
 export interface DekoScanDetectorContext {
   projectRoot: string;
@@ -182,8 +183,10 @@ async function dekobrain(context: DekoScanDetectorContext): Promise<DekoScanDete
   return { findings, scannedFiles: recent.length + memoryFiles.length };
 }
 
-async function performance(): Promise<DekoScanDetectorResult> {
-  return { findings: [], scannedFiles: 0, performanceMeasurementsAvailable: false };
+async function performance(context: DekoScanDetectorContext): Promise<DekoScanDetectorResult> {
+  const target = path.join(context.projectRoot, "public", "generated", "performance-build-report.json");
+  const report = (() => { try { return parseBuildPerformanceReport(JSON.parse(fs.readFileSync(target, "utf8"))); } catch { return null; } })();
+  return { findings: [], scannedFiles: report?.exportedFileCount ?? 0, performanceMeasurementsAvailable: Boolean(report) };
 }
 
 export const DEKO_SCAN_DETECTORS: Record<DekoScanDetectorId, (context: DekoScanDetectorContext) => Promise<DekoScanDetectorResult>> = {

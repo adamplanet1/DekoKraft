@@ -5,6 +5,7 @@ import { createLocalStructuredReportConnector } from "../dekoradar/securityAlert
 import { readFindings } from "./findingStore.ts";
 import { calculateHealthScore, readHealthScoreHistory } from "./healthScore.ts";
 import { calculateMemoryIntegrity } from "./memoryIntegrity.ts";
+import { buildReportSnapshot, calculatePerformanceScore, parseBuildPerformanceReport } from "./performance.ts";
 import { readSecurityMemory } from "./securityMemory.ts";
 import { readMaintenanceTimeline } from "./timeline.ts";
 import type { DekoCleanFinding, DekoCleanSeverity } from "./types.ts";
@@ -69,8 +70,19 @@ function adaptHealth(projectRoot: string): DekoDomainScore {
   };
 }
 
-function performanceUnavailable(): DekoDomainScore {
-  return { key: "performance", score: null, status: "unavailable", trend: "unknown", contributingFactors: [], unavailableReason: "لا يوجد Performance Monitor أو Performance Memory مقاس في المشروع حاليًا." };
+function adaptPerformance(projectRoot: string): DekoDomainScore {
+  const target = path.join(projectRoot, "public", "generated", "performance-build-report.json");
+  const report = (() => { try { return parseBuildPerformanceReport(JSON.parse(fs.readFileSync(target, "utf8"))); } catch { return null; } })();
+  if (!report) return { key: "performance", score: null, status: "unavailable", trend: "unknown", contributingFactors: [], unavailableReason: "لا يوجد build report مكتمل أو قياس متصفح فعلي حتى الآن." };
+  const snapshots = [buildReportSnapshot(report)];
+  const details = calculatePerformanceScore(snapshots);
+  const score = details.score;
+  const previous = readDekoIndexHistory(projectRoot).at(-1)?.performance ?? null;
+  return {
+    key: "performance", score, status: scoreStatus(score), trend: recentTrend(score, previous), previousScore: previous,
+    measuredAt: report.generatedAt, sourceUpdatedAt: report.generatedAt, performanceSnapshots: snapshots, performanceScoreDetails: details,
+    contributingFactors: details.metricScores.map((metric) => ({ id: metric.metric, label: metric.metric, value: metric.value, impact: metric.score - 100, explanation: `قياس فعلي من production build؛ تقييم ${metric.rating}.` })),
+  };
 }
 
 async function adaptSecurity(projectRoot: string, findings: DekoCleanFinding[]): Promise<DekoDomainScore> {
@@ -139,7 +151,7 @@ function freshness(domains: DekoDomainScore[]): DekoIndexSnapshot["dataFreshness
 
 export async function getDekoIndexSnapshot(projectRoot = process.cwd()): Promise<DekoIndexSnapshot> {
   const findings = readFindings(projectRoot);
-  const domains = [adaptHealth(projectRoot), performanceUnavailable(), await adaptSecurity(projectRoot, findings), await adaptAI(), adaptMemory(projectRoot, findings)];
+  const domains = [adaptHealth(projectRoot), adaptPerformance(projectRoot), await adaptSecurity(projectRoot, findings), await adaptAI(), adaptMemory(projectRoot, findings)];
   const calculation = calculateDekoIndex(domains);
   const history = readDekoIndexHistory(projectRoot);
   const previous = history.at(-1)?.dekoIndex;

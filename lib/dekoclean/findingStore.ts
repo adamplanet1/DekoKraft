@@ -66,10 +66,12 @@ export function writeFindings(findings: DekoCleanFinding[], projectRoot = proces
 export function saveDetectedFindings(findings: DekoCleanFinding[], projectRoot = process.cwd()): DekoCleanFinding[] {
   const previous = readFindings(projectRoot);
   const incoming = organizeFindings(findings);
+  const incomingFingerprints = new Set(incoming.map((finding) => finding.fingerprint));
   const recurring = new Map(previous.map((finding) => [finding.fingerprint, finding]));
   const reconciledIncoming = incoming.map((finding) => { const old = recurring.get(finding.fingerprint); return old ? { ...finding, id: old.id, findingId: old.findingId ?? old.id } : finding; });
   const merged = organizeFindings(mergeFindings(previous, reconciledIncoming)).map((finding) => {
     const old = previous.find((entry) => entry.fingerprint === finding.fingerprint);
+    if (old && !incomingFingerprints.has(finding.fingerprint)) return old;
     const seen = new Date().toISOString();
     const evidenceHash = JSON.stringify(finding.currentEvidence ?? finding.evidence);
     const priorEvidenceHash = old ? JSON.stringify(old.currentEvidence ?? old.evidence) : undefined;
