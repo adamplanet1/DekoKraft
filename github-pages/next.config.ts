@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   assetPrefix: isGitHubPagesExport ? "/DekoKraft/" : "",
   trailingSlash: true,
   images: { loader: "custom", loaderFile: "./image-loader.ts" },
-  env: { NEXT_PUBLIC_BASE_PATH: basePath },
+  env: { NEXT_PUBLIC_BASE_PATH: basePath, NEXT_PUBLIC_STUDIO_SERVER_API: "false" },
 };
 
 export default nextConfig;

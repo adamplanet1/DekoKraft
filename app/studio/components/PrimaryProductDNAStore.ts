@@ -1,4 +1,5 @@
 import { normalizeProductDNA, type ProductDNA } from "../../../lib/echo/echoProductDNA";
+import { studioServerFetch } from "../lib/studioServerApi";
 
 type PrimaryProductRow = Record<string, unknown>;
 
@@ -44,7 +45,7 @@ export function productRowToDNA(row: PrimaryProductRow): ProductDNA {
 
 export async function loadProductDNAFromPrimaryStore(productId: string): Promise<ProductDNA | null> {
   try {
-    const response = await fetch("/api/admin/products/", { cache: "no-store" });
+    const response = await studioServerFetch("/api/admin/products/", { cache: "no-store" });
     if (!response.ok) return null;
     const payload: unknown = await response.json();
     if (!Array.isArray(payload)) return null;
@@ -59,7 +60,7 @@ export async function loadProductDNAFromPrimaryStore(productId: string): Promise
 export async function saveProductDNAToPrimaryStore(productDNA: ProductDNA): Promise<boolean> {
   try {
     const normalized = normalizeProductDNA(productDNA as ProductDNA & Record<string, unknown>);
-    const response = await fetch("/api/admin/products/", {
+    const response = await studioServerFetch("/api/admin/products/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

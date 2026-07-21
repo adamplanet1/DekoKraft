@@ -2,6 +2,7 @@ import type { SmartProductSpecifications } from "./echoProductDNA";
 import type { EchoUserRole, SmartEditOptions } from "./echoGuide";
 import type { WorkspaceId, WorkspaceToolId } from "../../app/studio/engine/workspaceTypes";
 import type { DecisionPlanStep, ExecutionProvider } from "../decision-engine/types";
+import { studioServerFetch } from "../../app/studio/lib/studioServerApi";
 
 export type EchoGenerationPayload = {
   sourceImage: File | Blob;
@@ -84,7 +85,7 @@ export async function generateEchoSmartEdit(payload: EchoGenerationPayload): Pro
   formData.append("decisionId", payload.decisionId);
   formData.append("executionProvider", payload.executionProvider);
   formData.append("executionPlan", JSON.stringify(payload.executionPlan));
-  const response = await fetch("/api/echo-smart-edit/", { method: "POST", body: formData });
+  const response = await studioServerFetch("/api/echo-smart-edit/", { method: "POST", body: formData });
   const data = await response.json() as EchoGenerationResult;
   if (!response.ok && data.status !== "provider_not_connected") throw new Error(data.message || "تعذر تنفيذ التعديل الذكي.");
   return data;

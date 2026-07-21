@@ -5,6 +5,7 @@ import { Package, X } from "lucide-react";
 import { productRowToDNA } from "./PrimaryProductDNAStore";
 import type { ProductDNA } from "../../../lib/echo/echoProductDNA";
 import { publicPath } from "../../lib/publicPath";
+import { studioServerFetch } from "../lib/studioServerApi";
 
 export type PlatformProductSelection = { productDNA: ProductDNA; title: string; imageUrl: string | null };
 export type ProductSelectionMode = "load-complete-product" | "apply-dna-to-current-image";
@@ -18,7 +19,7 @@ export default function ProductMemoryPicker({ open, onClose, onSelect }: { open:
     if (!open) return;
     const controller = new AbortController();
     setLoading(true);
-    void fetch("/api/admin/products/", { cache: "no-store", signal: controller.signal })
+    void studioServerFetch("/api/admin/products/", { cache: "no-store", signal: controller.signal })
       .then((response) => response.ok ? response.json() : [])
       .then((payload: unknown) => {
         if (!Array.isArray(payload)) return;

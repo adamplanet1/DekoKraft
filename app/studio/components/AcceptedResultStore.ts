@@ -1,6 +1,7 @@
 import { saveConfirmedLearning } from "../../components/ui/dekobrain-experiment/LearningEchoStore";
 import type { SmartProductSpecifications } from "./SmartEditLearningStore";
 import type { EchoUserRole, SmartEditOptions } from "../../../lib/echo/echoGuide";
+import { studioServerFetch } from "../lib/studioServerApi";
 import type { WorkspaceId } from "../engine/workspaceTypes";
 import type { ExecutionProvider } from "../../../lib/decision-engine/types";
 import { loadCurrentUserSession } from "../../seller/lib/sellerSession";
@@ -94,7 +95,7 @@ export async function saveAcceptedVisualPreference(productId: string, productDNA
     artisanPreference: { instruction, preserveShape: options.preserveShape, preserveOriginalColors: options.colors?.mode === "preserve", preferredBackground: options.background?.mode },
   });
   try {
-    const response = await fetch("/api/echo-guide/memory/", {
+    const response = await studioServerFetch("/api/echo-guide/memory/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

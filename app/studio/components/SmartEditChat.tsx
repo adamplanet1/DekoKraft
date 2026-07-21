@@ -29,6 +29,7 @@ import { recordDecisionSmartEdit, updateSmartEditHistoryStatus } from "../engine
 import type { WorkspaceId } from "../engine/workspaceTypes";
 import { saveProductDNAToPrimaryStore } from "./PrimaryProductDNAStore";
 import type { EchoGuideOperation, EchoGuideRecommendation, EchoGuideUiState } from "../../../lib/echo-guide/types";
+import { studioServerFetch } from "../lib/studioServerApi";
 import type { DecisionResult } from "../../../lib/decision-engine/types";
 
 export type SmartEditStage = "product-confirmation" | "product-correction" | "ready-for-edit" | "edit-confirmation" | "confirmed";
@@ -398,7 +399,7 @@ export default function SmartEditChat({ workspace, participantId, sellerId, prod
     setDecisionLoading(true);
     setDecisionError(null);
     try {
-      const response = await fetch("/api/decision-engine/", {
+      const response = await studioServerFetch("/api/decision-engine/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -449,7 +450,7 @@ export default function SmartEditChat({ workspace, participantId, sellerId, prod
     setEchoGuideState("loading-context");
     setEchoGuideError(null);
     try {
-      const response = await fetch("/api/echo-guide/recommend/", {
+      const response = await studioServerFetch("/api/echo-guide/recommend/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

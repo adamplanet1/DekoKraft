@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,
+    NEXT_PUBLIC_STUDIO_SERVER_API: isStaticExport ? "false" : "true",
   },
 };
 
