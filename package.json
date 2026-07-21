@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "dev": "next dev",
     "build": "node scripts/build-github-pages.mjs",
+    "build:github-pages": "node scripts/build-github-pages.mjs",
     "build:server": "next build --webpack",
     "start": "next start",
     "lint": "eslint",

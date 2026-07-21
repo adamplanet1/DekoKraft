@@ -3,13 +3,15 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { useLanguage } from "../../components/LanguageProvider";
 import PublicPageShell from "../../components/PublicPageShell";
-import PublicServiceCenterModal from "../../components/PublicServiceCenterModal";
 import { DkButton, DkGlassPanel } from "../../components/ui";
 import {
   type WelcomeCardKey,
 } from "../../../locales/welcome";
 import WelcomeCard from "./WelcomeCard";
 import WelcomeIntro from "./WelcomeIntro";
+import WelcomeServicesCenter, {
+  WELCOME_SERVICES_CENTER_ID,
+} from "./WelcomeServicesCenter";
 import { routes } from "../../config/routes";
 
 const WELCOME_STORAGE_KEY = "dekokraft_welcome_seen_v1";
@@ -39,9 +41,7 @@ export default function WelcomePortal() {
   const [introState, setIntroState] = useState<IntroState>("checking");
   const [introRevision, setIntroRevision] = useState(0);
   const [notice, setNotice] = useState("");
-  const [isServiceCenterOpen, setIsServiceCenterOpen] = useState(false);
   const noticeTimerRef = useRef<number | null>(null);
-  const serviceCenterTriggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const forceIntro = new URLSearchParams(window.location.search).get("intro") === "1";
@@ -108,16 +108,11 @@ export default function WelcomePortal() {
       noticeTimerRef.current = null;
     }
 
-    setIsServiceCenterOpen(false);
     setNotice("");
     setIntroRevision((revision) => revision + 1);
     setIntroState("visible");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-  const dismissServiceCenter = useCallback(() => {
-    setIsServiceCenterOpen(false);
-  }, []);
 
   return (
     <PublicPageShell className="welcomePublicShell">
@@ -151,12 +146,12 @@ export default function WelcomePortal() {
             <WelcomeCard
               title={t("servicesCenter.open")}
               icon="🛠️"
-              aria-controls="public-service-center-dialog"
-              aria-expanded={isServiceCenterOpen}
-              aria-haspopup="dialog"
-              onClick={(event) => {
-                serviceCenterTriggerRef.current = event.currentTarget as HTMLButtonElement;
-                setIsServiceCenterOpen((open) => !open);
+              aria-controls={WELCOME_SERVICES_CENTER_ID}
+              onClick={() => {
+                document.getElementById(WELCOME_SERVICES_CENTER_ID)?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
               }}
             />
             <WelcomeCard
@@ -176,6 +171,8 @@ export default function WelcomePortal() {
             {t("welcome.replay")}
           </DkButton>
         </DkGlassPanel>
+
+        <WelcomeServicesCenter />
       </div>
 
       {notice && (
@@ -193,13 +190,6 @@ export default function WelcomePortal() {
           onComplete={finishIntro}
         />
       )}
-
-      <PublicServiceCenterModal
-        isOpen={isServiceCenterOpen}
-        onDismiss={dismissServiceCenter}
-        onNavigate={dismissServiceCenter}
-        returnFocusRef={serviceCenterTriggerRef}
-      />
     </main>
     </PublicPageShell>
   );
