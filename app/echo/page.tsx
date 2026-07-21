@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 type Mission = {
@@ -106,6 +107,22 @@ export default function EchoPage() {
           >
             حوّل فكرتك إلى مهمة عملية، ثم تابع تفاصيلها وتنفيذها.
           </p>
+
+          <Link
+            href="/studio"
+            style={{
+              display: "inline-flex",
+              marginTop: "18px",
+              padding: "12px 22px",
+              borderRadius: "14px",
+              background: "#5946c6",
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 700,
+            }}
+          >
+            معالجة الصور
+          </Link>
         </header>
 
         <div
