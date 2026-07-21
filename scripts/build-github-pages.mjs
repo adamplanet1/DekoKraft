@@ -11,7 +11,7 @@ const rootOutput = path.join(root, "out");
 fs.rmSync(pagesPublic, { recursive: true, force: true });
 fs.cpSync(path.join(root, "public"), pagesPublic, { recursive: true });
 fs.rmSync(path.join(pagesPublic, "images", "admin"), { recursive: true, force: true });
-const result = spawnSync(process.execPath, [path.join(root, "node_modules", "next", "dist", "bin", "next"), "build", pagesRoot, "--webpack"], { cwd: root, env: { ...process.env, DEKOKRAFT_STATIC_EXPORT: "true" }, stdio: "inherit" });
+const result = spawnSync(process.execPath, [path.join(root, "node_modules", "next", "dist", "bin", "next"), "build", pagesRoot, "--webpack"], { cwd: root, env: { ...process.env, DEKOKRAFT_STATIC_EXPORT: "true", DEKOKRAFT_GITHUB_PAGES: "true" }, stdio: "inherit" });
 if (result.status !== 0) process.exit(result.status ?? 1);
 fs.rmSync(rootOutput, { recursive: true, force: true });
 fs.cpSync(pagesOutput, rootOutput, { recursive: true });
