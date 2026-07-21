@@ -1,0 +1,3 @@
+import{notFound}from"next/navigation";import{sellerProducts}from"../../../../../data/sellerProducts";import SellerProductForm from"../../../../components/SellerProductForm";
+export function generateStaticParams(){return sellerProducts.map(product=>({productId:product.id}))}
+export default async function EditProductPage({params}:{params:Promise<{sellerId:string;productId:string}>}){const{sellerId,productId}=await params;const seeded=sellerProducts.find(p=>p.id===productId);if(seeded&&seeded.sellerId!==sellerId)notFound();return <main className="sellerPage"><header className="sellerPageHeader"><div><span>منتجاتي</span><h1>تعديل المنتج</h1><p>حدّث البيانات دون تغيير ملكية المنتج.</p></div></header><SellerProductForm sellerId={sellerId} productId={productId}/></main>}

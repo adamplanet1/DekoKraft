@@ -30,8 +30,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# local AI cost development data
+/data/ai-cost-records.json
+/data/financial-ledger.json
+/data/echo-guide-accepted-memory.json
+
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +45,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# DekoClean local reports, manifests, and quarantine
+/.dekoclean/

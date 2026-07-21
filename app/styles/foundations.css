@@ -1,0 +1,58 @@
+/* Low-specificity foundations intentionally preserve existing component styling. */
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+:where(html) {
+  width: 100%;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+:where(body) {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  color: var(--dk-color-text-strong);
+  line-height: var(--dk-line-height-body);
+}
+
+:where(button, input, select, textarea) {
+  font: inherit;
+}
+
+:where(button, a) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(a) {
+  color: inherit;
+}
+
+:where(img, video) {
+  max-width: 100%;
+}
+
+:where(img) {
+  height: auto;
+}
+
+:where([dir="rtl"]) {
+  text-align: start;
+}
+
+:where([dir="ltr"]) {
+  text-align: start;
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(49, 95, 189, 0.42);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(html) {
+    scroll-behavior: auto;
+  }
+}

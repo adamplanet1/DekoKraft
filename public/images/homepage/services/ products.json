@@ -4,6 +4,7 @@
     "title": "Service 01",
     "description": "طلبات خاصة، تصليح، طباعة وطرز",
     "imageCount": 1,
-    "extension": "jpg"
+    "extension": "jpg",
+    "participantId": "seller-001"
   }
 ]

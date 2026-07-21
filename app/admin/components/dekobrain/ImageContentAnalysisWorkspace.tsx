@@ -1,0 +1,3 @@
+"use client";
+import Link from"next/link";import{useLanguage}from"../../../components/LanguageProvider";import{adminToolsTranslations}from"../../config/adminToolsTranslations";import DekoBrainPage from"./DekoBrainPage";
+export default function ImageContentAnalysisWorkspace(){const{lang}=useLanguage(),entry=adminToolsTranslations[lang].entries.imageAnalysis;return <main className="dkStandaloneAdmin" dir={lang==="ar"?"rtl":"ltr"}><header><Link href="/admin">← {adminToolsTranslations[lang].back}</Link><h1>{entry.title}</h1><p>{entry.description}</p></header><DekoBrainPage lang={lang} view="analysis"/></main>}

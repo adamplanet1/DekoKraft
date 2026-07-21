@@ -1,0 +1,2 @@
+import SellerProductForm from"../../../components/SellerProductForm";
+export default async function NewProductPage({params}:{params:Promise<{sellerId:string}>}){const{sellerId}=await params;return <main className="sellerPage"><header className="sellerPageHeader"><div><span>منتجاتي</span><h1>إضافة منتج</h1><p>أدخل بيانات المنتج ثم احفظه أو أرسله للمراجعة.</p></div></header><SellerProductForm sellerId={sellerId}/></main>}

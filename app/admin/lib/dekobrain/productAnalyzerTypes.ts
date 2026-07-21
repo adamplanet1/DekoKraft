@@ -1,0 +1,6 @@
+export type ProductCategory="candle"|"flower"|"glass"|"jewelry"|"box"|"fabric"|"toy"|"food"|"electronics"|"furniture"|"gypsum-decor"|"unknown";
+export type ProductFeatureKey="flame"|"softShadow"|"hardShadow"|"reflection"|"transparency"|"thinEdges"|"fineTexture"|"petals"|"glass"|"wood"|"metal"|"fabric"|"roundShape"|"tallShape"|"whiteBackground"|"complexBackground";
+export interface DetectedFeature{key:ProductFeatureKey;detected:boolean;confidence:number;source:"pixels"|"metadata"|"filename"|"user"|"fallback"}
+export interface ProductProtectionRules{preserveFlame:boolean;preserveThinEdges:boolean;preserveFineTexture:boolean;preserveReflection:boolean;preserveNaturalShadow:boolean;allowAggressiveBackgroundRemoval:boolean}
+export interface ProductProcessingRecommendation{backgroundRemovalMode:"gentle"|"balanced"|"aggressive";shadowMode:"keep"|"soften"|"remove-experimental";cropMode:"contain"|"cover"|"smart";enhancementMode:"natural"|"warm"|"neutral"|"none";warnings:string[]}
+export interface ProductProfile{category:ProductCategory;categoryConfidence:number;categorySource:"pixels"|"metadata"|"filename"|"user"|"fallback";features:DetectedFeature[];protection:ProductProtectionRules;recommendation:ProductProcessingRecommendation;analyzedAt:string;analyzerVersion:string}

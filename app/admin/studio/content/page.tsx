@@ -1,0 +1,4 @@
+"use client";
+import StudioWorkspace from "../components/StudioWorkspace";
+const fields=["اسم المنتج","الفئة","وصف قصير","وصف كامل","كلمات مفتاحية","وسوم","نبرة المحتوى","اللغة"],outputs=["عنوان المنتج","الوصف","النص التسويقي","الوسوم","الدعوة إلى الإجراء"];
+export default function Page(){return <StudioWorkspace title="استوديو المحتوى التسويقي" description="إنشاء اسم المنتج والوصف والنص التسويقي والوسوم والدعوة إلى الإجراء.">{()=> <><section className="studioPanel"><h2>بيانات المنتج</h2><div className="studioFormGrid">{fields.map((field,index)=><label key={field}>{field}{index===3?<textarea rows={4}/>:<input type="text"/>}</label>)}</div></section><section className="studioPanel"><h2>المحتوى المقترح</h2><div className="studioOutputGrid">{outputs.map(item=><article key={item}><h3>{item}</h3><p>سيظهر المحتوى المقترح هنا بعد إدخال بيانات المنتج.</p></article>)}</div></section></>}</StudioWorkspace>}

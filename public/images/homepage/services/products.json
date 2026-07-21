@@ -5,7 +5,9 @@
     "title": "Box   Baden",
     "description": "",
     "imageCount": 0,
-    "extension": "webp"
+    "extension": "jpg",
+    "mainImage": "20210730_110615.jpg",
+    "participantId": "seller-001"
   },
   {
     "id": "Box- vorbeschtelt",
@@ -13,7 +15,9 @@
     "title": "Box  Vorbeschtelt",
     "description": "",
     "imageCount": 0,
-    "extension": "webp"
+    "extension": "jpg",
+    "mainImage": "20211217_160616.jpg",
+    "participantId": "seller-001"
   },
   {
     "id": "service-01",
@@ -21,7 +25,9 @@
     "title": "خدمة خاصة",
     "description": "خدمة تصليح أو طباعة حسب الطلب",
     "imageCount": 1,
-    "extension": "jpg",
+    "extension": "webp",
+    "mainImage": "candel-002-01-1-1200 Kopie.webp",
+    "participantId": "seller-001",
     "title_ar": "خدمة خاصة",
     "title_de": "Service 01",
     "title_en": "Service 01",
@@ -49,7 +55,8 @@
     "title": "Service 02",
     "description": "",
     "imageCount": 0,
-    "extension": "webp"
+    "extension": "webp",
+    "participantId": "seller-001"
   },
   {
     "id": "service-03",
@@ -57,6 +64,8 @@
     "title": "Service 03",
     "description": "",
     "imageCount": 0,
-    "extension": "webp"
+    "extension": "jpg",
+    "mainImage": "service-01-01.jpg",
+    "participantId": "seller-001"
   }
 ]

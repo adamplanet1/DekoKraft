@@ -1,0 +1,150 @@
+:root {
+  /* Brand and state colors extracted from the current public/admin CSS. */
+  --dk-color-primary: #315fbd;
+  --dk-color-primary-hover: #2457ff;
+  --dk-color-active-start: #4b63e8;
+  --dk-color-active-end: #7657dc;
+  --dk-color-text: #17213c;
+  --dk-color-text-strong: #0f1a33;
+  --dk-color-text-muted: #69748c;
+  --dk-color-text-inverse: #ffffff;
+  --dk-color-border: rgba(255, 255, 255, 0.18);
+  --dk-color-border-glass: rgba(255, 255, 255, 0.22);
+  --dk-color-border-strong: rgba(255, 255, 255, 0.55);
+  --dk-color-background: #f3f7ff;
+  --dk-color-surface: #ffffff;
+  --dk-color-glass: rgba(255, 255, 255, 0.08);
+  --dk-color-glass-soft: rgba(255, 255, 255, 0.10);
+  --dk-color-glass-medium: rgba(255, 255, 255, 0.16);
+  --dk-color-glass-hover: rgba(255, 255, 255, 0.22);
+  --dk-color-glass-toolbar-hover: rgba(255, 255, 255, 0.24);
+  --dk-color-glass-strong: rgba(255, 255, 255, 0.48);
+
+  /* Unified public-page identity. */
+  --dk-public-background-start: #eaf2ff;
+  --dk-public-background-middle: #b8cdf8;
+  --dk-public-background-end: #7089db;
+  --dk-public-glow-start: rgba(79, 137, 255, 0.42);
+  --dk-public-glow-end: rgba(105, 211, 255, 0.26);
+  --dk-public-glass: rgba(255, 255, 255, 0.22);
+  --dk-public-glass-strong: rgba(255, 255, 255, 0.58);
+  --dk-public-border: rgba(255, 255, 255, 0.42);
+  --dk-public-text: #101b38;
+  --dk-public-text-muted: #455578;
+  --dk-public-accent: #315fbd;
+  --dk-public-shadow: 0 18px 50px rgba(34, 66, 142, 0.16);
+  --dk-public-blur: 22px;
+  --dk-public-container: 1200px;
+  --dk-public-gutter: 32px;
+
+  /* Public Design System contract. Keep page implementations on these
+     semantic tokens instead of coupling them to individual screens. */
+  --dk-page-max-width: var(--dk-public-container);
+  --dk-page-padding-inline: clamp(12px, 3vw, 32px);
+  --dk-page-padding-block: clamp(20px, 4vw, 52px);
+  --dk-section-gap: clamp(28px, 5vw, 72px);
+  --dk-card-gap: clamp(14px, 2vw, 24px);
+  --dk-card-radius: clamp(18px, 2vw, 24px);
+  --dk-panel-radius: clamp(22px, 3vw, 32px);
+  --dk-glass-bg: var(--dk-public-glass-strong);
+  --dk-glass-border: var(--dk-public-border);
+  --dk-glass-blur: var(--dk-public-blur);
+  --dk-shadow-soft: 0 12px 36px rgba(34, 66, 142, 0.12);
+  --dk-shadow-card: var(--dk-public-shadow);
+  --dk-header-height: clamp(64px, 7vw, 88px);
+  --dk-toolbar-height: clamp(40px, 5vw, 48px);
+  --dk-icon-button-size: clamp(38px, 4vw, 44px);
+  --dk-control-height: clamp(40px, 5vw, 48px);
+  --dk-title-size: clamp(1.75rem, 4.6vw, 3.75rem);
+  --dk-subtitle-size: clamp(1rem, 1.8vw, 1.3rem);
+  --dk-body-size: clamp(0.95rem, 1.2vw, 1.08rem);
+  --dk-blue-start: var(--dk-public-background-start);
+  --dk-blue-middle: var(--dk-public-background-middle);
+  --dk-blue-end: var(--dk-public-background-end);
+
+  /* Shadows preserve the existing visual depth. */
+  --dk-shadow-sm: 0 5px 16px rgba(15, 23, 42, 0.09);
+  --dk-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --dk-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.18);
+  --dk-shadow-sidebar: 0 18px 50px rgba(30, 40, 65, 0.16);
+  --dk-shadow-glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.30);
+
+  /* Typography. */
+  --dk-font-xs: 0.75rem;
+  --dk-font-sm: 0.875rem;
+  --dk-font-md: 1rem;
+  --dk-font-lg: 1.25rem;
+  --dk-font-xl: 1.5rem;
+  --dk-font-weight-regular: 400;
+  --dk-font-weight-medium: 600;
+  --dk-font-weight-bold: 700;
+  --dk-font-weight-heavy: 800;
+  --dk-line-height-tight: 1;
+  --dk-line-height-heading: 1.2;
+  --dk-line-height-body: 1.4;
+  --dk-line-height-relaxed: 1.6;
+
+  /* Spacing scale. */
+  --dk-space-1: 4px;
+  --dk-space-2: 6px;
+  --dk-space-3: 8px;
+  --dk-space-4: 10px;
+  --dk-space-5: 12px;
+  --dk-space-6: 16px;
+  --dk-space-panel: 18px;
+  --dk-space-7: 20px;
+  --dk-space-8: 24px;
+  --dk-space-9: 32px;
+
+  /* Shape, controls and media. */
+  --dk-radius-sm: 8px;
+  --dk-radius-md: 11px;
+  --dk-radius-lg: 18px;
+  --dk-radius-xl: 22px;
+  --dk-radius-panel: 28px;
+  --dk-radius-pill: 999px;
+  --dk-button-height-sm: 32px;
+  --dk-button-height-md: 42px;
+  --dk-button-height-lg: 58px;
+  --dk-icon-size-sm: 15px;
+  --dk-icon-size-md: 18px;
+  --dk-icon-size-lg: 24px;
+
+  /* Containers and effects. */
+  --dk-container-max: 1200px;
+  --dk-container-wide: 1440px;
+  --dk-blur-sm: 12px;
+  --dk-blur-control: 14px;
+  --dk-blur-md: 18px;
+  --dk-blur-sidebar: 20px;
+  --dk-blur-lg: 28px;
+  --dk-transition-fast: 180ms;
+  --dk-transition-normal: 220ms;
+  --dk-transition-slow: 320ms;
+  --dk-ease-standard: ease;
+
+  /* Layering. */
+  --dk-z-background: 0;
+  --dk-z-overlay: 1;
+  --dk-z-content: 2;
+  --dk-z-toolbar: 20;
+  --dk-z-dropdown: 60;
+  --dk-z-sidebar: 1002;
+  --dk-z-modal: 1100;
+
+  /* Current Admin V2 measurements. */
+  --dk-admin-toolbar-height: 32px;
+  --dk-admin-toolbar-margin-block-start: 14px;
+  --dk-admin-control-height: 32px;
+  --dk-admin-control-height-mobile: 34px;
+  --dk-admin-toolbar-icon-size: 15px;
+  --dk-admin-creator-button-height: 72px;
+  --dk-admin-card-width: 260px;
+  --dk-admin-card-height: 190px;
+  --dk-admin-card-gap: 16px;
+  --dk-services-center-gap: 12px;
+  --dk-admin-sidebar-width: 280px;
+
+  /* Breakpoint reference (custom properties cannot be used in media queries):
+     mobile < 640px | tablet 640–1023px | desktop 1024–1439px | wide >= 1440px */
+}

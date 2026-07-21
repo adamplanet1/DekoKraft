@@ -1,27 +1,26 @@
-import HeroCard from "../dashboard/HeroCard";
-import Statistics from "../dashboard/Statistics";
-import QuickAccess from "../dashboard/QuickAccess";
-import { type CmsTabId } from "../../config/cmsTabs";
+import DkServicesCenter from "../../../components/platform/DkServicesCenter";
+import AdminSellerStores from "../../../components/admin/AdminSellerStores";
+import { DkBrainProgressCenter } from "../../../components/ui";
+import AdminDashboardGrid from "../dashboard/AdminDashboardGrid";
+import AICostCompactSummary from "../dashboard/AICostCompactSummary";
 import { type Lang } from "../../config/translations";
 
 type Props = {
   lang: Lang;
-  setActiveTab: (tab: CmsTabId) => void;
-  onAddProduct: () => void;
 };
 
 export default function DashboardPage({
   lang,
-  setActiveTab,
-  onAddProduct,
 }: Props) {
   const dir = lang === "ar" ? "rtl" : "ltr";
 
   return (
     <div className="dkDashboardPage" dir={dir}>
-      <HeroCard lang={lang} dir={dir} onAddProduct={onAddProduct} />
-      <Statistics lang={lang} dir={dir} />
-      <QuickAccess lang={lang} dir={dir} setActiveTab={setActiveTab} />
+      <AdminDashboardGrid />
+      <AICostCompactSummary />
+      <AdminSellerStores />
+      <DkBrainProgressCenter compact />
+      <DkServicesCenter locale={lang} direction={dir} variant="compact" />
     </div>
   );
 }

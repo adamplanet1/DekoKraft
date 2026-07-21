@@ -1,0 +1,91 @@
+import type { SmartProductSpecifications } from "./echoProductDNA";
+import type { EchoUserRole, SmartEditOptions } from "./echoGuide";
+import type { WorkspaceId, WorkspaceToolId } from "../../app/studio/engine/workspaceTypes";
+import type { DecisionPlanStep, ExecutionProvider } from "../decision-engine/types";
+
+export type EchoGenerationPayload = {
+  sourceImage: File | Blob;
+  productDNA: SmartProductSpecifications;
+  options: SmartEditOptions;
+  instruction: string;
+  userInstruction: string;
+  role: EchoUserRole;
+  background: NonNullable<SmartEditOptions["background"]>["mode"];
+  outputFormat: "png";
+  preserveProduct: boolean;
+  preserveWick: boolean;
+  sourcePriority: "uploaded-image" | "current-preview" | "product-memory";
+  workspace: WorkspaceId;
+  tool: WorkspaceToolId;
+  productId?: string;
+  participantId?: string;
+  sellerId?: string;
+  echoGuideRecommendationId: string;
+  model: string;
+  quality?: string;
+  size?: string;
+  ratio?: string;
+  executionId: string;
+  decisionId: string;
+  executionProvider: ExecutionProvider;
+  executionPlan: DecisionPlanStep[];
+};
+export type EchoGenerationResult = {
+  success: boolean;
+  status: "generated" | "provider_not_connected" | "failed";
+  imageBase64?: string;
+  mimeType?: string;
+  outputFormat?: "png";
+  background?: string;
+  hasAlpha?: boolean;
+  sourceUsed?: "original-upload" | "current-preview" | "product-memory";
+  preservedFeatures?: string[];
+  generationId?: string;
+  model?: string;
+  estimatedCostUsd?: number;
+  actualCostUsd?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  generationTimeMs?: number;
+  costRecordId?: string;
+  ledgerEntryId?: string;
+  executionProvider?: ExecutionProvider;
+  decisionId?: string;
+  message?: string;
+};
+
+export async function generateEchoSmartEdit(payload: EchoGenerationPayload): Promise<EchoGenerationResult> {
+  const formData = new FormData();
+  const imageName = payload.sourceImage instanceof File && payload.sourceImage.name
+    ? payload.sourceImage.name
+    : "echo-current-product.png";
+  formData.append("sourceImage", payload.sourceImage, imageName);
+  formData.append("productDNA", JSON.stringify(payload.productDNA));
+  formData.append("editSettings", JSON.stringify(payload.options));
+  formData.append("instruction", payload.instruction);
+  formData.append("userInstruction", payload.userInstruction);
+  formData.append("role", payload.role);
+  formData.append("background", payload.background);
+  formData.append("outputFormat", payload.outputFormat);
+  formData.append("preserveProduct", String(payload.preserveProduct));
+  formData.append("preserveWick", String(payload.preserveWick));
+  formData.append("sourcePriority", payload.sourcePriority);
+  formData.append("workspace", payload.workspace);
+  formData.append("tool", payload.tool);
+  if (payload.productId) formData.append("productId", payload.productId);
+  if (payload.participantId) formData.append("participantId", payload.participantId);
+  if (payload.sellerId) formData.append("sellerId", payload.sellerId);
+  formData.append("echoGuideRecommendationId", payload.echoGuideRecommendationId);
+  formData.append("recommendedModel", payload.model);
+  if (payload.quality) formData.append("quality", payload.quality);
+  if (payload.size) formData.append("size", payload.size);
+  if (payload.ratio) formData.append("ratio", payload.ratio);
+  formData.append("executionId", payload.executionId);
+  formData.append("decisionId", payload.decisionId);
+  formData.append("executionProvider", payload.executionProvider);
+  formData.append("executionPlan", JSON.stringify(payload.executionPlan));
+  const response = await fetch("/api/echo-smart-edit/", { method: "POST", body: formData });
+  const data = await response.json() as EchoGenerationResult;
+  if (!response.ok && data.status !== "provider_not_connected") throw new Error(data.message || "تعذر تنفيذ التعديل الذكي.");
+  return data;
+}

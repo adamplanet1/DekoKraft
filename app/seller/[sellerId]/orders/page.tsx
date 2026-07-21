@@ -1,0 +1,1 @@
+export default function OrdersPage(){return <main className="sellerPage"><header className="sellerPageHeader"><div><span>قريبًا</span><h1>الطلبات</h1><p>ستظهر طلبات المتجر هنا في المرحلة القادمة.</p></div></header></main>}

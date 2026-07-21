@@ -1,0 +1,62 @@
+.dk-container {
+  width: min(calc(100% - 32px), var(--dk-container-max));
+  margin-inline: auto;
+}
+
+.dk-glass {
+  background: var(--dk-color-glass);
+  border: 1px solid var(--dk-color-border);
+  -webkit-backdrop-filter: blur(var(--dk-blur-md));
+  backdrop-filter: blur(var(--dk-blur-md));
+}
+
+.dk-glass-strong {
+  background: var(--dk-color-glass-strong);
+  border: 1px solid var(--dk-color-border-strong);
+  -webkit-backdrop-filter: blur(var(--dk-blur-lg));
+  backdrop-filter: blur(var(--dk-blur-lg));
+}
+
+.dk-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.dk-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.dk-center {
+  display: grid;
+  place-items: center;
+}
+
+.dk-hidden {
+  display: none;
+}
+
+.dk-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dk-text-muted {
+  color: var(--dk-color-text-muted);
+}
+
+.dk-scrollbar-hidden {
+  scrollbar-width: none;
+}
+
+.dk-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}

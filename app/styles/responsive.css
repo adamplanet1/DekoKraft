@@ -1,0 +1,225 @@
+/* Phase 1: only shared container, toolbar, hero and Creator Studio behavior. */
+@media (max-width: 639px) {
+  .dk-container,
+  .dk-toolbar {
+    width: calc(100% - 20px);
+  }
+
+  .dk-toolbar {
+    flex-direction: column-reverse;
+  }
+
+  .dk-hero-grid,
+  .dk-creator-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .dk-hero-grid,
+  .dk-creator-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .dk-hero-grid {
+    grid-template-columns: repeat(4, var(--dk-admin-card-width));
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1440px) {
+  .dk-container {
+    max-width: var(--dk-container-wide);
+  }
+}
+
+@media (max-width: 1023px) {
+  .publicFloatingToolbar,
+  [dir="rtl"] .publicFloatingToolbar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "actions search utilities";
+  }
+
+  [dir="rtl"] .publicFloatingToolbar {
+    grid-template-areas: "utilities search actions";
+  }
+
+  .publicHeaderSearch {
+    max-width: none;
+  }
+}
+
+/* Public Design System breakpoints: desktop >= 1200, tablet 768-1199,
+   mobile < 768 and compact mobile < 480. */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .dk-responsive-grid {
+    grid-template-columns: repeat(var(--dk-grid-tablet), minmax(var(--dk-grid-min-card), 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .publicContentContainer,
+  .dk-container {
+    width: min(calc(100% - (var(--dk-page-padding-inline) * 2)), var(--dk-page-max-width));
+  }
+
+  .dk-responsive-grid {
+    grid-template-columns: repeat(var(--dk-grid-mobile), minmax(0, 1fr));
+  }
+
+  .dk-content-section__header {
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .dk-page-hero--large {
+    min-height: 230px;
+  }
+}
+
+@media (max-width: 479px) {
+  .dk-page-hero {
+    padding: 20px 16px;
+    border-radius: var(--dk-card-radius);
+  }
+
+  .dk-public-card__content {
+    padding: 16px 14px;
+  }
+}
+
+@media (max-width: 720px) {
+  .dkPublicTheme .publicHeader,
+  .dkPublicTheme .publicFloatingToolbar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .publicHeader .publicHeaderMain {
+    width: min(calc(100% - 24px), 680px);
+    max-width: 100%;
+    min-width: 0;
+    margin-inline: auto;
+    padding-block: 10px 12px;
+  }
+
+  .publicFloatingToolbar,
+  [dir="rtl"] .publicFloatingToolbar {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "actions utilities"
+      "search search";
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 10px;
+    border-radius: var(--dk-radius-lg);
+    padding: 8px;
+  }
+
+  [dir="rtl"] .publicFloatingToolbar {
+    grid-template-areas:
+      "utilities actions"
+      "search search";
+  }
+
+  .publicSecondaryActions {
+    position: static;
+    z-index: auto;
+    inset: auto;
+    display: flex;
+    align-items: center;
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  [dir="rtl"] .publicSecondaryActions {
+    justify-self: end;
+  }
+
+  [dir="ltr"] .publicSecondaryActions {
+    justify-self: start;
+  }
+
+  .publicSecondaryActions .publicMarketButton {
+    display: none;
+  }
+
+  [dir="rtl"] .publicHeaderEndGroup,
+  [dir="ltr"] .publicHeaderEndGroup {
+    display: flex;
+  }
+
+  .publicHeaderEndGroup {
+    gap: 8px;
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  [dir="rtl"] .publicHeaderEndGroup {
+    justify-self: start;
+  }
+
+  [dir="ltr"] .publicHeaderEndGroup {
+    justify-self: end;
+  }
+
+  .publicHeaderSearchRow {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .publicHeaderSearch {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: 50px;
+    min-height: 50px;
+    padding-inline: 16px;
+  }
+
+  [dir="rtl"] .publicHeaderSearch {
+    direction: rtl;
+  }
+
+  [dir="ltr"] .publicHeaderSearch {
+    direction: ltr;
+  }
+
+  .publicSecondaryActions .publicHeaderIconButton {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .publicFloatingToolbar .publicLanguageButton {
+    width: 52px;
+    min-width: 52px;
+    height: 44px;
+    min-height: 44px;
+    padding-inline: 8px;
+  }
+
+  .publicHeaderEndGroup .publicHeaderIconButton {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+}

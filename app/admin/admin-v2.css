@@ -1,0 +1,2046 @@
+.dkAdminLayout{--admin-v2-glass:var(--dk-color-glass-strong);--admin-v2-line:rgba(118,143,211,.18);--admin-v2-shadow:0 10px 26px rgba(58,77,135,.09);display:grid;align-items:start;width:100%;max-width:100%;min-height:100vh;overflow-x:hidden}.dkAdminLayout[data-dir="rtl"]{grid-template-areas:"main sidebar";grid-template-columns:minmax(0,1fr) clamp(190px,15vw,220px)}.dkAdminLayout[data-dir="ltr"]{grid-template-areas:"sidebar main";grid-template-columns:clamp(190px,15vw,220px) minmax(0,1fr)}.dkAdminLayout .dkMain{width:100%;max-width:none;min-width:0;padding:16px 20px}.dkAdminLayout .dkSidebar{position:sticky;top:16px;width:auto;min-width:0;max-height:calc(100vh - 32px);margin:16px 12px;padding:12px;border:1px solid rgba(255,255,255,.38);border-radius:20px;background:rgba(255,255,255,.18);box-shadow:none;backdrop-filter:blur(var(--dk-blur-md));-webkit-backdrop-filter:blur(var(--dk-blur-md));overflow-y:auto}.dkAdminLayout .dkNavigation{gap:6px}.dkAdminLayout .dkNavButton{min-height:var(--dk-button-height-md);justify-content:flex-start;gap:8px;border:1px solid rgba(255,255,255,.5);border-radius:12px;background:var(--admin-v2-glass);box-shadow:0 5px 14px rgba(61,79,135,.06);padding:8px 11px;font-size:var(--dk-font-sm)}.dkAdminLayout .dkNavButton:hover{transform:translateY(-1px);background:rgba(255,255,255,.74);box-shadow:0 8px 18px rgba(61,79,135,.11)}.dkAdminLayout .dkNavButton.active{border-color:rgba(74,105,226,.34);background:linear-gradient(135deg,rgba(55,89,231,.9),rgba(96,129,255,.86));box-shadow:0 10px 22px rgba(67,94,215,.22)}.dkAdminLayout .dkNavIcon{flex:0 0 20px;font-size:19px;text-align:center}.dkAdminLayout .dkNavText{font-size:var(--dk-font-sm)}.dkMobileSidebarToggle,.dkMobileSidebarBackdrop{display:none}.dkAdminLayout .dkHeader{min-height:145px;display:grid;grid-template-columns:84px minmax(280px,1fr) auto;grid-template-areas:"logo title actions";align-items:center;gap:14px;padding:8px 12px 12px}.dkHeaderLogo{grid-area:logo;display:grid;place-items:center}.dkHeaderLogo img{display:block;width:78px;height:78px;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(57,46,27,.13))}.dkAdminLayout .dkHeaderTitle{grid-area:title;text-align:center!important}.dkAdminLayout .dkHeader h1{margin:0;font-size:clamp(42px,6vw,82px);font-weight:950;line-height:.94;letter-spacing:-.055em;white-space:nowrap}.dkAdminLayout .dkHeaderTitle>p{margin:10px 0 0;color:#536079;font-size:18px;font-weight:800;text-align:center!important}.dkAdminLayout .dkHeaderActions{grid-area:actions;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px}.dkAdminLayout .dkLangMain,.dkAdminLayout .dkSettings{min-height:var(--dk-button-height-md);border-color:rgba(255,255,255,.66);border-radius:12px;background:rgba(255,255,255,.62);box-shadow:var(--admin-v2-shadow);padding:9px 12px;backdrop-filter:blur(var(--dk-blur-sm))}.dkAdminLayout .dkSettings{width:var(--dk-button-height-md);padding:0}.dkAdminProfile{display:flex;align-items:center;gap:6px;min-height:var(--dk-button-height-md);padding:4px 7px;border:1px solid rgba(255,255,255,.6);border-radius:12px;background:rgba(255,255,255,.5);box-shadow:var(--admin-v2-shadow);backdrop-filter:blur(var(--dk-blur-sm))}.dkAdminProfile>span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(145deg,#d79a25,#f1cb75);color:#4b330c}.dkAdminProfile>button{border:0;background:transparent;color:#21325d;cursor:pointer;font-size:13px;font-weight:900;padding:5px}.dkAdminLayout .dkLangMenu{inset-block-start:48px}.dkAdminLayout .dkAdminTools,.dkAdminLayout .dkContent{width:100%;max-width:none;margin-inline:0}.dkAdminLayout .dkAdminTools{margin:0 auto 8px}.dkAdminLayout .dkAdminTools>header{margin:0 0 14px;text-align:center}.dkAdminLayout .dkAdminTools>header h2{font-size:clamp(34px,3.2vw,42px);line-height:1.05}.dkAdminLayout .dkAdminTools>header p{margin-top:5px;font-size:clamp(15px,1.3vw,17px);font-weight:700}.dkAdminLayout .dkAdminTools--compact .dkAdminToolsGrid{display:grid;grid-template-columns:1.15fr 1fr 1fr .9fr;gap:14px}.dkAdminLayout .dkAdminTools--compact .studioToolCard{height:clamp(200px,18vw,235px);border-radius:var(--dk-radius-lg);background:transparent}.dkAdminLayout .dkAdminTools--compact .studioToolCard article,.dkAdminLayout .dkAdminTools--compact .dkAdminToolImage{width:100%;height:100%;aspect-ratio:auto}.dkAdminToolGradient{position:absolute;z-index:1;inset:40% 0 0;background:linear-gradient(transparent,rgba(9,16,34,.86));pointer-events:none}.dkAdminToolTitleOverlay{position:absolute;z-index:1;inset:auto 12px 16px;margin:0;color:#fff;font-size:clamp(18px,2vw,28px);font-weight:850;line-height:1.15;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.55);display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}.dkAdminLayout .dkDashboardPage{width:100%}.dkAdminLayout .dkCreatorStudio{width:100%;min-height:150px;max-height:195px;margin:12px 0 10px;padding:14px 18px;border-radius:20px;overflow:hidden;text-align:center}.dkMain[dir="rtl"] .dkCreatorStudio h2,.dkMain[dir="rtl"] .dkCreatorStudio p{text-align:center}.dkAdminLayout .dkCreatorStudio h2{margin:0;font-size:clamp(28px,2.7vw,34px);line-height:1.1}.dkAdminLayout .dkCreatorStudio p{margin:5px auto 9px;font-size:var(--dk-font-sm);line-height:var(--dk-line-height-body)}.dkCreatorFooterGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.dkCreatorFooterGrid a{display:grid;place-items:center;min-height:34px;border:1px solid rgba(110,135,199,.15);border-radius:9px;background:rgba(255,255,255,.52);color:#273453;padding:5px 7px;text-decoration:none;font-size:var(--dk-font-xs);font-weight:750;transition:transform .18s ease,background .18s ease}.dkCreatorFooterGrid a:hover{transform:translateY(-1px);background:#fff}.dkAdminFooter{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 14px;width:100%;min-height:74px;margin:8px 0 0;padding:12px 8px;border-top:1px solid rgba(86,106,162,.18);color:#5c667c;font-size:var(--dk-font-xs)}.dkAdminFooter nav{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.dkAdminFooter a{color:inherit;text-decoration:none}.dkAdminFooter button{border:1px solid rgba(88,110,170,.2);border-radius:var(--dk-radius-pill);background:rgba(255,255,255,.64);color:#273453;cursor:pointer;padding:6px 10px;font-size:var(--dk-font-xs);font-weight:800}
+@media(max-width:1199px){.dkAdminLayout[data-dir="rtl"]{grid-template-columns:minmax(0,1fr) 190px}.dkAdminLayout[data-dir="ltr"]{grid-template-columns:190px minmax(0,1fr)}.dkAdminLayout .dkMain{padding:16px}.dkAdminLayout .dkHeader{grid-template-columns:70px minmax(220px,1fr) auto}.dkHeaderLogo img{width:68px;height:68px}.dkAdminLayout .dkHeader h1{font-size:clamp(42px,5.6vw,68px)}.dkAdminLayout .dkHeaderActions{flex-wrap:wrap}.dkAdminLayout .dkAdminTools--compact .dkAdminToolsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.dkAdminLayout .dkAdminTools--compact .studioToolCard{height:210px}.dkAdminLayout .dkCreatorStudio{max-height:none}.dkCreatorFooterGrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:767px){.dkAdminLayout[data-dir="rtl"],.dkAdminLayout[data-dir="ltr"]{display:block;min-height:100vh}.dkAdminLayout .dkMain{width:100%;padding:12px}.dkAdminLayout .dkSidebar{position:fixed;z-index:1002;top:0;bottom:0;inset-inline-end:0;width:min(82vw,280px);max-height:none;margin:0;border-radius:18px 0 0 18px;background:rgba(244,248,255,.94);box-shadow:0 20px 60px rgba(25,37,73,.3);transform:translateX(110%);transition:transform .22s ease}.dkAdminLayout[data-dir="ltr"] .dkSidebar{inset-inline-start:0;inset-inline-end:auto;border-radius:0 18px 18px 0;transform:translateX(-110%)}.dkAdminLayout .dkSidebar.mobileOpen{transform:translateX(0)}.dkMobileSidebarToggle{position:fixed;z-index:1001;top:10px;inset-inline-end:10px;display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(91,111,174,.22);border-radius:12px;background:rgba(255,255,255,.86);box-shadow:0 8px 22px rgba(40,55,99,.15);cursor:pointer}.dkMobileSidebarBackdrop{position:fixed;z-index:1000;inset:0;display:block;border:0;background:rgba(10,17,34,.38)}.dkAdminLayout .dkHeader{min-height:150px;grid-template-columns:64px minmax(0,1fr);grid-template-areas:"logo title" "actions actions";gap:8px;padding:8px 48px 10px 4px}.dkHeaderLogo img{width:64px;height:64px}.dkAdminLayout .dkHeader h1{font-size:clamp(42px,13vw,64px)}.dkAdminLayout .dkHeaderTitle>p{margin-top:5px;font-size:15px}.dkAdminLayout .dkHeaderActions{justify-content:center;flex-wrap:wrap}.dkAdminLayout .dkAdminTools>header h2{font-size:32px}.dkAdminLayout .dkAdminTools--compact .dkAdminToolsGrid{grid-template-columns:1fr}.dkAdminLayout .dkAdminTools--compact .studioToolCard{height:220px}.dkAdminLayout .dkCreatorStudio{max-height:none;padding:16px}.dkCreatorFooterGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.dkAdminFooter{min-height:88px}}
+@media(prefers-reduced-motion:reduce){.dkAdminLayout .dkSidebar,.dkAdminLayout .dkNavButton,.dkCreatorFooterGrid a{transition:none}}
+
+/* Final design polish */
+.dkAdminLayout .dkSidebar{padding:8px;background:transparent;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}.dkAdminLayout .dkNavButton{background:transparent;border-color:transparent;box-shadow:none}.dkAdminLayout .dkNavButton:hover{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.38);box-shadow:0 8px 20px rgba(58,77,135,.07);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transform:translateY(-1px)}.dkAdminLayout .dkNavButton.active{background:linear-gradient(135deg,#4b63e8,#7657dc);border-color:rgba(255,255,255,.26);color:#fff;box-shadow:0 0 22px rgba(76,91,222,.3)}.dkAdminLayout .dkHeader{position:relative;display:flex;align-items:center;justify-content:center;min-height:190px;padding:50px 12px 10px}.dkAdminLayout .dkHeaderTitle{display:flex;align-items:center;flex-direction:column;width:min(100%,760px)}.dkAdminHomeLink{display:inline-flex;align-items:center;justify-content:center;gap:.12em;color:#101a35;text-decoration:none;cursor:pointer;transition:transform .18s ease,filter .18s ease}.dkAdminHomeLink img{display:block;width:1em;height:1em;object-fit:contain}.dkAdminLayout .dkAdminHomeLink h1{font-size:clamp(32px,3.2vw,44px);line-height:1;margin:0;letter-spacing:-.045em}.dkAdminHomeLink:hover{transform:translateY(-2px);filter:drop-shadow(0 0 10px rgba(72,96,220,.3))}.dkAdminLayout .dkHeaderTitle>p{margin:7px 0 0;font-size:16px}.dkAdminPageHeading{margin-top:10px;text-align:center}.dkAdminPageHeading h2{margin:0;color:#111b35;font-size:clamp(40px,4.3vw,56px);font-weight:950;line-height:1}.dkAdminPageHeading span{display:block;margin-top:5px;color:#68728a;font-size:clamp(15px,1.3vw,17px);font-weight:750}.dkAdminLayout .dkHeaderActions{position:absolute;z-index:5;top:8px;right:8px;display:flex;direction:ltr;align-items:center;justify-content:flex-start;gap:7px}.dkAdminLayout .dkLangMain,.dkAdminLayout .dkSettings,.dkAdminProfile{min-height:40px;background:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.48);box-shadow:0 7px 18px rgba(58,77,135,.07);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.dkAdminLayout .dkLangMain:hover,.dkAdminLayout .dkSettings:hover,.dkAdminProfile:hover{background:rgba(255,255,255,.48)}.dkAdminLayout .dkCreatorStudio{max-height:none;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.38);box-shadow:0 12px 28px rgba(58,77,135,.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}.dkCreatorFooterGrid a,.dkCreatorFooterGrid button{display:grid;place-items:center;min-height:34px;border:1px solid rgba(255,255,255,.34);border-radius:9px;background:rgba(70,83,132,.1);box-shadow:0 4px 10px rgba(52,65,107,.04);color:#273453;padding:5px 7px;text-decoration:none;font:inherit;font-size:12px;font-weight:750;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .18s ease,background .18s ease,box-shadow .18s ease}.dkCreatorFooterGrid a:hover,.dkCreatorFooterGrid button:hover{transform:translateY(-2px) scale(1.02);background:rgba(255,255,255,.34);box-shadow:0 7px 16px rgba(52,65,107,.08)}.dkCreatorNotice{display:block;margin-top:6px;color:#4c5873;font-size:12px;text-align:center}
+@media(max-width:1199px){.dkAdminLayout .dkHeader{min-height:185px}.dkAdminLayout .dkHeaderActions{top:6px;right:6px}.dkAdminPageHeading h2{font-size:clamp(38px,4.5vw,50px)}}
+@media(max-width:767px){.dkAdminLayout .dkHeader{display:flex;min-height:235px;padding:62px 8px 10px}.dkAdminLayout .dkHeaderActions{top:8px;right:56px;left:8px;justify-content:flex-end;flex-wrap:wrap}.dkAdminLayout .dkAdminHomeLink h1{font-size:clamp(30px,10vw,40px)}.dkAdminPageHeading h2{font-size:clamp(32px,9vw,42px)}.dkAdminLayout .dkHeaderTitle>p{font-size:14px}}
+
+/* Final admin toolbar, navigation drawer and Creator Studio surfaces. */
+.dkAdminLayout,.dkAdminLayout[data-dir="rtl"],.dkAdminLayout[data-dir="ltr"]{display:block;width:100%;max-width:100%;min-width:0}.dkAdminLayout .dkMain{width:100%;max-width:100%;min-width:0}.dkAdminLayout .dkHeader{min-height:178px;padding:56px 12px 8px}.dkAdminLayout .dkHeaderActions{position:absolute;z-index:20;top:8px;right:8px;left:auto;display:flex;align-items:center;flex-wrap:nowrap;gap:7px;max-width:calc(100% - 16px)}.dkAdminLayout[data-dir="rtl"] .dkHeaderActions{direction:rtl}.dkAdminLayout[data-dir="ltr"] .dkHeaderActions{right:auto;left:8px;direction:ltr}
+.dkMenuButton,.dkMarketButton{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;margin:0;padding:7px 11px;border:1px solid rgba(255,255,255,.48);border-radius:12px;background:rgba(255,255,255,.28);box-shadow:0 7px 18px rgba(58,77,135,.07);color:#21325d;font:inherit;font-size:13px;font-weight:850;line-height:1;text-decoration:none;white-space:nowrap;cursor:pointer;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .2s ease,background .2s ease,box-shadow .2s ease}.dkMarketButton img{display:block;width:24px;height:24px;object-fit:contain}.dkMenuButton:hover,.dkMarketButton:hover{background:rgba(255,255,255,.48);box-shadow:0 9px 20px rgba(58,77,135,.11);transform:translateY(-1px)}.dkMenuButton:focus-visible,.dkMarketButton:focus-visible,.admin-creator-tool:focus-visible{outline:3px solid rgba(50,93,220,.55);outline-offset:2px}
+.admin-brand-title{display:inline-flex;align-items:center;justify-content:center;gap:clamp(8px,.8vw,12px);color:#101a35}.admin-brand-title .admin-brand-logo{display:block;width:clamp(38px,3.2vw,54px);height:clamp(38px,3.2vw,54px);object-fit:contain;flex:0 0 auto}.dkAdminLayout .admin-brand-title h1{margin:0;font-size:clamp(32px,3.2vw,44px);line-height:1}
+.dkAdminLayout .dkSidebar{position:fixed;z-index:1002;top:0;right:0;bottom:0;left:auto;width:min(320px,86vw);max-height:100vh;margin:0;padding:20px 14px;border:1px solid rgba(255,255,255,.26);border-radius:24px 0 0 24px;background:rgba(239,244,252,.74);box-shadow:0 24px 70px rgba(15,23,42,.22);backdrop-filter:blur(24px) saturate(125%);-webkit-backdrop-filter:blur(24px) saturate(125%);overflow-y:auto;visibility:hidden;pointer-events:none;transform:translateX(105%);transition:transform .22s ease,visibility .22s ease}.dkAdminLayout[data-dir="ltr"] .dkSidebar{right:auto;left:0;border-radius:0 24px 24px 0;transform:translateX(-105%)}.dkAdminLayout .dkSidebar.isOpen{visibility:visible;pointer-events:auto;transform:translateX(0)}.dkSidebarBackdrop{position:fixed;z-index:1001;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;background:rgba(15,23,42,.24);cursor:default}.dkAdminLayout .dkNavigation{display:grid;gap:7px}.dkAdminLayout .dkNavButton{width:100%;min-height:44px;justify-content:flex-start}
+.dkAdminLayout .admin-creator-studio{width:100%;max-height:none;border:1px solid rgba(255,255,255,.14);border-radius:26px;background:rgba(255,255,255,.02);box-shadow:0 18px 45px rgba(15,23,42,.08),inset 0 1px 0 rgba(255,255,255,.18);backdrop-filter:blur(20px) saturate(125%);-webkit-backdrop-filter:blur(20px) saturate(125%)}.dkAdminLayout .dkCreatorFooterGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.dkAdminLayout .dkCreatorFooterGrid .admin-creator-tool{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:46px;padding:8px 10px;border:1px solid rgba(76,94,122,.25);border-radius:18px;background:linear-gradient(135deg,rgba(76,94,122,.22),rgba(123,142,170,.1));box-shadow:0 8px 22px rgba(48,63,88,.1);color:#172033;font:inherit;font-size:12px;font-weight:800;line-height:1.25;text-align:center;text-decoration:none;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .2s ease,background .2s ease,box-shadow .2s ease}.dkAdminLayout .dkCreatorFooterGrid .admin-creator-tool:hover{background:linear-gradient(135deg,rgba(65,85,118,.3),rgba(105,126,158,.18));box-shadow:0 12px 26px rgba(48,63,88,.16);transform:translateY(-2px)}.dkAdminLayout .dkCreatorFooterGrid .admin-creator-tool:active{transform:scale(.98)}
+@media(max-width:1199px){.dkAdminLayout .dkCreatorFooterGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:767px){.dkAdminLayout .dkMain{padding:12px}.dkAdminLayout .dkHeader{min-height:228px;padding:112px 4px 8px}.dkAdminLayout .dkHeaderActions,.dkAdminLayout[data-dir="ltr"] .dkHeaderActions{top:8px;right:8px;left:8px;justify-content:center;flex-wrap:wrap;max-width:none}.dkMenuButton,.dkMarketButton,.dkAdminLayout .dkLangMain,.dkAdminLayout .dkSettings,.dkAdminProfile{min-height:38px}.dkAdminLayout .dkCreatorFooterGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.dkAdminLayout .dkCreatorFooterGrid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.dkAdminLayout .dkSidebar,.dkMenuButton,.dkMarketButton,.dkAdminLayout .dkCreatorFooterGrid .admin-creator-tool{transition:none}}
+
+/* Final desktop polish. */
+.admin-brand-title{gap:10px}.admin-brand-title .admin-brand-logo{width:clamp(36px,2.75vw,46px);height:clamp(36px,2.75vw,46px)}.dkAdminLayout .admin-brand-title h1{font-size:clamp(27px,2.72vw,37px)}.dkAdminPageHeading h2{font-size:clamp(44px,4.8vw,62px)}
+.dkAdminLayout .dkSidebar{width:min(300px,86vw);padding:10px 12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.18);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}.dkAdminLayout .dkNavigation{gap:6px}.dkAdminLayout .dkNavButton{display:flex;align-items:center;justify-content:space-between;height:46px;min-height:46px;padding:8px 12px;font-size:16px;font-weight:600;transition:transform .18s ease,background .18s ease,box-shadow .18s ease}.dkAdminLayout .dkNavIcon{flex:0 0 24px}.dkAdminLayout .dkNavText{flex:0 1 auto;font-size:16px;font-weight:600}.dkAdminLayout[data-dir="rtl"] .dkNavButton:hover{background:rgba(255,255,255,.14);transform:translateX(-3px)}.dkAdminLayout[data-dir="ltr"] .dkNavButton:hover{background:rgba(255,255,255,.14);transform:translateX(3px)}
+.dkAdminLayout .admin-creator-studio{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.15);box-shadow:0 14px 36px rgba(15,23,42,.07),inset 0 1px 0 rgba(255,255,255,.16);backdrop-filter:blur(26px) saturate(125%);-webkit-backdrop-filter:blur(26px) saturate(125%)}.dkAdminLayout .dkCreatorFooterGrid .admin-creator-tool{border-color:rgba(255,255,255,.18);background:linear-gradient(135deg,rgba(88,110,160,.22),rgba(140,160,200,.08));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.dkAdminLayout .dkCreatorFooterGrid .admin-creator-tool:hover{background:linear-gradient(135deg,rgba(78,103,158,.3),rgba(132,154,198,.14));box-shadow:0 14px 30px rgba(48,63,88,.2);transform:translateY(-3px)}
+.dkAdminLayout .dkHeaderActions>*{flex:0 0 auto}.dkMenuButton,.dkMarketButton,.dkAdminLayout .dkSettings,.dkAdminLayout .dkLangMain,.dkAdminProfile{height:42px;min-height:42px;border-radius:12px}.dkMenuButton,.dkMarketButton,.dkAdminLayout .dkLangMain,.dkAdminProfile{min-width:96px}.dkAdminLayout .dkSettings{width:auto;min-width:48px}.dkMarketButton{gap:5px}.dkMarketButton>span:first-child{font-size:15px}.dkMarketButton img{width:22px;height:22px}
+.dkAdminToolGradient{inset:34% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.6))}.dkAdminToolTextOverlay{position:absolute;z-index:2;inset:auto 12px 16px;display:grid;gap:3px;justify-items:center;transition:transform .2s ease}.dkAdminToolTextOverlay .dkAdminToolTitleOverlay{position:static;inset:auto}.dkAdminToolSubtitle{display:block;width:min(60%,120px);height:3px;border-radius:999px;background:rgba(255,255,255,.42);opacity:0;transition:opacity .2s ease}.studioToolCard:hover .dkAdminToolTextOverlay{transform:translateY(-8px)}
+@keyframes dkAdminPolishIn{from{opacity:0;transform:translateY(5px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}.dkAdminLayout .dkHeaderTitle,.dkAdminLayout .dkAdminToolsGrid,.dkAdminLayout .admin-creator-studio{animation:dkAdminPolishIn .32s ease-out both}.dkAdminLayout .dkAdminToolsGrid{animation-delay:.04s}.dkAdminLayout .admin-creator-studio{animation-delay:.08s}
+@media(max-width:767px){.dkMenuButton,.dkMarketButton,.dkAdminLayout .dkLangMain,.dkAdminProfile{min-width:auto}.dkAdminLayout .dkSettings{min-width:42px}}
+@media(prefers-reduced-motion:reduce){.dkAdminLayout .dkHeaderTitle,.dkAdminLayout .dkAdminToolsGrid,.dkAdminLayout .admin-creator-studio{animation:none}.dkAdminToolTextOverlay{transition:none}}
+
+.dkAdminLayout .creatorStudioSection{
+  background:transparent!important;
+  background-color:transparent!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  border:none!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  padding:0!important;
+  margin:40px 0!important;
+}
+
+/* Final admin toolbar and Creator Studio control sizing. */
+.dkAdminLayout .adminTopbar {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  margin: 0;
+  box-sizing: border-box;
+  direction: ltr;
+}
+
+.dkAdminLayout .adminTopbar__primary,
+.dkAdminLayout .adminTopbar__secondary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  margin: 0;
+  position: static;
+  transform: none;
+}
+
+.dkAdminLayout[data-dir="rtl"] .adminTopbar__primary {
+  direction: rtl;
+  order: 2;
+}
+
+.dkAdminLayout[data-dir="rtl"] .adminTopbar__secondary {
+  direction: ltr;
+  order: 1;
+}
+
+.dkAdminLayout[data-dir="ltr"] .adminTopbar__primary {
+  direction: ltr;
+  order: 1;
+}
+
+.dkAdminLayout[data-dir="ltr"] .adminTopbar__secondary {
+  direction: ltr;
+  order: 2;
+}
+
+.adminTopbar__primary .menuButton,
+.adminTopbar__secondary .languageButton {
+  order: 1;
+}
+
+.adminTopbar__primary .loginButton,
+.adminTopbar__secondary .settingsButton {
+  order: 2;
+}
+
+.adminTopbar__primary .marketButton {
+  order: 3;
+}
+
+.dkAdminLayout .adminTopbar .toolbarButton {
+  width: auto;
+  min-width: 92px;
+  max-width: none;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  margin: 0;
+  position: static;
+  transform: none;
+}
+
+.dkAdminLayout .adminTopbar .toolbarButton.iconOnly,
+.dkAdminLayout .adminTopbar .settingsButton {
+  width: 40px;
+  min-width: 40px;
+  padding: 0;
+}
+
+.dkAdminLayout .adminTopbar .toolbarIcon,
+.dkAdminLayout .adminTopbar .loginIcon,
+.dkAdminLayout .creator-tools-grid .creatorToolIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.dkAdminLayout .adminTopbar .loginIcon {
+  border-radius: 50%;
+  background: #d5a51e;
+  color: #2c2100;
+}
+
+.dkAdminLayout .creator-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dkAdminLayout .creator-tools-grid .creatorStudioButton,
+.dkAdminLayout .creator-tools-grid a,
+.dkAdminLayout .creator-tools-grid button {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  padding: 0 14px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .dkAdminLayout .adminTopbar {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "primary"
+      "secondary";
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .dkAdminLayout .adminTopbar__primary {
+    grid-area: primary;
+    width: 100%;
+    justify-content: flex-end;
+    order: 1;
+  }
+
+  .dkAdminLayout .adminTopbar__secondary {
+    grid-area: secondary;
+    width: 100%;
+    justify-content: flex-start;
+    order: 2;
+  }
+
+  .dkAdminLayout .adminTopbar .toolbarButton {
+    width: auto;
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    min-width: auto;
+    padding: 0 11px;
+    font-size: 0.78rem;
+    border-radius: 12px;
+    flex: 0 0 auto;
+  }
+
+  .dkAdminLayout .adminTopbar .toolbarButton.iconOnly,
+  .dkAdminLayout .adminTopbar .settingsButton {
+    width: 36px;
+    min-width: 36px;
+    padding: 0;
+  }
+
+  .dkAdminLayout .adminTopbar .adminLanguageButton {
+    width: auto;
+  }
+
+  .dkAdminLayout .creator-tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dkAdminLayout .creator-tools-grid .creatorStudioButton,
+  .dkAdminLayout .creator-tools-grid a,
+  .dkAdminLayout .creator-tools-grid button {
+    height: 36px;
+    min-height: 36px;
+    max-height: 36px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+  }
+}
+
+.dkLogoVideo{
+  width:64px;
+  height:64px;
+  object-fit:cover;
+  border-radius:10px;
+  display:block;
+  flex-shrink:0;
+}
+
+.dkBrandHeading{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.dkBrandLogoVideo{
+  display:block;
+  width:64px;
+  height:64px;
+  min-width:64px;
+  min-height:64px;
+  max-width:64px;
+  max-height:64px;
+  object-fit:cover;
+  object-position:center;
+  border-radius:10px;
+  overflow:hidden;
+  flex:0 0 64px;
+  background:transparent;
+  opacity:1;
+  visibility:visible;
+  position:relative;
+  z-index:auto;
+}
+
+.dkTopControls{
+  position:relative;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  direction:ltr;
+}
+
+.dkAdminLayout .dkTopControlsLeft,
+.dkAdminLayout .dkTopControlsRight{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:10px;
+  direction:ltr!important;
+  order:initial!important;
+}
+
+.dkTopControlsLeft{justify-content:flex-start;margin-inline-end:auto}
+.dkTopControlsRight{justify-content:flex-end;margin-inline-start:auto}
+
+.dkAdminLayout .dkTopControlsLeft>*,
+.dkAdminLayout .dkTopControlsRight>*{
+  order:initial!important;
+}
+
+.dkTopControls button{
+  direction:rtl;
+}
+
+@media(max-width:768px){
+  .dkAdminLayout .dkTopControls{
+    display:grid!important;
+    grid-template-columns:1fr;
+    grid-template-areas:"right" "left";
+  }
+
+  .dkAdminLayout .dkTopControlsRight{
+    grid-area:right;
+    width:100%;
+    justify-content:flex-end!important;
+    order:1!important;
+  }
+
+  .dkAdminLayout .dkTopControlsLeft{
+    grid-area:left;
+    width:100%;
+    justify-content:flex-start!important;
+    order:2!important;
+  }
+}
+
+/* Responsive Admin Dashboard architecture. */
+.dk-studio-page{
+  position:relative;
+  width:100%;
+  min-height:100dvh;
+  overflow-x:hidden;
+  isolation:isolate;
+}
+
+.dk-studio-content{
+  position:relative;
+  z-index:2;
+  width:min(calc(100% - 32px),1440px);
+  min-height:100dvh;
+  margin-inline:auto;
+}
+
+.dk-video-background{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100dvh;
+  object-fit:cover;
+  object-position:center;
+  z-index:0;
+  pointer-events:none;
+}
+
+.dk-video-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:rgba(255,255,255,.08);
+}
+
+.dkAdminLayout.dkAdminLayout .dkHeader.dkHeader{
+  position:relative;
+  width:100%;
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:0;
+  overflow:visible;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-topbar.dk-topbar{
+  position:relative;
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:center;
+  gap:16px;
+  padding-block:16px;
+  padding-inline:0;
+  direction:ltr!important;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-topbar-primary.dk-topbar-primary,
+.dkAdminLayout.dkAdminLayout .dk-topbar-secondary.dk-topbar-secondary{
+  position:static;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  margin:0;
+  direction:ltr!important;
+  transform:none;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-topbar-secondary.dk-topbar-secondary{
+  grid-column:1;
+  grid-row:1;
+  justify-self:start;
+  justify-content:flex-start;
+  order:initial!important;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-topbar-primary.dk-topbar-primary{
+  grid-column:2;
+  grid-row:1;
+  justify-self:end;
+  justify-content:flex-end;
+  order:initial!important;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-topbar-primary.dk-topbar-primary>*,
+.dkAdminLayout.dkAdminLayout .dk-topbar-secondary.dk-topbar-secondary>*{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  order:initial!important;
+  flex:0 0 auto;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-topbar .dk-topbar-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:auto;
+  min-width:0;
+  min-height:44px;
+  height:44px;
+  max-height:44px;
+  padding:8px 16px;
+  border-radius:16px;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-brand-hero.dk-brand-hero{
+  position:static;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  gap:6px;
+  padding:0;
+  text-align:center!important;
+  transform:none;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-brand-row.dk-brand-row{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-brand-media.dk-brand-media{
+  width:clamp(52px,5vw,86px);
+  height:auto;
+  min-width:0;
+  min-height:0;
+  max-width:none;
+  max-height:none;
+  aspect-ratio:1;
+  object-fit:cover;
+  border-radius:16px;
+  flex:0 0 auto;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-brand-name.dk-brand-name{
+  margin:0;
+  font-size:clamp(2rem,4vw,4.5rem);
+  line-height:1;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-dashboard-title.dk-dashboard-title{
+  margin:12px 0 0;
+  font-size:clamp(2.2rem,5vw,5.2rem);
+  line-height:1.1;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-brand-tagline.dk-brand-tagline,
+.dkAdminLayout.dkAdminLayout .dk-dashboard-subtitle.dk-dashboard-subtitle{
+  font-size:clamp(.85rem,1.2vw,1.15rem);
+}
+
+.dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-grid.dk-feature-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  justify-content:stretch;
+  gap:clamp(12px,1.5vw,22px);
+  width:100%;
+  max-width:100%;
+  margin-top:24px;
+}
+
+.dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card,
+.dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card article,
+.dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card .dkAdminToolImage{
+  width:100%;
+  min-width:0;
+  max-width:none;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  aspect-ratio:4/3;
+}
+
+.dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card{
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--dk-radius-xl);
+  flex:none;
+}
+
+.dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card img{
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-feature-title.dk-feature-title{
+  margin:0;
+  color:#fff;
+  font-size:clamp(1rem,1.5vw,1.65rem);
+  line-height:1.15;
+  text-align:center;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-creator-section.dk-creator-section{
+  width:100%;
+  max-height:none;
+  min-height:0;
+  margin:28px 0 0!important;
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:visible;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-creator-grid.dk-creator-grid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+  width:100%;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-creator-grid.dk-creator-grid .dk-creator-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  min-width:0;
+  max-width:none;
+  min-height:48px;
+  height:auto;
+  max-height:none;
+  padding:10px 12px;
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:16px;
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  font-size:clamp(.9rem,1vw,1.05rem);
+  line-height:1.2;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+
+.dkAdminLayout.dkAdminLayout .dk-sidebar-panel.dk-sidebar-panel{
+  position:fixed;
+  z-index:1002;
+  top:0;
+  bottom:0;
+  inset-inline-end:0;
+  inset-inline-start:auto;
+  width:min(360px,88vw);
+  max-width:100%;
+  max-height:100dvh;
+  margin:0;
+  padding:18px;
+  overflow-y:auto;
+  border:0;
+  border-inline-start:1px solid rgba(255,255,255,.28);
+  border-radius:0;
+  background:rgba(255,255,255,.1);
+  box-shadow:0 18px 50px rgba(30,40,65,.16);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+}
+
+.dkAdminLayout.dkAdminLayout .dk-sidebar-link.dk-sidebar-link{
+  display:grid;
+  grid-template-columns:32px minmax(0,1fr);
+  align-items:center;
+  justify-content:initial;
+  gap:12px;
+  width:100%;
+  min-height:48px;
+  padding:8px 10px;
+}
+
+@media(max-width:1099px){
+  .dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-grid.dk-feature-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .dkAdminLayout.dkAdminLayout .dk-creator-grid.dk-creator-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media(max-width:699px){
+  .dk-studio-content{
+    width:min(calc(100% - 24px),100%);
+  }
+
+  .dkAdminLayout.dkAdminLayout .dk-topbar.dk-topbar{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    padding-block:10px;
+  }
+
+  .dkAdminLayout.dkAdminLayout .dk-topbar-primary.dk-topbar-primary,
+  .dkAdminLayout.dkAdminLayout .dk-topbar-secondary.dk-topbar-secondary{
+    display:flex;
+    width:100%;
+    justify-content:center;
+    justify-self:auto;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .dkAdminLayout.dkAdminLayout .dk-topbar-primary.dk-topbar-primary{order:1!important}
+  .dkAdminLayout.dkAdminLayout .dk-topbar-secondary.dk-topbar-secondary{order:2!important}
+
+  .dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-grid.dk-feature-grid{
+    grid-template-columns:1fr;
+  }
+
+  .dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card,
+  .dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card article,
+  .dkAdminLayout.dkAdminLayout .dkAdminTools--compact .dk-feature-card.dk-feature-card .dkAdminToolImage{
+    aspect-ratio:1;
+  }
+
+  .dkAdminLayout.dkAdminLayout .dk-creator-grid.dk-creator-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:419px){
+  .dkAdminLayout.dkAdminLayout .dk-topbar .dk-topbar-button{
+    min-height:40px;
+    height:40px;
+    max-height:40px;
+    padding:7px 11px;
+    font-size:.88rem;
+  }
+
+  .dkAdminLayout.dkAdminLayout .dk-creator-grid.dk-creator-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* Desktop-only placement for the two existing top-control groups. */
+@media(min-width:769px){
+  .dkAdminLayout .adminTopbar.dkTopControls{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    direction:ltr!important;
+  }
+
+  .dkAdminLayout .adminTopbar.dkTopControls .dkTopControlsLeft{
+    order:1!important;
+    display:flex;
+    align-items:center;
+    flex-direction:row;
+    direction:ltr!important;
+    gap:10px;
+    margin-right:auto;
+    margin-left:0;
+  }
+
+  .dkAdminLayout .adminTopbar.dkTopControls .dkTopControlsRight{
+    order:2!important;
+    display:flex;
+    align-items:center;
+    flex-direction:row;
+    direction:ltr!important;
+    gap:10px;
+    margin-left:auto;
+    margin-right:0;
+  }
+
+  .dkAdminLayout .adminTopbar.dkTopControls .dkTopControlsLeft>*,
+  .dkAdminLayout .adminTopbar.dkTopControls .dkTopControlsRight>*{
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    flex:0 0 auto;
+    order:initial!important;
+  }
+}
+
+.dkAdminLayout .dkCreatorFooterGrid .creatorButton{
+  width:100%;
+  height:var(--dk-button-height-lg);
+  min-height:var(--dk-button-height-lg);
+  padding:0 var(--dk-space-8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--dk-space-4);
+  font-size:var(--dk-font-lg);
+  font-weight:var(--dk-font-weight-bold);
+  line-height:var(--dk-line-height-tight);
+  white-space:nowrap;
+  overflow:visible;
+  border-radius:var(--dk-radius-lg);
+  background:var(--dk-color-glass-medium);
+  backdrop-filter:blur(var(--dk-blur-md));
+  -webkit-backdrop-filter:blur(var(--dk-blur-md));
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+  transition:all 250ms var(--dk-ease-standard);
+}
+
+.dkAdminLayout .dkCreatorFooterGrid .creatorButton:hover{
+  transform:translateY(-2px);
+  background:var(--dk-color-glass-hover);
+}
+
+/* visionOS-style admin navigation drawer. */
+.dkAdminLayout .dkSidebar{
+  top:var(--dk-space-5);
+  right:var(--dk-space-5);
+  bottom:var(--dk-space-5);
+  left:auto;
+  width:min(var(--dk-admin-sidebar-width),calc(100vw - 24px));
+  max-height:calc(100vh - 24px);
+  padding:var(--dk-space-panel) var(--dk-space-5);
+  border:1px solid var(--dk-color-border);
+  border-radius:var(--dk-radius-panel);
+  background:var(--dk-color-glass-soft);
+  box-shadow:0 20px 60px rgba(0,0,0,.12);
+  backdrop-filter:blur(32px);
+  -webkit-backdrop-filter:blur(32px);
+  opacity:0;
+  transform:translateX(20px);
+  transition:opacity var(--dk-transition-normal) var(--dk-ease-standard),transform var(--dk-transition-normal) var(--dk-ease-standard),visibility var(--dk-transition-normal) var(--dk-ease-standard);
+}
+
+.dkAdminLayout[data-dir="ltr"] .dkSidebar{
+  right:auto;
+  left:var(--dk-space-5);
+  border-radius:var(--dk-radius-panel);
+  transform:translateX(-20px);
+}
+
+.dkAdminLayout .dkSidebar.isOpen,
+.dkAdminLayout[data-dir="ltr"] .dkSidebar.isOpen{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.dkAdminLayout .dkNavigation{
+  gap:12px;
+}
+
+.dkAdminLayout .dkNavButton{
+  height:48px;
+  min-height:48px;
+  padding-inline:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-color:transparent;
+  border-radius:14px;
+  background:transparent;
+  box-shadow:none;
+  font-size:19px;
+  font-weight:600;
+  line-height:1.2;
+  transition:all .22s ease;
+}
+
+.dkAdminLayout .dkNavText{
+  font-size:19px;
+  font-weight:600;
+  line-height:1.2;
+}
+
+.dkAdminLayout .dkNavIcon{
+  display:grid;
+  place-items:center;
+  flex:0 0 22px;
+  width:22px;
+  height:22px;
+  font-size:22px;
+  line-height:1;
+}
+
+.dkAdminLayout[data-dir="rtl"] .dkNavButton:not(.active):hover{
+  border-color:transparent;
+  background:rgba(255,255,255,.12);
+  box-shadow:none;
+  transform:translateX(-3px);
+}
+
+.dkAdminLayout[data-dir="ltr"] .dkNavButton:not(.active):hover{
+  border-color:transparent;
+  background:rgba(255,255,255,.12);
+  box-shadow:none;
+  transform:translateX(3px);
+}
+
+@media(prefers-reduced-motion:reduce){
+  .dkAdminLayout .dkSidebar,
+  .dkAdminLayout .dkNavButton{
+    transition:none;
+  }
+}
+
+.dkAdminLayout .dkCreatorFooterGrid .creatorButton{
+  width:65%;
+  max-width:var(--dk-admin-card-width);
+  min-width:180px;
+  height:var(--dk-admin-creator-button-height);
+  min-height:var(--dk-admin-creator-button-height);
+  margin-inline:auto;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:22px;
+  font-weight:var(--dk-font-weight-bold);
+  text-align:center;
+}
+
+.dkAdminLayout .dkCreatorFooterGrid .creatorButton>span[aria-hidden="true"]{
+  flex:0 0 24px;
+  font-size:24px;
+  line-height:1;
+}
+
+/* Direction-safe glass navigation menu. */
+.dkAdminLayout .dkSidebar{
+  background:var(--dk-color-glass);
+  background-color:var(--dk-color-glass);
+  background-image:none;
+  border:1px solid var(--dk-color-border-glass);
+  box-shadow:var(--dk-shadow-sidebar);
+  backdrop-filter:blur(var(--dk-blur-sidebar)) saturate(145%);
+  -webkit-backdrop-filter:blur(var(--dk-blur-sidebar)) saturate(145%);
+}
+
+.dkAdminLayout[data-dir="rtl"] .dkSidebar{
+  direction:rtl;
+  text-align:right;
+}
+
+.dkAdminLayout[data-dir="ltr"] .dkSidebar{
+  direction:ltr;
+  text-align:left;
+}
+
+.dkAdminLayout .dkNavButton{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-start;
+  gap:14px;
+  background:transparent;
+  background-image:none;
+  border:0;
+  box-shadow:none;
+}
+
+.dkAdminLayout[data-dir="rtl"] .dkNavButton{
+  direction:rtl;
+  text-align:right;
+}
+
+.dkAdminLayout[data-dir="ltr"] .dkNavButton{
+  direction:ltr;
+  text-align:left;
+}
+
+.dkAdminLayout .dkNavButton:not(.active):hover,
+.dkAdminLayout[data-dir="rtl"] .dkNavButton:not(.active):hover,
+.dkAdminLayout[data-dir="ltr"] .dkNavButton:not(.active):hover{
+  background:rgba(255,255,255,.18);
+  background-image:none;
+  border:0;
+  box-shadow:none;
+  transform:none;
+}
+
+.dkAdminLayout .dkNavButton.active{
+  background:linear-gradient(135deg,#315eea,#6438e8);
+  color:#fff;
+  border:0;
+  box-shadow:none;
+}
+
+/* Admin Dashboard video background layers. */
+.admin-video-page{
+  position:relative;
+  min-height:100vh;
+  isolation:isolate;
+  overflow:hidden;
+  background:transparent!important;
+}
+
+.admin-background-video{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  object-fit:cover;
+  z-index:0;
+  opacity:1;
+  visibility:visible;
+  display:block;
+  pointer-events:none;
+}
+
+.admin-video-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:rgba(255,255,255,.26);
+}
+
+.admin-video-content{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  background:transparent!important;
+}
+
+.admin-video-page .dkAdminLayout,
+.admin-video-page .dkMain,
+.admin-video-page .dkContent,
+.admin-video-page .dkDashboardPage,
+.admin-video-page .creatorStudioSection,
+.admin-video-page main{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+}
+
+/* Flow-based Admin Dashboard top controls. */
+.dkAdminLayout .dkHeader{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  min-height:178px;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  overflow-x:clip;
+  padding:0 0 8px;
+}
+
+.adminTopControls{
+  position:static;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:16px;
+  padding:14px 24px;
+  direction:ltr;
+  overflow:visible;
+  transform:none;
+  margin:0;
+}
+
+.adminTopControlsRight,
+.adminTopControlsLeft{
+  position:static;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  margin:0;
+  transform:none;
+}
+
+.adminTopControlsRight{
+  order:3;
+  justify-content:flex-start;
+  direction:rtl;
+  margin-left:auto;
+}
+
+.adminTopControlsLeft{
+  order:1;
+  justify-content:flex-end;
+  direction:ltr;
+}
+
+.adminTopControls>.adminMenuButton{
+  order:2;
+}
+
+.dkAdminLayout .adminTopControl{
+  position:static;
+  height:58px;
+  min-height:58px;
+  max-height:58px;
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:0 22px;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:18px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 8px 24px rgba(20,35,60,.10);
+  color:#10182b;
+  font:inherit;
+  font-size:18px;
+  font-weight:700;
+  line-height:1;
+  white-space:nowrap;
+  text-decoration:none;
+  flex:0 0 auto;
+  margin:0;
+  transform:none;
+}
+
+.dkAdminLayout .adminSettingsButton{
+  width:58px;
+  min-width:58px;
+  padding:0;
+}
+
+.dkAdminLayout .adminLanguageButton{min-width:150px}
+.dkAdminLayout .adminMarketButton{min-width:150px}
+.dkAdminLayout .adminLoginButton{min-width:190px;cursor:pointer}
+.dkAdminLayout .adminMenuButton{min-width:145px;cursor:pointer}
+
+.adminMarketButton img,
+.adminMarketButton .marketLogo,
+.adminMarketButton .dekokraftLogo{
+  display:none!important;
+}
+
+.adminLoginIcon{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#d5a51e;
+  color:#2c2100;
+  flex:0 0 auto;
+}
+
+.adminTopControls .dkLangBox{
+  position:relative;
+  flex:0 0 auto;
+}
+
+.adminTopControls .dkLangMenu{
+  z-index:50;
+}
+
+@media(max-width:1180px){
+  .adminTopControls{gap:10px;padding-inline:16px}
+  .adminTopControlsRight,.adminTopControlsLeft{gap:8px}
+  .dkAdminLayout .adminTopControl{height:52px;min-height:52px;max-height:52px;padding-inline:15px;font-size:16px}
+  .dkAdminLayout .adminSettingsButton{width:52px;min-width:52px;padding:0}
+  .dkAdminLayout .adminLanguageButton,.dkAdminLayout .adminMarketButton{min-width:125px}
+  .dkAdminLayout .adminLoginButton{min-width:160px}
+  .dkAdminLayout .adminMenuButton{min-width:120px}
+  .adminLoginIcon{width:32px;height:32px}
+}
+
+@media(max-width:900px){
+  .adminTopControls{flex-wrap:wrap}
+  .adminTopControlsRight,.adminTopControlsLeft{width:100%;justify-content:center;flex-wrap:wrap}
+  .adminTopControlsRight{order:1}
+  .adminTopControlsLeft{order:2}
+}
+
+@media(max-width:768px){
+  .adminTopControls{
+    display:grid;
+    grid-template-columns:minmax(0,1.25fr) minmax(0,.85fr);
+    grid-template-areas:
+      "left right"
+      "menu menu";
+    align-items:center;
+    gap:10px 8px;
+    padding:10px 8px;
+    direction:ltr;
+  }
+
+  .adminTopControlsLeft{
+    grid-area:left;
+    width:100%;
+    min-width:0;
+    display:flex;
+    flex-wrap:nowrap;
+    justify-content:flex-start;
+    gap:6px;
+    direction:ltr;
+  }
+
+  .adminTopControlsRight{
+    grid-area:right;
+    width:100%;
+    min-width:0;
+    display:flex;
+    flex-wrap:nowrap;
+    justify-content:flex-end;
+    gap:6px;
+    direction:rtl;
+    margin-left:0;
+  }
+
+  .dkAdminLayout .adminTopControl{
+    height:46px;
+    min-height:46px;
+    max-height:46px;
+    min-width:0;
+    padding-inline:8px;
+    font-size:14px;
+    gap:6px;
+  }
+
+  .dkAdminLayout .adminMarketButton,
+  .dkAdminLayout .adminLoginButton{
+    flex:1 1 0;
+    min-width:0;
+  }
+
+  .dkAdminLayout .adminSettingsButton{
+    flex:0 0 42px;
+    width:42px;
+    min-width:42px;
+    padding:0;
+  }
+
+  .dkAdminLayout .adminLanguageButton{
+    flex:1 1 0;
+    width:auto;
+    min-width:0;
+  }
+
+  .adminLoginIcon{
+    width:30px;
+    height:30px;
+  }
+
+  .adminTopControls>.adminMenuButton{
+    grid-area:menu;
+    justify-self:center;
+    width:130px;
+    min-width:130px;
+  }
+}
+
+/* Compact two-group admin toolbar. */
+.adminTopbar{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 18px;
+  margin:0;
+}
+
+.dkAdminLayout[data-dir="rtl"] .adminTopbar{
+  direction:rtl;
+}
+
+.dkAdminLayout[data-dir="ltr"] .adminTopbar{
+  direction:ltr;
+}
+
+.adminTopbar__primary,
+.adminTopbar__secondary{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+  min-width:0;
+  margin:0;
+  order:initial;
+}
+
+.dkAdminLayout[data-dir="rtl"] .adminTopbar__primary,
+.dkAdminLayout[data-dir="rtl"] .adminTopbar__secondary{
+  direction:rtl;
+}
+
+.dkAdminLayout[data-dir="ltr"] .adminTopbar__primary,
+.dkAdminLayout[data-dir="ltr"] .adminTopbar__secondary{
+  direction:ltr;
+}
+
+.dkAdminLayout .adminTopbar .adminTopControl{
+  width:auto;
+  min-width:0;
+  max-width:none;
+  height:38px;
+  min-height:38px;
+  max-height:38px;
+  padding:0 14px;
+  gap:7px;
+  box-sizing:border-box;
+  font-size:.82rem;
+  line-height:1;
+  border-radius:14px;
+  white-space:nowrap;
+  flex:0 0 auto;
+}
+
+.dkAdminLayout .adminTopbar .iconOnly{
+  width:38px;
+  min-width:38px;
+  padding:0;
+}
+
+.adminTopbar .toolbarIcon,
+.adminTopbar svg,
+.adminTopbar img{
+  width:18px;
+  height:18px;
+  object-fit:contain;
+  flex:0 0 18px;
+  font-size:16px;
+  line-height:1;
+}
+
+.adminTopbar .adminLoginIcon{
+  width:18px;
+  height:18px;
+  flex-basis:18px;
+}
+
+.adminTopbar .dkLangBox{
+  min-width:0;
+}
+
+@media(max-width:768px){
+  .adminTopbar{
+    display:grid;
+    grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+    grid-template-areas:"secondary primary";
+    gap:8px;
+    padding:8px 10px;
+    align-items:start;
+    direction:ltr!important;
+  }
+
+  .dkAdminLayout[data-dir="ltr"] .adminTopbar{
+    grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);
+    grid-template-areas:"primary secondary";
+  }
+
+  .adminTopbar__primary{
+    grid-area:primary;
+    width:100%;
+    min-width:0;
+    justify-content:flex-end;
+    gap:6px;
+  }
+
+  .adminTopbar__secondary{
+    grid-area:secondary;
+    width:100%;
+    min-width:0;
+    justify-content:flex-start;
+    gap:6px;
+  }
+
+  .dkAdminLayout[data-dir="rtl"] .adminTopbar__primary,
+  .dkAdminLayout[data-dir="rtl"] .adminTopbar__secondary{
+    direction:rtl;
+  }
+
+  .dkAdminLayout[data-dir="ltr"] .adminTopbar__primary,
+  .dkAdminLayout[data-dir="ltr"] .adminTopbar__secondary{
+    direction:ltr;
+  }
+
+  .dkAdminLayout .adminTopbar .adminTopControl{
+    height:34px;
+    min-height:34px;
+    max-height:34px;
+    min-width:0;
+    padding:0 7px;
+    gap:4px;
+    font-size:.72rem;
+    border-radius:12px;
+  }
+
+  .dkAdminLayout .adminTopbar .adminMarketButton,
+  .dkAdminLayout .adminTopbar .adminMenuButton{
+    flex:.8 1 0;
+  }
+
+  .dkAdminLayout .adminTopbar .adminLoginButton{
+    flex:1.2 1 0;
+  }
+
+  .dkAdminLayout .adminTopbar .iconOnly{
+    width:34px;
+    min-width:34px;
+    padding:0;
+    flex:0 0 34px;
+  }
+
+  .dkAdminLayout .adminTopbar .adminLanguageButton{
+    width:100%;
+    min-width:0;
+  }
+
+  .adminTopbar .toolbarIcon,
+  .adminTopbar svg,
+  .adminTopbar img{
+    width:16px;
+    height:16px;
+    flex-basis:16px;
+    font-size:14px;
+  }
+
+  .adminTopbar .adminLoginIcon{
+    width:16px;
+    height:16px;
+    flex-basis:16px;
+  }
+}
+
+/* Active toolbar structure: keep this final to supersede legacy experiments. */
+.dkAdminLayout .adminTopbar{
+  position:relative;
+  z-index:20;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 24px;
+  margin:0;
+  box-sizing:border-box;
+  direction:ltr;
+}
+
+.dkAdminLayout .adminTopbar__primary,
+.dkAdminLayout .adminTopbar__secondary{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+  min-width:0;
+  margin:0;
+  position:static;
+  transform:none;
+}
+
+.dkAdminLayout[data-dir="rtl"] .adminTopbar__primary{direction:rtl;order:2}
+.dkAdminLayout[data-dir="rtl"] .adminTopbar__secondary{direction:ltr;order:1}
+.dkAdminLayout[data-dir="ltr"] .adminTopbar__primary{direction:ltr;order:1}
+.dkAdminLayout[data-dir="ltr"] .adminTopbar__secondary{direction:ltr;order:2}
+.adminTopbar__primary .menuButton,.adminTopbar__secondary .languageButton{order:1}
+.adminTopbar__primary .loginButton,.adminTopbar__secondary .settingsButton{order:2}
+.adminTopbar__primary .marketButton{order:3}
+
+.dkAdminLayout .adminTopbar .toolbarButton{
+  width:auto;
+  min-width:92px;
+  max-width:none;
+  height:40px;
+  min-height:40px;
+  max-height:40px;
+  padding:0 14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:14px;
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  color:inherit;
+  font-size:.9rem;
+  font-weight:700;
+  line-height:1;
+  white-space:nowrap;
+  flex:0 0 auto;
+  margin:0;
+  position:static;
+  transform:none;
+}
+
+.dkAdminLayout .adminTopbar .toolbarButton.iconOnly,
+.dkAdminLayout .adminTopbar .settingsButton{width:40px;min-width:40px;padding:0}
+
+.dkAdminLayout .adminTopbar .toolbarIcon,
+.dkAdminLayout .adminTopbar .loginIcon,
+.dkAdminLayout .creator-tools-grid .creatorToolIcon{
+  width:18px;
+  height:18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 18px;
+  font-size:17px;
+  line-height:1;
+}
+
+.dkAdminLayout .adminTopbar .loginIcon{border-radius:50%;background:#d5a51e;color:#2c2100}
+.dkAdminLayout .creator-tools-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+
+.dkAdminLayout .creator-tools-grid .creatorStudioButton,
+.dkAdminLayout .creator-tools-grid a,
+.dkAdminLayout .creator-tools-grid button{
+  width:100%;
+  min-width:0;
+  max-width:none;
+  height:40px;
+  min-height:40px;
+  max-height:40px;
+  padding:0 14px;
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-sizing:border-box;
+  border-radius:14px;
+  font-size:.9rem;
+  font-weight:700;
+  line-height:1;
+  white-space:nowrap;
+}
+
+@media(max-width:768px){
+  .dkAdminLayout .adminTopbar{
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-areas:"primary" "secondary";
+    gap:8px;
+    padding:10px 12px;
+  }
+  .dkAdminLayout .adminTopbar__primary{grid-area:primary;width:100%;justify-content:flex-end;order:1}
+  .dkAdminLayout .adminTopbar__secondary{grid-area:secondary;width:100%;justify-content:flex-start;order:2}
+  .dkAdminLayout .adminTopbar .toolbarButton{
+    width:auto;
+    height:36px;
+    min-height:36px;
+    max-height:36px;
+    min-width:auto;
+    padding:0 11px;
+    font-size:.78rem;
+    border-radius:12px;
+    flex:0 0 auto;
+  }
+  .dkAdminLayout .adminTopbar .toolbarButton.iconOnly,
+  .dkAdminLayout .adminTopbar .settingsButton{width:36px;min-width:36px;padding:0}
+  .dkAdminLayout .adminTopbar .adminLanguageButton{width:auto}
+  .dkAdminLayout .creator-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dkAdminLayout .creator-tools-grid .creatorStudioButton,
+  .dkAdminLayout .creator-tools-grid a,
+  .dkAdminLayout .creator-tools-grid button{
+    height:36px;
+    min-height:36px;
+    max-height:36px;
+    padding:0 10px;
+    font-size:.78rem;
+  }
+}
+
+/* Shared Admin and Studio toolbar: one DOM structure and one style source. */
+.studioTopToolbar{
+  position:relative;
+  inset:auto;
+  z-index:var(--dk-z-toolbar);
+  width:calc(100% - var(--dk-space-9));
+  max-width:var(--dk-container-wide);
+  margin:var(--dk-admin-toolbar-margin-block-start) auto var(--dk-space-panel);
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--dk-space-7);
+  direction:ltr;
+  transform:none;
+  box-sizing:border-box;
+}
+
+.studioTopToolbarLeft,
+.studioTopToolbarRight{
+  display:flex;
+  flex-direction:row!important;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:var(--dk-space-2);
+  position:static;
+  inset:auto;
+  transform:none;
+  direction:ltr;
+}
+
+.studioTopToolbarLeft{justify-content:flex-start}
+.studioTopToolbarRight{justify-content:flex-end}
+
+.studioTopToolbarLeft>* ,
+.studioTopToolbarRight>*{
+  position:static;
+  inset:auto;
+  transform:none;
+  order:initial!important;
+  width:auto;
+  min-width:max-content;
+  height:var(--dk-admin-control-height);
+  min-height:var(--dk-admin-control-height);
+  max-height:var(--dk-admin-control-height);
+  padding:0 var(--dk-space-4);
+  margin:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  font-size:var(--dk-font-xs);
+  line-height:var(--dk-line-height-tight);
+  font-weight:var(--dk-font-weight-bold);
+  white-space:nowrap;
+  border:1px solid var(--dk-color-border-strong);
+  border-radius:var(--dk-radius-md);
+  background:var(--dk-color-glass-medium);
+  box-shadow:var(--dk-shadow-glass-inset),var(--dk-shadow-sm);
+  -webkit-backdrop-filter:blur(var(--dk-blur-control)) saturate(135%);
+  backdrop-filter:blur(var(--dk-blur-control)) saturate(135%);
+  color:inherit;
+  text-decoration:none;
+  box-sizing:border-box;
+  flex:0 0 auto;
+}
+
+.studioTopToolbarLeft>*:hover,
+.studioTopToolbarRight>*:hover{
+  background:var(--dk-color-glass-toolbar-hover);
+}
+
+.studioTopToolbarRight>.dk-menu-anchor{
+  width:auto;
+  min-width:0;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+
+.studioTopToolbarRight>.dk-menu-anchor:hover{
+  background:transparent;
+}
+
+.studioSettingsButton{
+  width:var(--dk-admin-control-height)!important;
+  min-width:var(--dk-admin-control-height)!important;
+  padding:0!important;
+}
+
+.studioTopToolbarLeft svg,
+.studioTopToolbarRight svg,
+.studioTopToolbarLeft img,
+.studioTopToolbarRight img,
+.studioTopToolbarLeft span[role="img"],
+.studioTopToolbarRight span[role="img"],
+.studioToolbarIcon{
+  width:var(--dk-admin-toolbar-icon-size);
+  height:var(--dk-admin-toolbar-icon-size);
+  min-width:var(--dk-admin-toolbar-icon-size);
+  flex:0 0 var(--dk-admin-toolbar-icon-size);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  object-fit:contain;
+  font-size:var(--dk-admin-toolbar-icon-size);
+  line-height:1;
+}
+
+.studioLanguageButton{
+  position:relative;
+}
+
+.studioLanguageTrigger{
+  width:100%;
+  height:100%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  white-space:nowrap;
+  padding:0;
+  cursor:pointer;
+}
+
+.studioLanguageCode{
+  min-width:2ch;
+  font-size:var(--dk-font-xs);
+  font-weight:var(--dk-font-weight-heavy);
+  letter-spacing:.04em;
+  line-height:1;
+}
+
+.studioTopToolbar .dkLangMenu{
+  inset-block-start:calc(100% + 6px);
+  z-index:var(--dk-z-dropdown);
+}
+
+.studioTopToolbar .studioLanguageMenu{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:var(--dk-space-1);
+  min-width:74px;
+  padding:var(--dk-space-2);
+  border:1px solid var(--dk-color-border-glass);
+  border-radius:var(--dk-radius-md);
+  background:var(--dk-color-glass-strong);
+  box-shadow:var(--dk-shadow-md);
+  -webkit-backdrop-filter:blur(var(--dk-blur-md)) saturate(140%);
+  backdrop-filter:blur(var(--dk-blur-md)) saturate(140%);
+}
+
+.studioTopToolbar .studioLanguageMenu button{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--dk-space-2);
+  width:100%;
+  min-height:var(--dk-button-height-sm);
+  border:0;
+  border-radius:var(--dk-radius-sm);
+  background:transparent;
+  color:inherit;
+  padding-inline:var(--dk-space-3);
+  font-size:var(--dk-font-xs);
+  font-weight:var(--dk-font-weight-bold);
+  cursor:pointer;
+}
+
+.studioTopToolbar .studioLanguageMenu button:hover,
+.studioTopToolbar .studioLanguageMenu button:focus-visible{
+  background:var(--dk-color-glass-hover);
+}
+
+.dk-brand-subtitle{
+  display:block;
+  width:100%;
+  margin:5px auto 0;
+  padding:0;
+  text-align:center;
+  font-size:16px;
+  line-height:1.35;
+  font-weight:750;
+  color:rgba(15,23,42,.78);
+  opacity:1;
+}
+
+.dk-admin-subtitle{
+  display:block;
+  width:100%;
+  margin:7px auto 0;
+  padding:0;
+  text-align:center;
+  font-size:18px;
+  line-height:1.4;
+  font-weight:800;
+  color:rgba(15,23,42,.75);
+  opacity:1;
+}
+
+.dk-creator-subtitle{
+  display:block;
+  width:min(100%,760px);
+  margin:8px auto 0;
+  padding:0 12px;
+  text-align:center;
+  font-size:15px;
+  line-height:1.45;
+  font-weight:750;
+  color:rgba(15,23,42,.76);
+  opacity:1;
+}
+
+@media(max-width:700px){
+  .studioTopToolbar{
+    width:calc(100% - 20px);
+    flex-direction:row!important;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-top:10px;
+  }
+
+  .studioTopToolbarLeft,
+  .studioTopToolbarRight{
+    width:auto;
+    justify-content:center;
+    flex-direction:row!important;
+    flex-wrap:nowrap;
+  }
+
+  .studioTopToolbarLeft>* ,
+  .studioTopToolbarRight>*{
+    height:var(--dk-admin-control-height-mobile);
+    min-height:var(--dk-admin-control-height-mobile);
+    max-height:var(--dk-admin-control-height-mobile);
+    padding-inline:9px;
+    font-size:var(--dk-font-xs);
+  }
+
+  .studioSettingsButton{
+    width:var(--dk-admin-control-height-mobile)!important;
+    min-width:var(--dk-admin-control-height-mobile)!important;
+  }
+
+  .dk-brand-subtitle{font-size:15px}
+  .dk-admin-subtitle{font-size:17px}
+  .dk-creator-subtitle{font-size:14px;padding-inline:18px}
+}
+
+/* The admin drawer follows the real menu control instead of a page edge. */
+.dkAdminLayout .dkSidebar.dk-anchored-menu{
+  top:var(--dk-anchored-menu-top);
+  bottom:auto;
+  max-height:calc(100dvh - var(--dk-anchored-menu-top) - 12px);
+}
+
+.dkAdminLayout[data-dir="rtl"] .dkSidebar.dk-anchored-menu{
+  right:var(--dk-anchored-menu-edge);
+  left:auto;
+}
+
+.dkAdminLayout[data-dir="ltr"] .dkSidebar.dk-anchored-menu{
+  right:auto;
+  left:var(--dk-anchored-menu-edge);
+}
+
+.dkAdminLayout[data-menu-open="true"] .studioTopToolbar{
+  z-index:calc(var(--dk-z-sidebar) + 1);
+}
+
+.studioTopToolbarRight>.dk-menu-anchor,
+.studioTopToolbarRight>.dk-menu-anchor:hover{
+  width:auto;
+  min-width:0;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+
+.adminSectionPageContent{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+.adminSectionHeader{
+  display:flex;
+  justify-content:center;
+  width:min(calc(100% - var(--dk-space-9)),var(--dk-container-max));
+  margin:var(--dk-space-7) auto;
+  text-align:center;
+}
+
+.adminSectionHeader a{
+  color:inherit;
+  text-decoration:none;
+}
+
+.adminSectionPlaceholder{
+  width:min(calc(100% - var(--dk-space-9)),760px);
+  margin:0 auto;
+  padding:clamp(24px,5vw,48px);
+  text-align:center;
+}
+
+.adminSectionPlaceholder h1{
+  margin:0;
+  font-size:clamp(1.8rem,4vw,3rem);
+}
+
+.adminSectionPlaceholder p{
+  margin:var(--dk-space-5) 0 var(--dk-space-7);
+  color:var(--dk-color-text-muted);
+}
+
+.adminSectionPage .dkAdminFooter{
+  width:min(calc(100% - var(--dk-space-9)),var(--dk-container-max));
+  margin:var(--dk-space-9) auto 0;
+}
+
+/* Compact Phase 1 cost visibility on the admin home page. */
+.adminAICostSummary{
+  width:min(calc(100% - var(--dk-space-9)),var(--dk-container-max));
+  min-width:0;
+  margin:var(--dk-space-9) auto 0;
+  padding:clamp(18px,3vw,28px);
+}
+
+.adminAICostSummary__header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:var(--dk-space-6);
+  margin-bottom:var(--dk-space-7);
+}
+
+.adminAICostSummary__header h2{
+  margin:0;
+  color:var(--dk-color-text-strong);
+  font-size:clamp(1.35rem,2.5vw,2rem);
+  line-height:var(--dk-line-height-heading);
+}
+
+.adminAICostSummary__header p{
+  margin:var(--dk-space-2) 0 0;
+  color:var(--dk-color-text-muted);
+  font-size:var(--dk-font-sm);
+  line-height:var(--dk-line-height-relaxed);
+}
+
+.adminAICostSummary__grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:var(--dk-space-4);
+}
+
+.adminAICostSummary__grid article{
+  display:flex;
+  align-items:center;
+  gap:var(--dk-space-4);
+  min-width:0;
+  min-height:86px;
+  padding:var(--dk-space-5);
+  border:1px solid var(--dk-color-border-strong);
+  border-radius:var(--dk-radius-lg);
+  background:var(--dk-color-glass-medium);
+  box-shadow:var(--dk-shadow-glass-inset),var(--dk-shadow-sm);
+}
+
+.adminAICostSummary__icon{
+  display:grid;
+  place-items:center;
+  flex:0 0 36px;
+  width:36px;
+  height:36px;
+  border-radius:var(--dk-radius-md);
+  background:linear-gradient(135deg,var(--dk-color-active-start),var(--dk-color-active-end));
+  color:var(--dk-color-text-inverse);
+}
+
+.adminAICostSummary__icon svg{
+  width:var(--dk-icon-size-md);
+  height:var(--dk-icon-size-md);
+}
+
+.adminAICostSummary__grid article>div{
+  display:grid;
+  gap:var(--dk-space-1);
+  min-width:0;
+}
+
+.adminAICostSummary__grid small{
+  color:var(--dk-color-text-muted);
+  font-size:var(--dk-font-xs);
+  line-height:var(--dk-line-height-body);
+}
+
+.adminAICostSummary__grid strong{
+  color:var(--dk-color-text-strong);
+  font-size:clamp(1rem,1.8vw,1.35rem);
+  line-height:var(--dk-line-height-heading);
+  overflow-wrap:anywhere;
+}
+
+.adminAICostSummary__budget{
+  display:grid;
+  gap:var(--dk-space-3);
+  margin-top:var(--dk-space-6);
+}
+
+.adminAICostSummary__budget>div:first-child{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--dk-space-4);
+  color:var(--dk-color-text-muted);
+  font-size:var(--dk-font-sm);
+}
+
+.adminAICostSummary__budget>div:first-child strong{
+  color:var(--dk-color-text-strong);
+}
+
+.adminAICostSummary__track{
+  height:13px;
+  overflow:hidden;
+  border:1px solid var(--dk-color-border-strong);
+  border-radius:var(--dk-radius-pill);
+  background:var(--dk-color-glass-medium);
+  box-shadow:var(--dk-shadow-glass-inset);
+}
+
+.adminAICostSummary__track>span{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--dk-color-active-start),var(--dk-color-active-end));
+  transition:width var(--dk-transition-slow) var(--dk-ease-standard);
+}
+
+.adminAICostSummary__budget--warning .adminAICostSummary__track>span{background:#a76608}
+.adminAICostSummary__budget--critical .adminAICostSummary__track>span{background:#b4233d}
+
+.adminAICostSummary__state{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--dk-space-4);
+  min-height:150px;
+  color:var(--dk-color-text-muted);
+  font-weight:var(--dk-font-weight-bold);
+  text-align:center;
+}
+
+.adminAICostSummary__state--error{
+  flex-direction:column;
+  color:#b4233d;
+}
+
+.adminAICostSummary__state--error small{
+  max-width:680px;
+  color:var(--dk-color-text-muted);
+  overflow-wrap:anywhere;
+}
+
+.adminAICostSummary__spinner{
+  width:24px;
+  height:24px;
+  border:3px solid var(--dk-color-border-strong);
+  border-block-start-color:var(--dk-color-primary);
+  border-radius:50%;
+  animation:admin-ai-cost-spin 800ms linear infinite;
+}
+
+@keyframes admin-ai-cost-spin{to{transform:rotate(1turn)}}
+
+.adminAICostSummary__mobileAction{display:none}
+
+@media(max-width:900px){
+  .adminAICostSummary__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+@media(max-width:600px){
+  .adminAICostSummary{
+    width:min(calc(100% - 24px),var(--dk-container-max));
+    padding:var(--dk-space-6);
+  }
+  .adminAICostSummary__header{display:block;text-align:center}
+  .adminAICostSummary__header>.dk-button{display:none}
+  .adminAICostSummary__grid{grid-template-columns:1fr}
+  .adminAICostSummary__grid article{min-height:76px}
+  .adminAICostSummary__budget>div:first-child{align-items:flex-start;flex-direction:column}
+  .adminAICostSummary__mobileAction{display:flex;width:100%;margin-top:var(--dk-space-6)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .adminAICostSummary__spinner{animation-duration:1600ms}
+  .adminAICostSummary__track>span{transition:none}
+}

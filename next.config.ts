@@ -1,12 +1,12 @@
 import type { NextConfig } from "next";
 
-const isProduction = process.env.NODE_ENV === "production";
-const basePath = isProduction ? "/DekoKraft" : "";
+const isStaticExport = process.env.DEKOKRAFT_STATIC_EXPORT === "true";
+const basePath = isStaticExport ? "/DekoKraft" : "";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  output: isStaticExport ? "export" : undefined,
   basePath,
-  assetPrefix: isProduction ? "/DekoKraft/" : undefined,
+  assetPrefix: isStaticExport ? "/DekoKraft/" : undefined,
   images: {
     unoptimized: true,
   },

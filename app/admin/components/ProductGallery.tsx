@@ -13,6 +13,7 @@ type ProductGalleryProduct = {
   thumbnails: string[];
   shape?: string;
   tags?: string;
+  color?: string;
 };
 
 export default function ProductGallery({
@@ -20,7 +21,7 @@ export default function ProductGallery({
 }: {
   product: ProductGalleryProduct;
 }) {
-  const { lang, t } = useLanguage();
+  const { lang, direction, dictionary, t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showBoxModels, setShowBoxModels] = useState(false);
   const [selectedBoxModelIndex, setSelectedBoxModelIndex] = useState(0);
@@ -36,11 +37,11 @@ export default function ProductGallery({
   const hasImages = Boolean(currentImage);
   const textAlign = lang === "ar" ? "right" : "left";
   const customBoxDimensionFields = [
-    { key: "length", label: t.product.dimensions.length },
-    { key: "width", label: t.product.dimensions.width },
-    { key: "height", label: t.product.dimensions.height },
+    { key: "length", label: t("product.dimensions.length") },
+    { key: "width", label: t("product.dimensions.width") },
+    { key: "height", label: t("product.dimensions.height") },
   ] as const;
-  const boxModelOptions = t.product.boxModels;
+  const boxModelOptions = dictionary.product.boxModels;
   const selectedBoxModel = boxModelOptions[selectedBoxModelIndex];
   const isBoxProduct =
     product.category === "boxes" ||
@@ -84,7 +85,7 @@ export default function ProductGallery({
         [key]: formatDimension(min),
       }));
       setCustomBoxNotice(
-        t.product.dimensions.minNotice.replace("{value}", formatDimension(min))
+        t("product.dimensions.minNotice", { value: formatDimension(min) })
       );
       return;
     }
@@ -95,7 +96,7 @@ export default function ProductGallery({
         [key]: formatDimension(max),
       }));
       setCustomBoxNotice(
-        t.product.dimensions.maxNotice.replace("{value}", formatDimension(max))
+        t("product.dimensions.maxNotice", { value: formatDimension(max) })
       );
       return;
     }
@@ -112,9 +113,10 @@ export default function ProductGallery({
 
     if (normalized !== value) {
       setCustomBoxNotice(
-        t.product.dimensions.acceptedNotice
-          .replace("{input}", formatDimension(value))
-          .replace("{value}", formatDimension(normalized))
+        t("product.dimensions.acceptedNotice", {
+          input: formatDimension(value),
+          value: formatDimension(normalized),
+        })
       );
       return;
     }
@@ -138,7 +140,7 @@ export default function ProductGallery({
         <Image
           key={image}
           src={image}
-          alt={t.common.thumbnailAlt}
+          alt={t("common.thumbnailAlt")}
           width={90}
           height={90}
           onClick={() => setCurrentIndex(index)}
@@ -156,7 +158,7 @@ export default function ProductGallery({
 
   if (isBoxProduct) {
     return (
-      <section className="gallery" dir={t.dir}>
+      <section className="gallery productDetailsGallery" dir={direction}>
         <div
           style={{
             marginInline: "auto",
@@ -215,7 +217,6 @@ export default function ProductGallery({
               style={{
                 display: "grid",
                 gap: "8px",
-                gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
                 padding: 0,
                 width: "100%",
               }}
@@ -229,7 +230,7 @@ export default function ProductGallery({
                   style={{ width: "100%" }}
                   onClick={() => setShowBoxModels((isOpen) => !isOpen)}
                 >
-                  {t.common.models}
+                  {t("common.variants")}
                 </button>
 
                 {showBoxModels && (
@@ -274,19 +275,24 @@ export default function ProductGallery({
                 )}
               </div>
 
+              <div className="boxActionButton productMetadataAction">
+                <span>{t("common.colors")}</span>
+                <strong>{product.color || "—"}</strong>
+              </div>
+
               <Link
                 href={`/${product.category}/${product.id}`}
                 className="boxActionButton"
                 style={{ width: "100%" }}
               >
-                {t.common.buy}
+                {t("common.buy")}
               </Link>
               <Link
                 href={`/${product.category}`}
                 className="boxActionButton"
                 style={{ width: "100%" }}
               >
-                {t.common.back}
+                {t("common.back")}
               </Link>
             </div>
 
@@ -309,7 +315,7 @@ export default function ProductGallery({
                   fontWeight: 900,
                 }}
               >
-                {t.common.selectedModel}: {selectedBoxModel.name}
+                {t("common.selectedModel")}: {selectedBoxModel.name}
               </p>
               <p
                 style={{
@@ -341,7 +347,7 @@ export default function ProductGallery({
               style={{ minHeight: "46px", width: "100%" }}
               onClick={() => setShowCustomBoxPanel((isOpen) => !isOpen)}
             >
-              {t.common.customBox}
+              {t("common.customBox")}
             </button>
 
             {showCustomBoxPanel && (
@@ -432,7 +438,7 @@ export default function ProductGallery({
   }
 
   return (
-    <section className="gallery">
+    <section className="gallery productDetailsGallery" dir={direction}>
       <div style={{ marginInline: "auto", maxWidth: "720px" }}>
         <div className="mainImageBox">
           {hasImages ? (
@@ -456,6 +462,29 @@ export default function ProductGallery({
           <button className="galleryButton right" onClick={nextImage}>
             ›
           </button>
+        </div>
+
+        <div className="productDetailActions">
+          <div className="boxActionButton productMetadataAction">
+            <span>{t("common.variants")}</span>
+            <strong>{product.shape || "—"}</strong>
+          </div>
+          <div className="boxActionButton productMetadataAction">
+            <span>{t("common.colors")}</span>
+            <strong>{product.color || "—"}</strong>
+          </div>
+          <Link
+            href={`/${product.category}/${product.id}`}
+            className="boxActionButton"
+          >
+            {t("common.buy")}
+          </Link>
+          <Link
+            href={`/${product.category}`}
+            className="boxActionButton"
+          >
+            {t("common.back")}
+          </Link>
         </div>
       </div>
 

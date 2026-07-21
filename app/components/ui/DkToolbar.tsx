@@ -1,0 +1,14 @@
+import type { ReactNode } from "react";
+import { classNames } from "./classNames";
+
+export type DkToolbarProps = {
+  children: ReactNode;
+  className?: string;
+  as?: "div" | "nav";
+  "aria-label"?: string;
+};
+
+export default function DkToolbar({ children, className, as = "div", ...props }: DkToolbarProps) {
+  const Component = as;
+  return <Component className={classNames("dk-toolbar", className)} {...props}>{children}</Component>;
+}

@@ -1,0 +1,25 @@
+"use client";
+import { useMemo, useRef, useState } from "react";
+import type { DekoBrainMemoryCopy } from "../../config/dekoBrainMemoryTranslations";
+import type { DekoBrainMemoryRecord, DekoBrainMemoryStatus } from "../../types/dekobrainMemory";
+
+export default function DekoBrainMemoryPanel({ copy, records, status, exact, related, categoryLabels, verdictLabels, onReuse, onAnalyzeAgain, onDelete, onExport, onImport, onClear }:{
+ copy:DekoBrainMemoryCopy; records:DekoBrainMemoryRecord[]; status:DekoBrainMemoryStatus; exact:DekoBrainMemoryRecord|null; related:DekoBrainMemoryRecord[];
+ categoryLabels:Record<string,string>; verdictLabels:Record<string,string>; onReuse:(r:DekoBrainMemoryRecord)=>void; onAnalyzeAgain:()=>void; onDelete:(r:DekoBrainMemoryRecord)=>void; onExport:()=>void; onImport:(file:File)=>void; onClear:()=>void;
+}) {
+ const [search,setSearch]=useState(""); const [category,setCategory]=useState(""); const [verdict,setVerdict]=useState(""); const [webp,setWebp]=useState(""); const [detail,setDetail]=useState<DekoBrainMemoryRecord|null>(null); const input=useRef<HTMLInputElement>(null);
+ const filtered=useMemo(()=>records.filter(r=>(!search||r.originalFileName.toLowerCase().includes(search.toLowerCase()))&&(!category||r.category===category)&&(!verdict||r.advisorVerdict===verdict)&&(!webp||String(r.convertedToWebP)===(webp))),[records,search,category,verdict,webp]);
+ const notice=exact ?? related[0] ?? null;
+ return <section className="dkBrainPanel dkBrainMemoryPanel">
+  <div className="dkBrainSectionHeading"><div><span>12</span><h2>{copy.title}</h2></div></div><p>{copy.subtitle}</p>
+  <div className={`dkBrainMemoryStatus ${status}`}><strong>{copy.status}:</strong> {copy.statuses[status]}</div>
+  {notice&&<div className="dkBrainMemoryNotice"><h3>{exact?copy.exactTitle:copy.relatedTitle}</h3><p>{notice.originalFileName} · {copy.previousDate}: {new Date(notice.updatedAt).toLocaleString()} · {copy.score}: {notice.advisorScore} · {verdictLabels[notice.advisorVerdict]}</p><div><button onClick={()=>onReuse(notice)}>{copy.usePrevious}</button><button onClick={onAnalyzeAgain}>{copy.analyzeAgain}</button><button onClick={()=>setDetail(notice)}>{copy.view}</button><button className="danger" onClick={()=>onDelete(notice)}>{copy.forget}</button></div></div>}
+  <div className="dkBrainMemoryStats"><span>{copy.total}: <b>{records.length}</b></span><span>{copy.duplicates}: <b>{records.reduce((n,r)=>n+r.duplicateDetections,0)}</b></span><span>{copy.webp}: <b>{records.filter(r=>r.convertedToWebP).length}</b></span><span>{copy.ready}: <b>{records.filter(r=>r.advisorVerdict==="ready").length}</b></span></div>
+  <h3>{copy.recent}</h3><div className="dkBrainMemoryFilters"><input value={search} onChange={e=>setSearch(e.target.value)} placeholder={copy.search}/><select value={category} onChange={e=>setCategory(e.target.value)}><option value="">{copy.allCategories}</option>{Object.entries(categoryLabels).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select><select value={verdict} onChange={e=>setVerdict(e.target.value)}><option value="">{copy.allVerdicts}</option>{Object.entries(verdictLabels).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select><select value={webp} onChange={e=>setWebp(e.target.value)}><option value="">{copy.allWebp}</option><option value="true">{copy.converted}</option><option value="false">{copy.notConverted}</option></select></div>
+  <div className="dkBrainMemoryGrid">{filtered.slice(0,6).map(r=><article key={r.id}><h4>{r.originalFileName}</h4><p>{categoryLabels[r.category]} · {r.width}×{r.height} · {r.advisorScore}/100</p><small>{new Date(r.lastUsedAt).toLocaleString()}</small><div><button onClick={()=>onReuse(r)}>{copy.reuse}</button><button onClick={()=>setDetail(r)}>{copy.view}</button><button className="danger" onClick={()=>onDelete(r)}>{copy.delete}</button></div></article>)}</div>{!filtered.length&&<p>{copy.noRecords}</p>}
+  <div className="dkBrainMemoryTools"><button onClick={onExport}>{copy.export}</button><button onClick={()=>input.current?.click()}>{copy.import}</button><button className="danger" onClick={onClear}>{copy.clear}</button><input ref={input} hidden type="file" accept="application/json" onChange={e=>e.target.files?.[0]&&onImport(e.target.files[0])}/></div>
+  <aside className="dkBrainMemoryPrivacy"><strong>{copy.privacyTitle}</strong><p>{copy.privacy}</p></aside>
+  <div className="dkBrainSupportingSystems"><h3>{copy.supporting}</h3><p>✓ {copy.advisorReady}</p><p>✓ {copy.memoryReady}</p><p>◌ {copy.marketFuture}</p><small>{copy.marketText}</small></div>
+  {detail&&<div className="dkBrainMemoryModal" role="dialog" aria-modal="true" aria-label={copy.details}><div><h3>{copy.details}</h3><dl><dt>{copy.category}</dt><dd>{categoryLabels[detail.category]}</dd><dt>{copy.dimensions}</dt><dd>{detail.width} × {detail.height}</dd><dt>{copy.score}</dt><dd>{detail.advisorScore}</dd><dt>{copy.verdict}</dt><dd>{verdictLabels[detail.advisorVerdict]}</dd><dt>SHA-256</dt><dd className="dkBrainFingerprint">{detail.fingerprint}</dd></dl><button onClick={()=>setDetail(null)}>{copy.close}</button></div></div>}
+ </section>;
+}

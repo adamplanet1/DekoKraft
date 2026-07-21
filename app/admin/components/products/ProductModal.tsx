@@ -3,12 +3,16 @@
 import {
   type ChangeEvent,
   type DragEvent,
+  type FormEvent,
   useEffect,
   useRef,
   useState,
 } from "react";
 
 import { type Lang } from "../../config/translations";
+import {
+  analyzeProductDescription,
+} from "../../lib/analyzeProductDescription";
 import { buildLocalProductDraft } from "../../magic-engine/productEngine";
 import {
   AutoFixPlanCard,
@@ -55,11 +59,28 @@ import {
   type RecommendationId,
   type RecommendationPriority,
 } from "./magicEnginePreview";
+import type { ProductDNA, ProductDimensions } from "../../../../lib/echo/echoProductDNA";
 
 type ProductModalProps = {
   open: boolean;
   onClose: () => void;
+  onSaved: (product: ProductModalSavedProduct, successMessage: string) => void;
   lang: Lang;
+};
+
+export type ProductModalSavedProduct = {
+  id?: string | number;
+  title?: string;
+  title_ar?: string;
+  title_de?: string;
+  title_en?: string;
+  title_fr?: string;
+  category?: string;
+  status?: string;
+  price?: string | number;
+  currency?: string;
+  dimensions?: ProductDimensions;
+  productDNA?: ProductDNA;
 };
 
 type ImageRole =
@@ -209,6 +230,10 @@ const modalText: Record<
     material: string;
     thickness: string;
     dimensions: string;
+    dimensionLength: string;
+    dimensionWidth: string;
+    dimensionHeight: string;
+    dimensionUnit: string;
     productionCountry: string;
     factoryLocation: string;
     inventorySection: string;
@@ -238,6 +263,7 @@ const modalText: Record<
     productDescriptionHelp: string;
     productDescriptionPlaceholder: string;
     analyzeSpecifications: string;
+    analysisDescriptionRequired: string;
     analysisTitle: string;
     analysisConfidence: string;
     analysisPlaceholder: string;
@@ -414,6 +440,19 @@ const modalText: Record<
     roles: Record<Exclude<ImageRole, "">, string>;
     cancel: string;
     save: string;
+    saving: string;
+    productNameRequired: string;
+    categoryRequired: string;
+    saveSuccess: string;
+    saveFailed: string;
+    saveNetworkError: string;
+    saveDevelopmentError: string;
+    variants: string;
+    wizardStepLabel: string;
+    wizardStepTitles: [string, string, string, string];
+    wizardNext: string;
+    wizardBack: string;
+    saveProduct: string;
   }
 > = {
   ar: {
@@ -470,6 +509,10 @@ const modalText: Record<
     material: "المادة",
     thickness: "السماكة",
     dimensions: "الأبعاد",
+    dimensionLength: "الطول L",
+    dimensionWidth: "العرض B",
+    dimensionHeight: "الارتفاع H",
+    dimensionUnit: "الوحدة",
     productionCountry: "بلد الإنتاج",
     factoryLocation: "موقع المصنع",
     inventorySection: "المخزون",
@@ -504,12 +547,13 @@ const modalText: Record<
     active: "نشط",
     draft: "مسودة",
     archived: "مؤرشف",
-    productDescription: "وصف المنتج الذكي",
+    productDescription: "وصف مختصر",
     productDescriptionHelp:
       "اكتب مواصفات المنتج بلغة طبيعية مثل المواد، المقاس، الاستخدام، الرائحة أو التفاصيل المهمة.",
     productDescriptionPlaceholder:
       "مثال: شمعة صويا معطرة بلون وردي، مناسبة للهدايا، بحجم متوسط وعلبة فاخرة...",
-    analyzeSpecifications: "✨ تحليل المواصفات",
+    analyzeSpecifications: "✨ تحليل المنتج",
+    analysisDescriptionRequired: "أدخل وصف المنتج الذكي أولاً قبل تحليل المواصفات.",
     analysisTitle: "🧠 فهم المنتج",
     analysisConfidence: "نسبة الثقة: سيتم حسابها لاحقًا",
     analysisPlaceholder: "سيتم توليده بالذكاء الاصطناعي",
@@ -543,7 +587,7 @@ const modalText: Record<
       imageAltText: "النص البديل للصورة",
       tags: "الوسوم",
     },
-    generateBlueprint: "✨ إنشاء مخطط المنتج",
+    generateBlueprint: "✨ إنشاء مخطط بيانات المنتج",
     blueprintPlaceholder: "سيتم إنشاؤه لاحقًا",
     blueprintSections: {
       productIdentity: "هوية المنتج",
@@ -1080,6 +1124,19 @@ const modalText: Record<
     },
     cancel: "إلغاء",
     save: "حفظ",
+    saving: "جارٍ الحفظ...",
+    productNameRequired: "يرجى إدخال اسم المنتج قبل الحفظ.",
+    categoryRequired: "يرجى إدخال القسم قبل الحفظ.",
+    saveSuccess: "تم حفظ المنتج بنجاح.",
+    saveFailed: "تعذر حفظ المنتج. يرجى المحاولة مرة أخرى.",
+    saveNetworkError: "تعذر الاتصال بخدمة الحفظ. تحقق من الاتصال وحاول مرة أخرى.",
+    saveDevelopmentError: "تعذر حفظ المنتج: {message}",
+    variants: "الخيارات",
+    wizardStepLabel: "الخطوة {current} من {total}",
+    wizardStepTitles: ["المعلومات الأساسية", "تفاصيل المنتج", "المبيعات", "مساعد الذكاء الاصطناعي"],
+    wizardNext: "التالي ←",
+    wizardBack: "→ رجوع",
+    saveProduct: "حفظ المنتج",
   },
   en: {
     title: "Add Product",
@@ -1135,6 +1192,10 @@ const modalText: Record<
     material: "Material",
     thickness: "Thickness",
     dimensions: "Dimensions",
+    dimensionLength: "Length L",
+    dimensionWidth: "Width B",
+    dimensionHeight: "Height H",
+    dimensionUnit: "Unit",
     productionCountry: "Production Country",
     factoryLocation: "Factory Location",
     inventorySection: "Inventory",
@@ -1169,12 +1230,13 @@ const modalText: Record<
     active: "Active",
     draft: "Draft",
     archived: "Archived",
-    productDescription: "Smart product description",
+    productDescription: "Short Description",
     productDescriptionHelp:
       "Write product specifications in natural language, such as materials, size, usage, scent, or important details.",
     productDescriptionPlaceholder:
       "Example: Pink scented soy candle, gift-ready, medium size, premium box...",
-    analyzeSpecifications: "✨ Analyze Specifications",
+    analyzeSpecifications: "✨ Analyze Product",
+    analysisDescriptionRequired: "Enter the smart product description before analyzing specifications.",
     analysisTitle: "🧠 Product Understanding",
     analysisConfidence: "Confidence: will be calculated later",
     analysisPlaceholder: "Will be generated by AI",
@@ -1192,7 +1254,7 @@ const modalText: Record<
       urlSlug: "URL Slug",
       imageAltText: "Image ALT Text",
     },
-    buildProductCard: "✨ Build Product Card",
+    buildProductCard: "✨ Generate Product Card",
     productCardPlaceholder: "Will be created later",
     productCardFields: {
       productName: "Product Name",
@@ -1208,7 +1270,7 @@ const modalText: Record<
       imageAltText: "Image ALT Text",
       tags: "Tags",
     },
-    generateBlueprint: "✨ Generate Product Blueprint",
+    generateBlueprint: "✨ Generate Product Schema",
     blueprintPlaceholder: "Will be created later",
     blueprintSections: {
       productIdentity: "Product Identity",
@@ -1752,6 +1814,19 @@ const modalText: Record<
     },
     cancel: "Cancel",
     save: "Save",
+    saving: "Saving...",
+    productNameRequired: "Please enter a product name before saving.",
+    categoryRequired: "Please enter a category before saving.",
+    saveSuccess: "Product saved successfully.",
+    saveFailed: "The product could not be saved. Please try again.",
+    saveNetworkError: "Could not connect to the save service. Check the connection and try again.",
+    saveDevelopmentError: "The product could not be saved: {message}",
+    variants: "Variants",
+    wizardStepLabel: "Step {current} of {total}",
+    wizardStepTitles: ["Basic Information", "Product Details", "Sales", "AI Assistant"],
+    wizardNext: "Next →",
+    wizardBack: "← Back",
+    saveProduct: "Save Product",
   },
   de: {
     title: "Produkt hinzufügen",
@@ -1807,6 +1882,10 @@ const modalText: Record<
     material: "Material",
     thickness: "Stärke",
     dimensions: "Abmessungen",
+    dimensionLength: "Länge L",
+    dimensionWidth: "Breite B",
+    dimensionHeight: "Höhe H",
+    dimensionUnit: "Einheit",
     productionCountry: "Produktionsland",
     factoryLocation: "Fabrikstandort",
     inventorySection: "Lagerbestand",
@@ -1841,12 +1920,13 @@ const modalText: Record<
     active: "Aktiv",
     draft: "Entwurf",
     archived: "Archiviert",
-    productDescription: "Intelligente Produktbeschreibung",
+    productDescription: "Kurzbeschreibung",
     productDescriptionHelp:
       "Schreiben Sie Produktspezifikationen in natürlicher Sprache, z. B. Material, Größe, Nutzung, Duft oder wichtige Details.",
     productDescriptionPlaceholder:
       "Beispiel: Rosa Duftkerze aus Sojawachs, als Geschenk geeignet, mittlere Größe, hochwertige Box...",
-    analyzeSpecifications: "✨ Spezifikationen analysieren",
+    analyzeSpecifications: "✨ Produkt analysieren",
+    analysisDescriptionRequired: "Geben Sie zuerst die intelligente Produktbeschreibung ein, bevor Sie die Spezifikationen analysieren.",
     analysisTitle: "🧠 Produktverständnis",
     analysisConfidence: "Vertrauen: wird später berechnet",
     analysisPlaceholder: "Wird von KI generiert",
@@ -1880,7 +1960,7 @@ const modalText: Record<
       imageAltText: "Bild-ALT-Text",
       tags: "Tags",
     },
-    generateBlueprint: "✨ Produktplan erstellen",
+    generateBlueprint: "✨ Produktschema erstellen",
     blueprintPlaceholder: "Wird später erstellt",
     blueprintSections: {
       productIdentity: "Produktidentität",
@@ -2437,6 +2517,19 @@ const modalText: Record<
     },
     cancel: "Abbrechen",
     save: "Speichern",
+    saving: "Wird gespeichert...",
+    productNameRequired: "Bitte geben Sie vor dem Speichern einen Produktnamen ein.",
+    categoryRequired: "Bitte geben Sie vor dem Speichern eine Kategorie ein.",
+    saveSuccess: "Produkt erfolgreich gespeichert.",
+    saveFailed: "Das Produkt konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    saveNetworkError: "Die Verbindung zum Speicherdienst konnte nicht hergestellt werden. Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    saveDevelopmentError: "Das Produkt konnte nicht gespeichert werden: {message}",
+    variants: "Varianten",
+    wizardStepLabel: "Schritt {current} von {total}",
+    wizardStepTitles: ["Grundinformationen", "Produktdetails", "Verkauf", "KI-Assistent"],
+    wizardNext: "Weiter →",
+    wizardBack: "← Zurück",
+    saveProduct: "Produkt speichern",
   },
   fr: {
     title: "Ajouter un produit",
@@ -2492,6 +2585,10 @@ const modalText: Record<
     material: "Matière",
     thickness: "Épaisseur",
     dimensions: "Dimensions",
+    dimensionLength: "Longueur L",
+    dimensionWidth: "Largeur B",
+    dimensionHeight: "Hauteur H",
+    dimensionUnit: "Unité",
     productionCountry: "Pays de production",
     factoryLocation: "Emplacement de l'usine",
     inventorySection: "Inventaire",
@@ -2526,12 +2623,13 @@ const modalText: Record<
     active: "Actif",
     draft: "Brouillon",
     archived: "Archive",
-    productDescription: "Description intelligente du produit",
+    productDescription: "Description courte",
     productDescriptionHelp:
       "Redigez les specifications du produit en langage naturel, comme les matieres, la taille, l'utilisation, le parfum ou les details importants.",
     productDescriptionPlaceholder:
       "Exemple : bougie parfumee rose en cire de soja, ideale pour cadeau, taille moyenne, boite premium...",
-    analyzeSpecifications: "✨ Analyser les spécifications",
+    analyzeSpecifications: "✨ Analyser le produit",
+    analysisDescriptionRequired: "Saisissez d’abord la description intelligente du produit avant d’analyser les spécifications.",
     analysisTitle: "🧠 Compréhension du produit",
     analysisConfidence: "Confiance : sera calculée plus tard",
     analysisPlaceholder: "Sera généré par l’IA",
@@ -2565,7 +2663,7 @@ const modalText: Record<
       imageAltText: "Texte ALT de l'image",
       tags: "Tags",
     },
-    generateBlueprint: "✨ Générer la fiche complète",
+    generateBlueprint: "✨ Générer le schéma produit",
     blueprintPlaceholder: "Sera créé plus tard",
     blueprintSections: {
       productIdentity: "Identite du produit",
@@ -3120,6 +3218,19 @@ const modalText: Record<
     },
     cancel: "Annuler",
     save: "Enregistrer",
+    saving: "Enregistrement...",
+    productNameRequired: "Veuillez saisir un nom de produit avant l’enregistrement.",
+    categoryRequired: "Veuillez saisir une catégorie avant l’enregistrement.",
+    saveSuccess: "Produit enregistré avec succès.",
+    saveFailed: "Le produit n’a pas pu être enregistré. Veuillez réessayer.",
+    saveNetworkError: "Impossible de se connecter au service d’enregistrement. Vérifiez la connexion et réessayez.",
+    saveDevelopmentError: "Le produit n’a pas pu être enregistré : {message}",
+    variants: "Variantes",
+    wizardStepLabel: "Étape {current} sur {total}",
+    wizardStepTitles: ["Informations de base", "Détails du produit", "Ventes", "Assistant IA"],
+    wizardNext: "Suivant →",
+    wizardBack: "← Retour",
+    saveProduct: "Enregistrer le produit",
   },
 };
 
@@ -3254,11 +3365,26 @@ const engineSteps: EngineStep[] = [
   "readyToPublish",
 ];
 
+function parseDimensionSuggestion(value: string): ProductDimensions {
+  const values = value.match(/\d+(?:[.,]\d+)?/g)?.slice(0, 3).map((item) => Number(item.replace(",", "."))) ?? [];
+  const lower = value.toLowerCase();
+  return {
+    length: values[0] ?? null,
+    width: values[1] ?? null,
+    height: values[2] ?? null,
+    unit: /\bmm\b/.test(lower) ? "mm" : /\bm\b/.test(lower) && !/\bcm\b/.test(lower) ? "m" : "cm",
+    source: "manual",
+    confirmed: false,
+  };
+}
+
 export default function ProductModal({
   open,
   onClose,
+  onSaved,
   lang,
 }: ProductModalProps) {
+  const [wizardStep, setWizardStep] = useState<1 | 2 | 3 | 4>(1);
   const [availableColors, setAvailableColors] = useState<string[]>([]);
   const [isColorPanelOpen, setIsColorPanelOpen] = useState(false);
   const [productName, setProductName] = useState("");
@@ -3272,8 +3398,10 @@ export default function ProductModal({
   const [productCode, setProductCode] = useState("");
   const [productVersion, setProductVersion] = useState("");
   const [material, setMaterial] = useState("");
+  const [scent, setScent] = useState("");
+  const [variants, setVariants] = useState("");
   const [thickness, setThickness] = useState("");
-  const [dimensions, setDimensions] = useState("");
+  const [dimensions, setDimensions] = useState<ProductDimensions>({ length: null, width: null, height: null, unit: "mm", source: "manual", confirmed: false });
   const [productionCountry, setProductionCountry] = useState("");
   const [factoryLocation, setFactoryLocation] = useState("");
   const [stockQuantity, setStockQuantity] = useState("");
@@ -3288,11 +3416,22 @@ export default function ProductModal({
   const [productStatus, setProductStatus] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [showAnalysisPreview, setShowAnalysisPreview] = useState(false);
+  const [analyzedDescription, setAnalyzedDescription] = useState<string | null>(null);
+  const [analysisError, setAnalysisError] = useState("");
   const [showProductCardPreview, setShowProductCardPreview] = useState(false);
   const [showBlueprintPreview, setShowBlueprintPreview] = useState(false);
   const [magicEngineRefreshKey, setMagicEngineRefreshKey] = useState(0);
   const [customColorRequest, setCustomColorRequest] = useState("");
   const [managedImages, setManagedImages] = useState<ManagedImage[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [productNameError, setProductNameError] = useState("");
+  const [categoryError, setCategoryError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
+  const [saveMessageType, setSaveMessageType] = useState<"error" | "success">(
+    "error"
+  );
+  const formRef = useRef<HTMLFormElement>(null);
+  const focusedInvalidField = useRef<"productName" | "category" | null>(null);
   const draggedImageIndex = useRef<number | null>(null);
   const imagePreviewUrls = useRef<string[]>([]);
 
@@ -3309,6 +3448,9 @@ export default function ProductModal({
   }
 
   const text = modalText[lang];
+  const analysisResult = analyzedDescription === null
+    ? null
+    : analyzeProductDescription(analyzedDescription, lang);
   const magicEngineResult = buildLocalProductDraft({
     name: productName,
     category: productCategory,
@@ -3436,7 +3578,9 @@ export default function ProductModal({
   const engineStatusByStep: Record<EngineStep, EngineStatus> = {
     images: managedImages.length > 0 ? "ready" : "waiting",
     specifications: productDescription.trim() ? "ready" : "waiting",
-    productUnderstanding: showAnalysisPreview ? "ready" : "notStarted",
+    productUnderstanding: analysisResult?.hasUsefulInformation
+      ? "ready"
+      : "notStarted",
     productCard: showProductCardPreview ? "ready" : "notStarted",
     productBlueprint: showBlueprintPreview ? "ready" : "notStarted",
     productContent: showBlueprintPreview ? "waiting" : "notStarted",
@@ -3445,7 +3589,9 @@ export default function ProductModal({
       ? "waiting"
       : "notStarted",
     readyToPublish:
-      showAnalysisPreview && showProductCardPreview && showBlueprintPreview
+      analysisResult?.hasUsefulInformation &&
+      showProductCardPreview &&
+      showBlueprintPreview
         ? "waiting"
         : "notStarted",
   };
@@ -3469,6 +3615,47 @@ export default function ProductModal({
       current.includes(skill)
         ? current.filter((item) => item !== skill)
         : [...current, skill]
+    );
+  }
+
+  function handleProductDescriptionChange(value: string) {
+    setProductDescription(value);
+    setAnalyzedDescription(null);
+    setShowAnalysisPreview(false);
+    setAnalysisError("");
+  }
+
+  function handleAnalyzeSpecifications() {
+    const description = productDescription.trim();
+
+    if (!description) {
+      setAnalyzedDescription(null);
+      setShowAnalysisPreview(false);
+      setAnalysisError(text.analysisDescriptionRequired);
+      return;
+    }
+
+    const result = analyzeProductDescription(description, lang);
+    setAnalyzedDescription(description);
+    setShowAnalysisPreview(true);
+    setAnalysisError("");
+
+    setProductName((current) =>
+      current.trim() ? current : result.suggestions.suggestedProductName ?? current
+    );
+    setProductCategory((current) =>
+      current.trim() ? current : result.suggestions.category ?? current
+    );
+    setMaterial((current) =>
+      current.trim() ? current : result.suggestions.material ?? current
+    );
+    setDimensions((current) =>
+      current.length != null || current.width != null || current.height != null || !result.suggestions.dimensions
+        ? current
+        : parseDimensionSuggestion(result.suggestions.dimensions)
+    );
+    setAvailableColors((current) =>
+      current.length > 0 ? current : result.colors
     );
   }
 
@@ -3536,6 +3723,142 @@ export default function ProductModal({
     });
   }
 
+  function focusInvalidFieldOnce(fieldName: "productName" | "category") {
+    if (focusedInvalidField.current === fieldName) {
+      return;
+    }
+
+    const field = formRef.current?.elements.namedItem(fieldName);
+
+    if (!(field instanceof HTMLElement)) {
+      return;
+    }
+
+    focusedInvalidField.current = fieldName;
+    field.scrollIntoView({ block: "center" });
+    field.focus({ preventScroll: true });
+  }
+
+  function goToNextWizardStep() {
+    setSaveMessage("");
+    setWizardStep((current) =>
+      current < 4 ? ((current + 1) as 2 | 3 | 4) : current
+    );
+  }
+
+  function goToPreviousWizardStep() {
+    setSaveMessage("");
+    setWizardStep((current) =>
+      current > 1 ? ((current - 1) as 1 | 2 | 3) : current
+    );
+  }
+
+  async function handleSaveProduct(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (isSaving) {
+      return;
+    }
+
+    const isProductNameInvalid = !productName.trim();
+    const isCategoryInvalid = !productCategory.trim();
+    const firstInvalidField = isProductNameInvalid
+      ? "productName"
+      : isCategoryInvalid
+        ? "category"
+        : null;
+
+    if (firstInvalidField) {
+      setProductNameError(
+        isProductNameInvalid ? text.productNameRequired : ""
+      );
+      setCategoryError(isCategoryInvalid ? text.categoryRequired : "");
+      setSaveMessage("");
+      setWizardStep(1);
+      requestAnimationFrame(() => focusInvalidFieldOnce(firstInvalidField));
+      return;
+    }
+
+    setProductNameError("");
+    setCategoryError("");
+    focusedInvalidField.current = null;
+    setIsSaving(true);
+    setSaveMessage("");
+
+    try {
+      const localizedTitleField = `title_${lang}`;
+      const localizedDescriptionField = `description_${lang}`;
+      const response = await fetch("/api/admin/products/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: productCategory.trim(),
+          title: productName.trim(),
+          [localizedTitleField]: productName.trim(),
+          [localizedDescriptionField]: productDescription.trim(),
+          status: productStatus || "draft",
+          ...(productPrice.trim() ? { price: productPrice.trim() } : {}),
+          ...(material.trim() ? { material: material.trim() } : {}),
+          dimensions,
+          productType: productType || productCategory.trim(),
+          productDNA: {
+            categoryId: productCategory.trim(),
+            productType: productType || productCategory.trim(),
+            material: material.trim(),
+            color: availableColors.join(","),
+            dimensions,
+            usage: productDescription.trim(),
+            scent: scent.trim(),
+            notes: productDescription.trim(),
+          },
+          ...(availableColors.length
+            ? { color: availableColors.join(","), availableColors }
+            : {}),
+          ...(customColorRequest.trim()
+            ? { customColorRequest: customColorRequest.trim() }
+            : {}),
+          ...(stockQuantity.trim() ? { stock: stockQuantity.trim() } : {}),
+          imageCount: managedImages.length,
+          lang,
+        }),
+      });
+      const result = (await response.json().catch(() => null)) as
+        | {
+            success?: boolean;
+            errorCode?: string;
+            errorMessage?: string;
+            product?: ProductModalSavedProduct;
+          }
+        | null;
+
+      if (!response.ok || !result?.success || !result.product) {
+        throw new Error(
+          process.env.NODE_ENV === "development" && result?.errorMessage
+            ? result.errorMessage
+            : result?.errorCode || "save_failed"
+        );
+      }
+
+      setProductNameError("");
+      setCategoryError("");
+      focusedInvalidField.current = null;
+      setSaveMessageType("success");
+      setSaveMessage(text.saveSuccess);
+      onSaved(result.product, text.saveSuccess);
+    } catch (error) {
+      setSaveMessageType("error");
+      setSaveMessage(
+        error instanceof TypeError
+          ? text.saveNetworkError
+          : process.env.NODE_ENV === "development" && error instanceof Error
+            ? text.saveDevelopmentError.replace("{message}", error.message)
+            : text.saveFailed
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return (
     <div className="dkProductModalOverlay" role="presentation">
       <div
@@ -3547,11 +3870,35 @@ export default function ProductModal({
       >
         <h2 id="product-modal-title">{text.title}</h2>
 
-        <form
-          className="dkProductModalForm"
-          onSubmit={(event) => event.preventDefault()}
+        <div className="dkProductWizardProgress" aria-label={text.wizardStepLabel
+          .replace("{current}", String(wizardStep))
+          .replace("{total}", "4")}
         >
-          <section className="dkProductModalSection">
+          <div className="dkProductWizardTrack" aria-hidden="true">
+            {[1, 2, 3, 4].map((step) => (
+              <span
+                key={step}
+                className={step <= wizardStep ? "active" : ""}
+              />
+            ))}
+          </div>
+          <div>
+            <strong>{text.wizardStepTitles[wizardStep - 1]}</strong>
+            <span>
+              {text.wizardStepLabel
+                .replace("{current}", String(wizardStep))
+                .replace("{total}", "4")}
+            </span>
+          </div>
+        </div>
+
+        <form
+          ref={formRef}
+          className="dkProductModalForm"
+          noValidate
+          onSubmit={handleSaveProduct}
+        >
+          <section className="dkProductModalSection" hidden={wizardStep !== 1}>
             <div className="dkProductModalSectionHeader">
               <h3>{text.basicInformationSection}</h3>
               <p>{text.basicInformationHelp}</p>
@@ -3563,8 +3910,27 @@ export default function ProductModal({
                 type="text"
                 name="productName"
                 value={productName}
-                onChange={(event) => setProductName(event.target.value)}
+                aria-invalid={Boolean(productNameError)}
+                aria-describedby={
+                  productNameError ? "product-name-error" : undefined
+                }
+                onChange={(event) => {
+                  setProductName(event.target.value);
+                  if (event.target.value.trim()) {
+                    setProductNameError("");
+                    focusedInvalidField.current = null;
+                  }
+                }}
               />
+              {productNameError && (
+                <span
+                  id="product-name-error"
+                  className="dkProductFieldError"
+                  role="alert"
+                >
+                  {productNameError}
+                </span>
+              )}
             </label>
 
             <label>
@@ -3573,8 +3939,25 @@ export default function ProductModal({
                 type="text"
                 name="category"
                 value={productCategory}
-                onChange={(event) => setProductCategory(event.target.value)}
+                aria-invalid={Boolean(categoryError)}
+                aria-describedby={categoryError ? "category-error" : undefined}
+                onChange={(event) => {
+                  setProductCategory(event.target.value);
+                  if (event.target.value.trim()) {
+                    setCategoryError("");
+                    focusedInvalidField.current = null;
+                  }
+                }}
               />
+              {categoryError && (
+                <span
+                  id="category-error"
+                  className="dkProductFieldError"
+                  role="alert"
+                >
+                  {categoryError}
+                </span>
+              )}
             </label>
 
             <label>
@@ -3630,12 +4013,12 @@ export default function ProductModal({
                 name="productDescription"
                 value={productDescription}
                 placeholder={text.productDescriptionPlaceholder}
-                onChange={(event) => setProductDescription(event.target.value)}
+                onChange={(event) => handleProductDescriptionChange(event.target.value)}
               />
             </label>
           </section>
 
-          <section className="dkProductModalSection">
+          <section className="dkProductModalSection" hidden={wizardStep !== 2}>
             <div className="dkProductModalSectionHeader">
               <h3>{text.educationalClassificationSection}</h3>
               <p>{text.educationalClassificationHelp}</p>
@@ -3695,7 +4078,7 @@ export default function ProductModal({
             </div>
           </section>
 
-          <section className="dkProductModalSection">
+          <section className="dkProductModalSection" hidden={wizardStep !== 2}>
             <div className="dkProductModalSectionHeader">
               <h3>{text.manufacturingSection}</h3>
               <p>{text.manufacturingSectionHelp}</p>
@@ -3721,13 +4104,50 @@ export default function ProductModal({
               />
             </label>
 
+            <fieldset className="dkProductDimensionsFieldset">
+              <legend>{text.dimensions}</legend>
+              <div className="dkProductDimensionsGrid">
+                {(["length", "width", "height"] as const).map((key) => (
+                  <label key={key}>
+                    <span>{key === "length" ? text.dimensionLength : key === "width" ? text.dimensionWidth : text.dimensionHeight}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      inputMode="decimal"
+                      name={`dimensions.${key}`}
+                      value={dimensions[key] ?? ""}
+                      onChange={(event) => setDimensions((current) => ({
+                        ...current,
+                        [key]: event.currentTarget.value === "" ? null : Number(event.currentTarget.value),
+                        source: "manual",
+                        confirmed: false,
+                      }))}
+                    />
+                  </label>
+                ))}
+                <label>
+                  <span>{text.dimensionUnit}</span>
+                  <select
+                    name="dimensions.unit"
+                    value={dimensions.unit}
+                    onChange={(event) => setDimensions((current) => ({ ...current, unit: event.currentTarget.value as ProductDimensions["unit"], source: "manual", confirmed: false }))}
+                  >
+                    <option value="mm">mm</option>
+                    <option value="cm">cm</option>
+                    <option value="m">m</option>
+                  </select>
+                </label>
+              </div>
+            </fieldset>
+
             <label>
-              <span>{text.dimensions}</span>
+              <span>{text.analysisFields.scent}</span>
               <input
                 type="text"
-                name="dimensions"
-                value={dimensions}
-                onChange={(event) => setDimensions(event.target.value)}
+                name="scent"
+                value={scent}
+                onChange={(event) => setScent(event.target.value)}
               />
             </label>
 
@@ -3752,7 +4172,7 @@ export default function ProductModal({
             </label>
           </section>
 
-          <section className="dkProductModalSection">
+          <section className="dkProductModalSection" hidden={wizardStep !== 3}>
             <div className="dkProductModalSectionHeader">
               <h3>{text.inventorySection}</h3>
               <p>{text.inventorySectionHelp}</p>
@@ -3803,7 +4223,7 @@ export default function ProductModal({
             </label>
           </section>
 
-          <section className="dkProductModalSection">
+          <section className="dkProductModalSection" hidden={wizardStep !== 3}>
             <div className="dkProductModalSectionHeader">
               <h3>{text.pricingPreparationSection}</h3>
               <p>{text.pricingPreparationSectionHelp}</p>
@@ -3870,7 +4290,7 @@ export default function ProductModal({
             </label>
           </section>
 
-          <section className="dkProductModalSection">
+          <section className="dkProductModalSection" hidden={wizardStep !== 2}>
             <div className="dkProductModalSectionHeader">
               <h3>{text.futureBarcodeSection}</h3>
               <p>{text.futureBarcodeSectionHelp}</p>
@@ -3886,6 +4306,7 @@ export default function ProductModal({
             </label>
           </section>
 
+          <div className="dkProductWizardAiStep" hidden={wizardStep !== 4}>
           <section className="dkProductEnginePanel">
             <h3>{text.engineTitle}</h3>
             <div className="dkProductEngineSteps">
@@ -4210,10 +4631,16 @@ export default function ProductModal({
             <button
               type="button"
               className="dkProductAnalyzeButton"
-              onClick={() => setShowAnalysisPreview(true)}
+              onClick={handleAnalyzeSpecifications}
             >
               {text.analyzeSpecifications}
             </button>
+
+            {analysisError && (
+              <p role="alert" className="dkProductAnalysisMessage">
+                {analysisError}
+              </p>
+            )}
 
             {showAnalysisPreview && (
               <div className="dkProductAnalysisPreview">
@@ -4230,7 +4657,9 @@ export default function ProductModal({
                       </span>
                       <div>
                         <span>{text.analysisFields[field]}</span>
-                        <strong>{text.analysisPlaceholder}</strong>
+                        <strong>
+                          {analysisResult?.suggestions[field] ?? text.analysisPlaceholder}
+                        </strong>
                       </div>
                     </div>
                   ))}
@@ -4289,8 +4718,9 @@ export default function ProductModal({
               </div>
             )}
           </div>
+          </div>
 
-          <div className="dkProductModalField">
+          <div className="dkProductModalField" hidden={wizardStep !== 2}>
             <span>{text.colors}</span>
             <div className="dkProductColorPicker">
               <button
@@ -4349,7 +4779,7 @@ export default function ProductModal({
             </div>
           </div>
 
-          <label>
+          <label hidden={wizardStep !== 2}>
             <span>{text.customColorRequest}</span>
             <input
               type="text"
@@ -4360,7 +4790,7 @@ export default function ProductModal({
             />
           </label>
 
-          <div className="dkProductModalField">
+          <div className="dkProductModalField" hidden={wizardStep !== 3}>
             <span>{text.images}</span>
             <p>{text.imageHelp}</p>
 
@@ -4430,13 +4860,51 @@ export default function ProductModal({
             </div>
           </div>
 
+          <label hidden={wizardStep !== 3}>
+            <span>{text.variants}</span>
+            <input
+              type="text"
+              name="variants"
+              value={variants}
+              onChange={(event) => setVariants(event.target.value)}
+            />
+          </label>
+
+          {saveMessage && (
+            <p
+              className={`dkProductModalSubmitMessage ${saveMessageType}`}
+              role={saveMessageType === "error" ? "alert" : "status"}
+            >
+              {saveMessage}
+            </p>
+          )}
+
           <div className="dkProductModalActions">
             <button type="button" onClick={onClose}>
               {text.cancel}
             </button>
-            <button type="submit" className="dkProductModalSave">
-              {text.save}
-            </button>
+            {wizardStep > 1 && (
+              <button type="button" onClick={goToPreviousWizardStep}>
+                {text.wizardBack}
+              </button>
+            )}
+            {wizardStep < 4 ? (
+              <button
+                type="button"
+                className="dkProductModalSave"
+                onClick={goToNextWizardStep}
+              >
+                {text.wizardNext}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="dkProductModalSave"
+                disabled={isSaving}
+              >
+                {isSaving ? text.saving : text.saveProduct}
+              </button>
+            )}
           </div>
         </form>
       </div>

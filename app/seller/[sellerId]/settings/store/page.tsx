@@ -1,0 +1,1 @@
+import SellerStoreSettings from"../../../components/SellerStoreSettings";export default async function StoreSettingsPage({params}:{params:Promise<{sellerId:string}>}){const{sellerId}=await params;return <SellerStoreSettings sellerId={sellerId}/>}

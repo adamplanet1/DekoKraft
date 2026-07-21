@@ -1,0 +1,533 @@
+.welcomePage {
+  --dk-welcome-card-gap: 38px;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  color: var(--dk-color-text-strong);
+  background: transparent;
+}
+
+.welcomePublicShell {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* The controls and search keep their own glass surfaces. The shared header
+   wrapper itself stays transparent so the page background remains visible. */
+.welcomePublicShell .publicHeader,
+.welcomePublicShell .publicFloatingToolbar {
+  background: transparent;
+  background-image: none;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.welcomePublicShell .publicFloatingToolbar {
+  border-radius: 0;
+  padding: 0;
+}
+
+.welcomePublicShell .publicFloatingToolbar::before,
+.welcomePublicShell .publicFloatingToolbar::after {
+  content: none;
+  display: none;
+}
+
+.welcomePublicShell .dk-page-background__glass,
+.welcomePortalPanel {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.welcomePageContent {
+  position: relative;
+  z-index: var(--dk-z-content);
+  display: grid;
+  place-items: center;
+  width: min(calc(100% - 24px), 1100px);
+  max-width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-block: clamp(24px, 5vh, 64px);
+  box-sizing: border-box;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dk-transition-fast) var(--dk-ease-standard);
+}
+
+.welcomePageContent--checking {
+  opacity: 1;
+  visibility: visible;
+}
+
+.welcomePortalPanel {
+  width: 100%;
+  max-width: 1080px;
+  min-width: 0;
+  margin-inline: auto;
+  padding: clamp(22px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.welcomePortalHeader {
+  width: 100%;
+  max-width: 780px;
+  margin-inline: auto;
+  margin-block-end: clamp(24px, 4vw, 42px);
+  text-align: center;
+}
+
+.welcomePortalHeader h1 {
+  max-width: 100%;
+  margin: 0;
+  color: #111a2f;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.12;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  text-shadow: 0 2px 18px rgba(255, 255, 255, 0.46);
+}
+
+.welcomePortalHeader p {
+  max-width: 100%;
+  margin: var(--dk-space-5) auto 0;
+  color: rgba(15, 26, 51, 0.82);
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: var(--dk-font-weight-medium);
+  line-height: var(--dk-line-height-relaxed);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.welcomePortalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: center;
+  gap: var(--dk-welcome-card-gap);
+  width: 100%;
+}
+
+.welcomeCard.dk-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 116px;
+  padding: 18px 22px;
+  gap: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    rgba(67, 86, 120, 0.2),
+    rgba(255, 255, 255, 0.08)
+  );
+  color: inherit;
+  box-shadow: var(--dk-shadow-sm);
+  -webkit-backdrop-filter: blur(var(--dk-blur-control));
+  backdrop-filter: blur(var(--dk-blur-control));
+  white-space: normal;
+  transition:
+    transform var(--dk-transition-fast) var(--dk-ease-standard),
+    background var(--dk-transition-fast) var(--dk-ease-standard),
+    box-shadow var(--dk-transition-fast) var(--dk-ease-standard);
+}
+
+.welcomeCard.dk-button:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(
+    135deg,
+    rgba(67, 86, 120, 0.28),
+    rgba(255, 255, 255, 0.13)
+  );
+  box-shadow: 0 16px 36px rgba(20, 32, 56, 0.16);
+}
+
+.welcomeCard.dk-button:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.welcomeCard .dk-button__icon {
+  flex: 0 0 auto;
+}
+
+.welcomeCard .dk-button__label {
+  white-space: normal;
+}
+
+.welcomeCardIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1;
+}
+
+.welcomeCardTitle {
+  font-size: clamp(18px, 2vw, 26px);
+  font-weight: var(--dk-font-weight-heavy);
+  line-height: var(--dk-line-height-heading);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.welcomeReplayButton {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: fit-content;
+  margin: var(--dk-space-8) auto 0;
+  color: rgba(15, 26, 51, 0.74);
+  pointer-events: auto;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.welcomeNotice {
+  position: fixed;
+  z-index: var(--dk-z-dropdown);
+  inset-inline-start: 50%;
+  inset-block-end: var(--dk-space-8);
+  width: min(calc(100% - var(--dk-space-8)), 520px);
+  margin: 0;
+  padding: var(--dk-space-5) var(--dk-space-6);
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--dk-radius-lg);
+  background: rgba(18, 29, 55, 0.86);
+  color: var(--dk-color-text-inverse);
+  box-shadow: var(--dk-shadow-md);
+  -webkit-backdrop-filter: blur(var(--dk-blur-md));
+  backdrop-filter: blur(var(--dk-blur-md));
+  font-weight: var(--dk-font-weight-bold);
+  text-align: center;
+  animation: welcomeNoticeIn var(--dk-transition-normal) var(--dk-ease-standard) both;
+}
+
+.welcomeIntro {
+  position: fixed;
+  z-index: var(--dk-z-modal);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: var(--dk-space-7);
+  background: rgba(8, 15, 32, 0.34);
+  -webkit-backdrop-filter: blur(var(--dk-blur-sm));
+  backdrop-filter: blur(var(--dk-blur-sm));
+}
+
+.welcomeIntroBook {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 680px);
+  max-width: 100%;
+  min-width: 0;
+  padding: clamp(36px, 8vw, 82px) clamp(24px, 7vw, 72px);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: var(--dk-radius-panel);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(210, 225, 255, 0.09));
+  box-shadow:
+    0 28px 90px rgba(7, 14, 31, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  -webkit-backdrop-filter: blur(var(--dk-blur-lg)) saturate(140%);
+  backdrop-filter: blur(var(--dk-blur-lg)) saturate(140%);
+  text-align: center;
+  transform-origin: center left;
+  animation: welcomeBookReveal 5s cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+[dir="rtl"] .welcomeIntroBook {
+  transform-origin: center right;
+}
+
+.welcomeIntroBrand {
+  display: block;
+  color: #17213c;
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  font-weight: 950;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-shadow: 0 4px 24px rgba(255, 255, 255, 0.5);
+}
+
+.welcomeIntroBook h2 {
+  margin: clamp(20px, 4vw, 34px) 0 0;
+  color: #17213c;
+  font-size: clamp(1.35rem, 3.5vw, 2.45rem);
+  font-weight: 850;
+  line-height: var(--dk-line-height-heading);
+  text-wrap: balance;
+}
+
+.welcomeIntroBook p {
+  margin: var(--dk-space-6) 0 0;
+  color: rgba(23, 33, 60, 0.8);
+  font-size: clamp(1rem, 2.3vw, 1.4rem);
+  font-weight: var(--dk-font-weight-bold);
+  letter-spacing: 0.04em;
+}
+
+.welcomeIntroSkip {
+  position: absolute;
+  z-index: 4;
+  inset-inline-end: var(--dk-space-8);
+  inset-block-start: var(--dk-space-8);
+  color: #17213c;
+}
+
+.welcomeParticles {
+  position: absolute;
+  z-index: 3;
+  inset: 50%;
+  width: min(72vw, 720px);
+  height: min(54vh, 520px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.welcomeParticle {
+  position: absolute;
+  inset-inline-start: var(--particle-x);
+  inset-block-start: var(--particle-y);
+  width: var(--particle-size);
+  height: var(--particle-size);
+  border-radius: var(--dk-radius-pill);
+  background: var(--particle-color);
+  box-shadow: 0 0 12px var(--particle-color);
+  opacity: 0;
+  animation: welcomeParticleBurst 1.15s ease-out calc(3.8s + var(--particle-delay)) both;
+}
+
+@keyframes welcomeBookReveal {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(-18deg) translateY(14px) scale(0.86);
+    filter: blur(8px);
+  }
+  22% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0deg) translateY(0) scale(1);
+    filter: blur(0);
+  }
+  72% {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0deg) translateY(0) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(6deg) translateY(0) scale(1.04);
+    filter: blur(6px);
+  }
+}
+
+@keyframes welcomeParticleBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.35);
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--particle-dx), var(--particle-dy), 0) scale(1.15);
+  }
+}
+
+@keyframes welcomeNoticeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .welcomePortalPanel {
+    padding: clamp(22px, 4vw, 36px);
+  }
+
+  .welcomePortalGrid {
+    gap: clamp(20px, 3vw, 24px);
+  }
+}
+
+/* Welcome keeps the shared public chrome, but compacts its mobile geometry
+   without changing the toolbar's established control order. */
+@media (max-width: 768px) {
+  .welcomePublicShell {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 720px) {
+  .welcomePublicShell .publicFloatingToolbar {
+    background: transparent;
+    background-image: none;
+    border: 0;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .welcomePublicShell .publicFloatingToolbar::before,
+  .welcomePublicShell .publicFloatingToolbar::after {
+    content: none;
+    display: none;
+  }
+
+  .welcomePublicShell .publicSiteChrome,
+  .welcomePublicShell .publicHeader {
+    margin-block: 0;
+  }
+
+  .welcomePublicShell .publicHeader .publicHeaderMain {
+    padding-block: 8px;
+  }
+
+  .welcomePublicShell .publicFloatingToolbar {
+    gap: 8px;
+  }
+
+  .welcomePage,
+  .welcomePage * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .welcomePage {
+    min-height: 0;
+    padding-inline-start: env(safe-area-inset-left, 0px);
+    padding-inline-end: env(safe-area-inset-right, 0px);
+  }
+
+  .welcomePageContent {
+    width: min(calc(100% - 24px), 100%);
+    min-height: 0;
+    place-items: start center;
+    padding-block-start: 10px;
+    padding-block-end: max(24px, env(safe-area-inset-bottom, 0px));
+  }
+
+  .welcomePortalPanel {
+    width: 100%;
+    padding: 20px 14px;
+    border-radius: 24px;
+  }
+
+  .welcomePortalHeader {
+    margin-block-end: 18px;
+  }
+
+  .welcomePortalHeader h1 {
+    font-size: clamp(1.65rem, 8vw, 2.35rem);
+    line-height: 1.15;
+  }
+
+  .welcomePortalHeader p {
+    width: min(100%, 34rem);
+    margin-block-start: 10px;
+    font-size: clamp(0.9rem, 4vw, 1rem);
+    line-height: 1.55;
+  }
+
+  .welcomePortalGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .welcomeCard.dk-button {
+    min-height: 96px;
+    padding: 16px 14px;
+    gap: 10px;
+  }
+
+  .welcomeCardIcon {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+
+  .welcomeCardTitle {
+    font-size: clamp(1rem, 4.8vw, 1.2rem);
+  }
+
+  .welcomeReplayButton {
+    margin-block-start: 18px;
+  }
+
+  .welcomeIntro {
+    width: 100%;
+    padding-block-start: max(16px, env(safe-area-inset-top, 0px));
+    padding-block-end: max(16px, env(safe-area-inset-bottom, 0px));
+    padding-inline-start: max(16px, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .welcomeIntroBook {
+    width: 100%;
+  }
+
+  .welcomeIntroSkip {
+    inset-inline-end: var(--dk-space-5);
+    inset-block-start: var(--dk-space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcomeCard.dk-button,
+  .welcomePageContent,
+  .welcomeNotice {
+    transition: none;
+  }
+
+  .welcomeCard.dk-button:hover,
+  .welcomeCard.dk-button:active {
+    transform: none;
+  }
+
+  .welcomeIntro {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .welcomeIntroBook {
+    transform: none;
+    filter: none;
+    animation: welcomeReducedFade 420ms ease both;
+  }
+
+  .welcomeParticles {
+    display: none;
+  }
+}
+
+@keyframes welcomeReducedFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

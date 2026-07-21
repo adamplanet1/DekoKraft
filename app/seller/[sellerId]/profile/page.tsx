@@ -1,0 +1,1 @@
+import SellerProfileEditor from"../../components/SellerProfileEditor";export default async function ProfilePage({params}:{params:Promise<{sellerId:string}>}){const{sellerId}=await params;return <SellerProfileEditor sellerId={sellerId}/>}

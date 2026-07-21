@@ -2,12 +2,16 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import { publicPath } from "../lib/publicPath";
+import { normalizeProductDNA, type ProductDNA, type ProductDimensions } from "../../lib/echo/echoProductDNA";
 
 export interface CategoryData {
   slug: string;
   title: string;
   description: string;
   folder: string;
+  ownerType?: "admin" | "participant";
+  ownerId?: string;
+  participantId?: string;
 }
 
 export interface ProductData {
@@ -22,6 +26,7 @@ export interface ProductData {
   mainImage: string;
   images: string[];
   thumbnails: string[];
+  participantId?: string;
 
   title_ar?: string;
   title_de?: string;
@@ -56,6 +61,25 @@ export interface ProductData {
   package_weight_g?: string | number;
 
   tags?: string;
+  dimensions: ProductDimensions;
+  productDNA: ProductDNA;
+}
+
+function legacyDimensions(product: Partial<ProductData> & Record<string, unknown>): ProductDimensions {
+  if (product.dimensions && typeof product.dimensions === "object") {
+    return normalizeProductDNA({ dimensions: product.dimensions } as Partial<ProductDNA> & Record<string, unknown>).dimensions;
+  }
+  const size = typeof product.size_cm === "string" ? product.size_cm : typeof product.size === "string" ? product.size : "";
+  const values = size.match(/\d+(?:[.,]\d+)?/g)?.slice(0, 3).map((value) => Number(value.replace(",", "."))) ?? [];
+  const numberOrNull = (value: unknown) => value === "" || value === undefined || value === null ? null : Number(value);
+  return {
+    length: numberOrNull(product.length_cm) ?? values[0] ?? null,
+    width: numberOrNull(product.width_cm) ?? values[1] ?? null,
+    height: numberOrNull(product.height_cm) ?? values[2] ?? null,
+    unit: values.length || product.length_cm != null || product.width_cm != null || product.height_cm != null ? "cm" : "mm",
+    source: "product-data",
+    confirmed: false,
+  };
 }
 
 export function loadCategories(): CategoryData[] {
@@ -134,6 +158,21 @@ function completeProduct(
 
   const images: string[] = [];
   const thumbnails: string[] = [];
+  const dimensions = legacyDimensions(product as ProductData & Record<string, unknown>);
+  const productDNA = normalizeProductDNA({
+    ...(product.productDNA ?? {}),
+    id: product.id,
+    categoryId: categorySlug,
+    productType: product.productDNA?.productType || product.title,
+    shape: product.productDNA?.shape || product.shape,
+    material: product.productDNA?.material || product.material,
+    color: product.productDNA?.color || product.color,
+    dimensions,
+    scent: product.productDNA?.scent || product.fragrance,
+    burnTime: product.productDNA?.burnTime || product.burn_time,
+    waxType: product.productDNA?.waxType || product.wax_type,
+    notes: product.productDNA?.notes || product.description,
+  });
 
   for (let i = 1; i <= product.imageCount; i++) {
     const number = String(i).padStart(2, "0");
@@ -160,6 +199,8 @@ function completeProduct(
     mainImage,
     images,
     thumbnails,
+    dimensions,
+    productDNA,
   };
 }
 

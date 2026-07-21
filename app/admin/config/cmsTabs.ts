@@ -1,6 +1,7 @@
 export type CmsTabId =
   | "dashboard"
   | "products"
+  | "dekobrain"
   | "gallery"
   | "videos"
   | "backgrounds"
@@ -14,6 +15,7 @@ export type CmsTabId =
 export const cmsTabs: { id: CmsTabId; icon: string }[] = [
   { id: "dashboard", icon: "🏠" },
   { id: "products", icon: "📦" },
+  { id: "dekobrain", icon: "🧠" },
   { id: "gallery", icon: "🖼️" },
   { id: "videos", icon: "🎥" },
   { id: "backgrounds", icon: "🌄" },

@@ -1,5 +1,7 @@
 // app/admin/types.ts
 
+import type { ProductDNA, ProductDimensions } from "../../lib/echo/echoProductDNA";
+
 export type Lang = "ar" | "de" | "en";
 
 /** صف المنتج الذى يعرضه API */
@@ -27,6 +29,8 @@ export interface ProductRow {
   fragrance?: string;
   weight_g?: string;
   size_cm?: string;
+  dimensions: ProductDimensions;
+  productDNA: ProductDNA;
   shape?: string;
   brand?: string;
   tags?: string;

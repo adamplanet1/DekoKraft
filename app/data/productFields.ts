@@ -5,6 +5,7 @@ export const categories = [
   { value: "services", label_ar: "الخدمات", label_de: "Services", label_en: "Services" },
   { value: "decor3d", label_ar: "ديكور 3D", label_de: "3D Deko", label_en: "3D Decor" },
   { value: "textile", label_ar: "طباعة وطرز", label_de: "Textil & Stickerei", label_en: "Textile & Embroidery" },
+  { value: "gypsum-decor", label_ar: "ديكور من الجبس", label_de: "Gipsdekor", label_en: "Gypsum Decor" },
 ];
 
 type ProductField = {
@@ -15,6 +16,12 @@ type ProductField = {
 };
 
 export const productFields: Record<string, ProductField[]> = {
+  "gypsum-decor": [
+    { key: "material", ar: "المادة", de: "Material", en: "Material" },
+    { key: "shape", ar: "الشكل", de: "Form", en: "Shape" },
+    { key: "color", ar: "اللون", de: "Farbe", en: "Color" },
+    { key: "size_cm", ar: "الأبعاد", de: "Größe", en: "Dimensions" },
+  ],
   candles: [
     { key: "fragrance", ar: "الرائحة", de: "Duft", en: "Fragrance" },
     { key: "color", ar: "اللون", de: "Farbe", en: "Color" },

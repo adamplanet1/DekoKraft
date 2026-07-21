@@ -1,6 +1,7 @@
 import { type Lang } from "../../config/translations";
+import type { ProductDNA, ProductDimensions } from "../../../../lib/echo/echoProductDNA";
 
-type ProductTableItem = {
+export type ProductTableItem = {
   id?: string | number;
   title?: string;
   title_ar?: string;
@@ -10,6 +11,8 @@ type ProductTableItem = {
   status?: string;
   price?: string | number;
   currency?: string;
+  dimensions?: ProductDimensions;
+  productDNA?: ProductDNA;
 };
 
 type ProductsTableProps = {

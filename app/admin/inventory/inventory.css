@@ -1,0 +1,9 @@
+.adminInventory { width: min(100%, 1180px); margin-inline: auto; color: var(--dk-color-text); }
+.adminInventory > header p { margin: 0; color: var(--dk-color-text-muted); }
+.adminInventory > header h1 { margin: 4px 0 24px; font-size: clamp(2rem, 4vw, 3rem); }
+.adminInventory__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; }
+.adminInventory__card { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px 14px; padding: 20px; }
+.adminInventory__card svg { width: 24px; height: 24px; color: var(--dk-color-primary); }
+.adminInventory__card strong { grid-column: 1 / -1; font-size: 2rem; }
+.adminInventory__notice { margin-top: 20px; padding: 20px; }
+.adminInventory__notice p { margin: 8px 0 0; color: var(--dk-color-text-muted); line-height: 1.7; }

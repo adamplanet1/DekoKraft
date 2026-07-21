@@ -1,0 +1,2 @@
+import Link from "next/link";import SellerProductCatalog from "../../components/SellerProductCatalog";
+export default async function ProductsPage({params}:{params:Promise<{sellerId:string}>}){const{sellerId}=await params;return <main className="sellerPage"><header className="sellerPageHeader"><div><span>إدارة المتجر</span><h1>منتجاتي</h1><p>اعرض منتجات متجرك وحدها وتابع حالتها وذكاء DekoBrain.</p></div><Link className="sellerPrimary" href={`/seller/${sellerId}/products/new`}>＋ إضافة منتج</Link></header><SellerProductCatalog sellerId={sellerId}/></main>}

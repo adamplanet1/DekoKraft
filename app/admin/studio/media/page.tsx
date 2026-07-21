@@ -1,0 +1,3 @@
+"use client";
+import{useRouter}from"next/navigation";import StudioWorkspace from"../components/StudioWorkspace";import{useStudioMedia}from"../components/StudioMediaContext";
+export default function Page(){const router=useRouter(),{selectFile}=useStudioMedia();return <StudioWorkspace title="استيراد الصور والوسائط" description="رفع الملفات وإدارة قائمة الوسائط والتحقق من الصيغة والحجم." onPrepare={item=>{selectFile(item.file);router.push("/admin/studio/preview")}}>{()=> <section className="studioPanel"><h2>إدارة الوسائط</h2><p>اختر ملفًا من القائمة أعلاه ليصبح الملف النشط. تظهر مع كل صورة معلومات الاسم والنوع والأبعاد والحجم والحالة والتحذيرات.</p><p className="studioFuture">دعم الفيديو مخطط لمرحلة لاحقة.</p></section>}</StudioWorkspace>}
