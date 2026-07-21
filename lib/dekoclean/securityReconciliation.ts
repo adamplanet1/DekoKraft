@@ -14,15 +14,19 @@ const normalizePath = (value: string) => value.trim().replace(/\\/g, "/").replac
 const identity = (finding: DekoCleanFinding) => createHash("sha256").update([normalizePath(finding.affectedFiles[0] ?? ""), finding.detector ?? finding.detectedBy, finding.type, finding.fileHashSha256 ?? ""].join("::")).digest("hex");
 const active = (finding: DekoCleanFinding) => !["RESOLVED", "IGNORED"].includes(findingLifecycleStatus(finding));
 
-function workingTreeChange(root: string, filePath: string): boolean {
-  try { return execFileSync("git", ["status", "--porcelain", "--", filePath], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim().length > 0; } catch { return false; }
+function knownProjectChange(root: string, filePath: string, currentHash: string): boolean {
+  try {
+    if (execFileSync("git", ["status", "--porcelain", "--", filePath], { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim().length > 0) return true;
+    const committed = execFileSync("git", ["show", `HEAD:${filePath}`], { cwd: root, encoding: null, stdio: ["ignore", "pipe", "ignore"] });
+    return createHash("sha256").update(committed).digest("hex") === currentHash;
+  } catch { return false; }
 }
 function classify(root: string, filePath: string, currentHash: string | undefined, previousHash: string | undefined): ProtectedFileChangeClassification {
   const absolute = path.resolve(root, filePath);
   if (!fs.existsSync(absolute)) return "integrity-failure";
   try { fs.accessSync(absolute, fs.constants.R_OK); } catch { return "integrity-failure"; }
   if (!currentHash || !previousHash) return "unverified-change";
-  return workingTreeChange(root, filePath) ? "authorized-project-change" : currentHash === previousHash ? "authorized-project-change" : "unexpected-change";
+  return knownProjectChange(root, filePath, currentHash) || currentHash === previousHash ? "authorized-project-change" : "unexpected-change";
 }
 
 export function reconcilePersistedSecurityFindings(projectRoot = process.cwd()): SecurityReconciliationReport {
