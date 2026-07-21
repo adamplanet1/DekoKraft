@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Palette, Sparkles, Video, WandSparkles, X } from "lucide-react";
+import { ArrowLeft, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Paintbrush, Palette, Sparkles, Video, WandSparkles, X } from "lucide-react";
 import NextImage from "next/image";
 import {
   useEffect,
@@ -9,6 +9,7 @@ import {
   useState,
   useCallback,
   type ChangeEvent,
+  type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useLanguage } from "../../components/LanguageProvider";
@@ -86,6 +87,9 @@ export default function EchoImageStudio({
   const [productMemoryImage, setProductMemoryImage] = useState<string | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState("");
+  const [isImageDragging, setIsImageDragging] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState("");
   const [activeProductMemory, setActiveProductMemory] = useState<ProductMemory | null>(null);
   const [brightness, setBrightness] = useState(DEFAULT_FILTERS.brightness);
   const [contrast, setContrast] = useState(DEFAULT_FILTERS.contrast);
@@ -966,9 +970,13 @@ export default function EchoImageStudio({
     setSmartEditExportMessage("");
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const loadImageFile = (file: File) => {
+    if (!/^image\/(png|jpeg|webp)$/.test(file.type)) {
+      setImageUploadError("يرجى اختيار صورة PNG أو JPEG أو WebP.");
+      return;
+    }
+    setImageUploadError("");
+    setIsImageLoading(true);
 
     const nextUrl = URL.createObjectURL(file);
     const nextOriginalUrl = URL.createObjectURL(file);
@@ -1019,6 +1027,19 @@ export default function EchoImageStudio({
       });
     setFileName(file.name);
     setExportMessage("");
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) loadImageFile(file);
+    event.target.value = "";
+  };
+
+  const handleImageDrop = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    setIsImageDragging(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) loadImageFile(file);
   };
 
   const selectPlatformProduct = ({ productDNA, title, imageUrl }: PlatformProductSelection): ProductSelectionMode => {
@@ -1552,6 +1573,7 @@ export default function EchoImageStudio({
               type="button"
               className="echoImageIconButton"
               aria-label={t("studio.image.closeStudio")}
+              title={t("studio.image.closeStudio")}
               onClick={onCloseStudio}
             >
               <X size={18} aria-hidden="true" />
@@ -1560,17 +1582,18 @@ export default function EchoImageStudio({
               type="button"
               className="echoImageIconButton echoImageStudio__back"
               aria-label={t("studio.image.back")}
+              title={t("studio.image.back")}
               autoFocus
               onClick={onBack}
             >
               <ArrowLeft size={19} aria-hidden="true" />
             </button>
             {isMaximized ? (
-              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.restore")} aria-pressed="true" onClick={onRestore}>
+              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.restore")} title={t("studio.image.restore")} aria-pressed="true" onClick={onRestore}>
                 <Minimize2 size={18} aria-hidden="true" />
               </button>
             ) : (
-              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.maximize")} aria-pressed="false" onClick={onMaximize}>
+              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.maximize")} title={t("studio.image.maximize")} aria-pressed="false" onClick={onMaximize}>
                 <Maximize2 size={18} aria-hidden="true" />
               </button>
             )}
@@ -1698,7 +1721,7 @@ export default function EchoImageStudio({
                 onClick={toggleLaserTools}
               >
                 <span className="echoLaserMainToolIcon"><Crosshair size={20} aria-hidden="true" /></span>
-                <span className="echoLaserMainToolLabel">{t("studio.laserProcessing.processing")}</span>
+                <span className="echoLaserMainToolLabel">المقص الكهربائي</span>
                 <ChevronDown className={`echoLaserMainToolChevron${isLaserToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
               </button>
               <LaserToolsMenu
@@ -1759,9 +1782,20 @@ export default function EchoImageStudio({
                 }}
               />
             </div>
+            <div className="echoColoringStudio__headerTools">
+              <button
+                type="button"
+                className="echoColoringMainToolButton"
+                data-active={activeWorkspace === "coloring" ? "true" : undefined}
+                onClick={() => selectWorkspace("coloring")}
+              >
+                <span className="echoColoringMainToolIcon"><Paintbrush size={20} aria-hidden="true" /></span>
+                <span className="echoColoringMainToolLabel">التلوين</span>
+                <span className="echoStudioDashboardStatus">متاح</span>
+              </button>
+            </div>
             <div ref={smartEditToolsRef} className="echoSmartEditStudio__headerTools">
               <button
-                ref={smartEditToolsToggleRef}
                 type="button"
                 className="echoSmartEditMainToolButton"
                 data-active={activeTool === "smart-edit" ? "true" : undefined}
@@ -1770,7 +1804,7 @@ export default function EchoImageStudio({
                 onClick={toggleSmartEditTools}
               >
                 <span className="echoSmartEditMainToolIcon"><Sparkles size={20} aria-hidden="true" /></span>
-                <span className="echoSmartEditMainToolLabel">{t("studio.smartEditProcessing.processing")}</span>
+                <span className="echoSmartEditMainToolLabel">التحليل الذكي</span>
                 <ChevronDown className={`echoSmartEditMainToolChevron${isSmartEditOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
               </button>
               <SmartEditToolsMenu
@@ -1813,7 +1847,14 @@ export default function EchoImageStudio({
           ) : activeProcessingMode === "threeDImage" ? (
             <ThreeDProcessingWorkspace />
           ) : (
-            <section className="echoImagePreview" aria-label={t("studio.image.title")}>
+            <section
+              className={`echoImagePreview${isImageDragging ? " echoImagePreview--dragging" : ""}`}
+              aria-label={t("studio.image.title")}
+              onDragEnter={(event) => { event.preventDefault(); setIsImageDragging(true); }}
+              onDragOver={(event) => event.preventDefault()}
+              onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setIsImageDragging(false); }}
+              onDrop={handleImageDrop}
+            >
             {previewUrl ? (
               <NextImage
                 src={previewUrl}
@@ -1822,7 +1863,12 @@ export default function EchoImageStudio({
                 fill
                 unoptimized
                 sizes="(max-width: 760px) 100vw, 640px"
-                onError={() => setActiveImageSource((current) => current?.previewUrl === previewUrl ? null : current)}
+                onLoad={() => setIsImageLoading(false)}
+                onError={() => {
+                  setIsImageLoading(false);
+                  setImageUploadError("تعذر تحميل الصورة المختارة.");
+                  setActiveImageSource((current) => current?.previewUrl === previewUrl ? null : current);
+                }}
                 style={{
                   filter: activeProcessingMode === "embroidery"
                     ? isEmbroideryComparing ? "none" : embroideryFilterValue
@@ -1836,10 +1882,12 @@ export default function EchoImageStudio({
                 <ImagePlus size={42} aria-hidden="true" />
                 <p>{activeProductMemory?.productId ? "لا توجد صورة محفوظة لهذا المنتج." : t("studio.image.uploadHint")}</p>
                 <button type="button" className="echoImageActionButton" onClick={() => fileInputRef.current?.click()}>
-                  {t("studio.image.upload")}
+                  اختيار صورة
                 </button>
               </div>
             )}
+            {isImageLoading && <span className="echoImagePreview__state" role="status">جارٍ تحميل الصورة…</span>}
+            {imageUploadError && <span className="echoImagePreview__state echoImagePreview__state--error" role="alert">{imageUploadError}</span>}
             <input
               ref={fileInputRef}
               className="echoImageStudio__fileInput"
@@ -2068,6 +2116,55 @@ export default function EchoImageStudio({
           onCompareKeyChange={setIsSmartEditComparing}
         />
       </div>
+
+      <aside className="echoStudioSmartPanel" aria-label="لوحة التعديل الذكي">
+        <button
+          ref={smartEditToolsToggleRef}
+          type="button"
+          className="echoSmartEditMainToolButton echoStudioSmartPanel__trigger"
+          data-active={activeTool === "smart-edit" ? "true" : undefined}
+          aria-expanded={isSmartEditOpen}
+          aria-controls="echo-smart-edit-chat"
+          onClick={toggleSmartEditTools}
+        >
+          <span className="echoSmartEditMainToolIcon"><Sparkles size={20} aria-hidden="true" /></span>
+          <span className="echoSmartEditMainToolLabel">التعديل الذكي</span>
+          <ChevronDown className={`echoSmartEditMainToolChevron${isSmartEditOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
+        </button>
+        <div className="echoStudioSmartPanel__content">
+          {!isSmartEditOpen && <p className="echoStudioSmartPanel__placeholder">افتح التعديل الذكي لعرض المساعد وأدواته هنا.</p>}
+          {isSmartEditOpen && (
+            <SmartEditEngine
+              key={activeProductMemory?.memoryId ?? "empty-product-memory"}
+              product={{
+                id: activeProductMemory?.productId ?? activeProductMemory?.memoryId ?? "",
+                name: activeProductMemory?.sourceImageName ?? fileName,
+                productDNA: activeProductMemory?.productDNA ?? null,
+                originalUploadedImage,
+                currentPreviewImage,
+                generatedResultImage,
+                productMemoryImage,
+                originalImageUrl: originalPreviewUrl,
+              }}
+              activeProductMemory={activeProductMemory}
+              participantId={launchContext?.participantId}
+              sellerId={launchContext?.sellerId}
+              onProductMemoryChange={setActiveProductMemory}
+              onRequestUpload={() => fileInputRef.current?.click()}
+              onSelectProduct={selectPlatformProduct}
+              boundaryRef={studioWindowRef}
+              onPreviewChange={(imageUrl, source) => {
+                setGeneratedResultImage(source === "generated" ? imageUrl : null);
+                setActiveImageSource((current) => current ? { ...current, previewUrl: imageUrl } : current);
+              }}
+              onClose={() => {
+                selectTool(null);
+                window.requestAnimationFrame(() => smartEditToolsToggleRef.current?.focus());
+              }}
+            />
+          )}
+        </div>
+      </aside>
       </div>
 
       <FloatingImageToolPanel
@@ -2102,36 +2199,6 @@ export default function EchoImageStudio({
         onSepiaChange={setSepia}
         onHueRotateChange={setHueRotate}
       />
-      {isSmartEditOpen && (
-        <SmartEditEngine
-          key={activeProductMemory?.memoryId ?? "empty-product-memory"}
-          product={{
-            id: activeProductMemory?.productId ?? activeProductMemory?.memoryId ?? "",
-            name: activeProductMemory?.sourceImageName ?? fileName,
-            productDNA: activeProductMemory?.productDNA ?? null,
-            originalUploadedImage,
-            currentPreviewImage,
-            generatedResultImage,
-            productMemoryImage,
-            originalImageUrl: originalPreviewUrl,
-          }}
-          activeProductMemory={activeProductMemory}
-          participantId={launchContext?.participantId}
-          sellerId={launchContext?.sellerId}
-          onProductMemoryChange={setActiveProductMemory}
-          onRequestUpload={() => fileInputRef.current?.click()}
-          onSelectProduct={selectPlatformProduct}
-          boundaryRef={studioWindowRef}
-          onPreviewChange={(imageUrl, source) => {
-            setGeneratedResultImage(source === "generated" ? imageUrl : null);
-            setActiveImageSource((current) => current ? { ...current, previewUrl: imageUrl } : current);
-          }}
-          onClose={() => {
-            selectTool(null);
-            window.requestAnimationFrame(() => smartEditToolsToggleRef.current?.focus());
-          }}
-        />
-      )}
     </div>
   );
 }
