@@ -42,7 +42,7 @@ function recordTerminalTimeline(run: DekoScanRun, adminReference: string, projec
 function profileSummary(profileId: DekoScanProfileId, findings: DekoCleanFinding[], failures: number, securityAvailable?: boolean, performanceAvailable?: boolean): string {
   if (profileId === "security" && securityAvailable === false) return `لم يتم العثور على أداة حماية متصلة. اكتمل فحص سلامة المشروع ووجد ${findings.length} سببًا جذريًا.`;
   if (profileId === "performance" && performanceAvailable === false) return "لا توجد قياسات أداء فعلية متاحة؛ بقيت القيم غير متاحة ولم تُنشأ snapshot وهمية.";
-  return `اكتمل ${failures ? "جزئيًا" : "بنجاح"}: ${findings.length} سببًا جذريًا، و${findings.reduce((sum, finding) => sum + finding.count, 0)} نتيجة متأثرة.`;
+  return `اكتمل ${failures ? "جزئيًا" : "بنجاح"}: ${findings.length} نتيجة مجمعة، وتشمل ${findings.reduce((sum, finding) => sum + finding.count, 0)} مرجع ملف داخل النتائج.`;
 }
 
 async function executeDetectors(

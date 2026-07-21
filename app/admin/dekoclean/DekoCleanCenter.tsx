@@ -9,7 +9,8 @@ import type {
   DekoCleanFinding, DekoCleanRepairRecipe, DekoCleanSummary, DiagnosisCard, EchoRepairExecutionResult, HealthScore, HealthScoreHistoryEntry, SecurityMemoryEntry, TimelineEntry,
 } from "../../../lib/dekoclean/types";
 import type { DekoCleanManifestSummary } from "../../../lib/dekoclean/summary";
-import type { NeedsReviewCountBreakdown } from "../../../lib/dekoclean/findingSelectors";
+import type { InspectionCounters, NeedsReviewCountBreakdown } from "../../../lib/dekoclean/findingSelectors";
+import { selectVisibleInspectionFindings } from "../../../lib/dekoclean/findingSelectors";
 import type { MissionControlAnalytics } from "../../../lib/dekoclean/missionControlTypes";
 import type { DekoScanProfileId, DekoScanRun } from "../../../lib/dekoclean/scan/types";
 import MissionControlAnalyticsPanel from "./MissionControlAnalytics";
@@ -35,6 +36,7 @@ type CenterData = {
   total: number;
   scope: string;
   needsReviewBreakdown: NeedsReviewCountBreakdown;
+  inspectionCounters: InspectionCounters;
   securityFindings: DekoCleanFinding[];
   securityScore: { baseScore: number; criticalPenalty: number; highPenalty: number; mediumPenalty: number; finalScore: number };
 };
@@ -266,7 +268,7 @@ export default function DekoCleanCenter() {
   });
 
   const summary = data?.summary;
-  const activeFindings = useMemo(() => data?.findings.filter((finding) => !["resolved", "ignored"].includes(finding.status) && (!scanResultFilter || scanResultFilter.findingIds.includes(finding.id))) ?? [], [data?.findings, scanResultFilter]);
+  const activeFindings = useMemo(() => selectVisibleInspectionFindings(data?.findings ?? [], scanResultFilter?.findingIds), [data?.findings, scanResultFilter]);
   const critical = useMemo(() => activeFindings.filter((finding) => finding.severity === "critical"), [activeFindings]);
   const healthLabels: Record<HealthScore["label"], string> = { excellent: "ممتاز", good: "جيد", "needs-attention": "يحتاج انتباه", warning: "تحذير", critical: "حرج" };
   const timeline = data?.timeline ?? [];
@@ -365,7 +367,7 @@ export default function DekoCleanCenter() {
         <DekoAccordionSection id="findings" title="فحص الملفات وخطة التنظيف" subtitle="التشخيص، الأسباب الجذرية، والمعاينة الآمنة" icon={<FileSearch />} badge={`${activeFindings.length} نتيجة مجمعة`} isOpen={accordionOpen.findings} onToggle={toggleAccordion}>
         <section className="dkCleanPanel">
           <header><div><h2>فحص الملفات وخطة التنظيف</h2><p>اختر نتيجة لعرض التشخيص وخيارات الخطة الآمنة.</p></div></header>
-          {data?.needsReviewBreakdown && <div className="dkCleanCountBreakdown" role="status"><span>تحتاج مراجعة — نتائج قابلة للإجراء: <b>{data.needsReviewBreakdown.total}</b></span><span>ملفات متأثرة فريدة: <b>{new Set(activeFindings.flatMap((f) => f.affectedFiles)).size}</b></span><span>مستبعدة من المراجعة: <b>{data.needsReviewBreakdown.duplicateRecordsExcluded + data.needsReviewBreakdown.resolvedRecordsExcluded + data.needsReviewBreakdown.historicalRecordsExcluded + data.needsReviewBreakdown.informationalRecordsExcluded}</b></span><span>معلومات: <b>{data.needsReviewBreakdown.bySeverity.info ?? 0}</b></span><span>منخفض: <b>{data.needsReviewBreakdown.bySeverity.low ?? 0}</b></span><span>متوسط: <b>{data.needsReviewBreakdown.bySeverity.medium ?? 0}</b></span><span>مرتفع: <b>{data.needsReviewBreakdown.bySeverity.high ?? 0}</b></span><span>نتائج الأمان النشطة: <b>{data.securityFindings.length}</b></span></div>}
+          {data?.inspectionCounters && <><div className="dkCleanCountBreakdown" role="status"><span>إجمالي النتائج: <b>{data.inspectionCounters.totalFindings}</b></span><span>النتائج المعروضة: <b>{activeFindings.length}</b></span><span>نتائج قابلة للإجراء: <b>{data.inspectionCounters.actionableFindings}</b></span><span>الملفات المتأثرة الفريدة: <b>{data.inspectionCounters.uniqueAffectedFiles}</b></span><span>تم تجاهلها: <b>{data.inspectionCounters.ignoredFindings}</b></span><span>تم حلها: <b>{data.inspectionCounters.resolvedFindings}</b></span></div><p className="dkAccordionEmpty">النتيجة هي مجموعة مشكلة، وقد تحتوي النتيجة الواحدة على عدة ملفات.</p>{activeFindings.length < data.inspectionCounters.totalFindings && <p className="dkAccordionEmpty">يتم عرض {activeFindings.length} من أصل {data.inspectionCounters.totalFindings} نتيجة</p>}</>}
           <div className="dkCleanFindings">
             <aside>{activeFindings.length === 0 ? <p>لا توجد نتائج نشطة. شغّل الفحص للحصول على بيانات فعلية.</p> : activeFindings.map((finding) => { const severity = data?.diagnoses[finding.id]?.severity; const action = primaryAction(finding); return <button type="button" key={finding.id} className={selectedId === finding.id ? "active" : ""} aria-expanded={selectedId === finding.id} aria-controls="dk-clean-finding-details" onClick={() => { setSelectedId(finding.id); setPlan(null); setRecommendation(null); }}><span className={`severity-${finding.severity} dkCleanSeverity`} title={severity?.explanation}>{severity?.label ?? finding.severity}<i>{severity?.explanation}</i></span><strong>{finding.title}</strong><small>{categoryText[finding.category]} · {finding.count} ملف · {actionLabels[action]}</small><small>عرض التفاصيل · الإجراء: {actionLabels[action]}</small></button>; })}</aside>
             <article id="dk-clean-finding-details">{selected && diagnosis ? <div className="dkCleanDiagnosis">

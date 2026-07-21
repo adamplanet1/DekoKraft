@@ -4,7 +4,7 @@ import path from "node:path";
 import { readFindings } from "./findingStore.ts";
 import { readLatestReport } from "./report.ts";
 import type { DekoCleanReport, DekoCleanSummary } from "./types.ts";
-import { selectNeedsReviewFindings, selectSecurityFindings } from "./findingSelectors.ts";
+import { canonicalStatus, selectNeedsReviewFindings, selectSecurityFindings } from "./findingSelectors.ts";
 
 export type DekoCleanManifestSummary = { id: string; status: string; createdAt: string; entries: number };
 
@@ -26,10 +26,9 @@ function safeReport(projectRoot: string): DekoCleanReport | null {
 
 export function getDekoCleanSummary(projectRoot = process.cwd()): DekoCleanSummary {
   const all = readFindings(projectRoot);
-  const canonical = (f: typeof all[number]) => f.lifecycle?.status ?? (f.status === "resolved" ? "RESOLVED" : f.status === "ignored" ? "IGNORED" : f.status === "failed" ? "FAILED" : "OPEN");
   const unique = selectNeedsReviewFindings(all).findings;
-  const resolvedFindings = all.filter((f) => canonical(f) === "RESOLVED").length;
-  const failedFindings = all.filter((f) => canonical(f) === "FAILED").length;
+  const resolvedFindings = all.filter((f) => canonicalStatus(f) === "RESOLVED").length;
+  const failedFindings = all.filter((f) => canonicalStatus(f) === "FAILED").length;
   const report = safeReport(projectRoot);
   const quarantinedFiles = listDekoCleanManifests(projectRoot)
     .filter((manifest) => manifest.status !== "restored")
@@ -42,13 +41,13 @@ export function getDekoCleanSummary(projectRoot = process.cwd()): DekoCleanSumma
   return {
     status: criticalAlerts > 0 ? "danger" : highAlerts > 0 ? "warning" : unique.length > 0 ? "review" : "stable",
     radarAlerts,
-    reviewItems: unique.filter((f) => ["OPEN", "FAILED"].includes(canonical(f))).length,
+    reviewItems: unique.filter((f) => ["OPEN", "FAILED"].includes(canonicalStatus(f))).length,
     quarantinedFiles,
     protectedFiles: report?.protectedFiles ?? 0,
     criticalAlerts,
     lastScanAt: report?.createdAt,
     healthyFiles: Math.max(0, scanned - affected.size),
-    pendingDecision: unique.filter((f) => canonical(f) === "OPEN" && f.recommendedAction !== "validate").length,
+    pendingDecision: unique.filter((f) => canonicalStatus(f) === "OPEN" && f.recommendedAction !== "validate").length,
     resolvedFindings,
     failedFindings,
   };

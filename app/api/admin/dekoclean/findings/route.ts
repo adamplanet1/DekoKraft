@@ -7,7 +7,7 @@ import { getDekoCleanSummary, listDekoCleanManifests } from "../../../../../lib/
 import { readMaintenanceTimeline } from "../../../../../lib/dekoclean/timeline";
 import { getMissionControlAnalytics } from "../../../../../lib/dekoclean/missionControl";
 import { withDekoCleanAdmin } from "../_shared";
-import { calculateSecurityScore, selectInspectionFindings, selectNeedsReviewFindings, selectSecurityFindings } from "../../../../../lib/dekoclean/findingSelectors";
+import { calculateInspectionCounters, calculateSecurityScore, selectInspectionFindings, selectNeedsReviewFindings, selectSecurityFindings } from "../../../../../lib/dekoclean/findingSelectors";
 import { ensureDekoCleanActionStorage } from "../../../../../lib/dekoclean/actionStorage";
 
 export const runtime = "nodejs";
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       .catch((error: unknown) => ({ missionControl: null, missionControlError: error instanceof Error ? error.message : "Mission Control unavailable" }));
     return {
     summary: getDekoCleanSummary(), health: calculateHealthScore(), healthHistory: readHealthScoreHistory(),
-    findings, total: findings.length, scope: requestedStatus === "resolved" ? "resolved" : "active", needsReviewBreakdown: selectedReview.breakdown, securityFindings: selectSecurityFindings(allFindings), securityScore: calculateSecurityScore(allFindings), diagnoses: Object.fromEntries(findings.map((finding) => [finding.id, createDiagnosisCard(finding)])),
+    findings, total: findings.length, inspectionCounters: calculateInspectionCounters(allFindings), scope: requestedStatus === "resolved" ? "resolved" : "active", needsReviewBreakdown: selectedReview.breakdown, securityFindings: selectSecurityFindings(allFindings), securityScore: calculateSecurityScore(allFindings), diagnoses: Object.fromEntries(findings.map((finding) => [finding.id, createDiagnosisCard(finding)])),
     securityMemory: readSecurityMemory(),
     audit: readDekoCleanAudit().slice(-100).reverse(),
     manifests: listDekoCleanManifests(),

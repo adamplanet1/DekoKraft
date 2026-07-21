@@ -103,8 +103,8 @@ export default function SmartScanCenter({ onResultsChanged, onShowResults, onAct
       <span><small>آخر نوع فحص</small><strong>{latest ? overview?.profiles.find((profile) => profile.id === latest.profileId)?.titleAr : "غير متاح"}</strong></span>
       <span><small>آخر وقت فحص</small><strong>{latest ? new Date(latest.startedAt).toLocaleString("ar") : "غير متاح"}</strong></span>
       <span><small>حالة الفحص</small><strong>{latest ? statusLabels[latest.status] : "لم يبدأ"}</strong></span>
-      <span><small>عدد النتائج</small><strong>{latest?.findingsFound ?? 0}</strong></span>
-      <span><small>الأسباب الجذرية</small><strong>{latest?.groupedFindings ?? 0}</strong></span>
+      <span><small>إجمالي النتائج</small><strong>{latest?.groupedFindings ?? 0}</strong></span>
+      <span><small>الملفات ضمن النتائج</small><strong>{latest?.findingsFound ?? 0}</strong></span>
     </div>
     {loading && <p className="dkSmartScanState"><LoaderCircle className="is-spinning" /> جارٍ تحميل ملفات الفحص...</p>}
     {error && <p className="dkSmartScanError" role="alert">{error} <button type="button" onClick={() => void loadOverview()}>إعادة المحاولة</button></p>}
@@ -112,7 +112,7 @@ export default function SmartScanCenter({ onResultsChanged, onShowResults, onAct
     {activeRun && <div className={`dkSmartScanProgress status-${activeRun.status}`}>
           <div><strong>{overview?.profiles.find((profile) => profile.id === activeRun.profileId)?.titleAr ?? activeRun.profileId}</strong><span>{statusLabels[activeRun.status]}</span></div>
           <p>{activeRun.phase}</p><div className="dkSmartScanProgressBar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={activeRun.progress}><i style={{ width: `${activeRun.progress}%` }} /></div>
-          <dl><div><dt>الملفات المفحوصة</dt><dd>{activeRun.scannedFiles}</dd></div><div><dt>المتخطاة</dt><dd>{activeRun.skippedFiles}</dd></div><div><dt>النتائج</dt><dd>{activeRun.findingsFound}</dd></div><div><dt>الأسباب الجذرية</dt><dd>{activeRun.groupedFindings}</dd></div><div><dt>الوقت</dt><dd>{formatDuration(activeRun.durationMs ?? new Date(activeRun.updatedAt).getTime() - new Date(activeRun.startedAt).getTime())}</dd></div></dl>
+          <dl><div><dt>الملفات المفحوصة</dt><dd>{activeRun.scannedFiles}</dd></div><div><dt>المتخطاة</dt><dd>{activeRun.skippedFiles}</dd></div><div><dt>إجمالي النتائج</dt><dd>{activeRun.groupedFindings}</dd></div><div><dt>الملفات ضمن النتائج</dt><dd>{activeRun.findingsFound}</dd></div><div><dt>الوقت</dt><dd>{formatDuration(activeRun.durationMs ?? new Date(activeRun.updatedAt).getTime() - new Date(activeRun.startedAt).getTime())}</dd></div></dl>
           {activeRun.summary && <p>{activeRun.summary}</p>}
           {activeRun.error && <p className="dkSmartScanError" role="alert">{activeRun.error}</p>}
           {['queued', 'running'].includes(activeRun.status) ? <button type="button" className="dkSmartScanCancel" onClick={() => void cancel()}>إلغاء الفحص بأمان</button> : activeRun.findingIds.length > 0 && <button type="button" className="dkSmartScanPrimary" onClick={() => onShowResults(activeRun.profileId, activeRun.findingIds)}>عرض النتائج</button>}

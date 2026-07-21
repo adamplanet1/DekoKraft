@@ -11,17 +11,31 @@ export type NeedsReviewCountBreakdown = {
   informationalRecordsExcluded: number;
 };
 
+export type InspectionCounters = {
+  totalFindings: number;
+  actionableFindings: number;
+  uniqueAffectedFiles: number;
+  ignoredFindings: number;
+  resolvedFindings: number;
+};
+
 export function canonicalStatus(finding: DekoCleanFinding): string {
-  return finding.lifecycle?.status ?? (finding.status === "resolved" ? "RESOLVED" : finding.status === "ignored" ? "IGNORED" : finding.status === "failed" ? "FAILED" : "OPEN");
+  if (finding.status === "resolved") return "RESOLVED";
+  if (finding.status === "ignored") return "IGNORED";
+  if (finding.status === "failed") return "FAILED";
+  return finding.lifecycle?.status ?? "OPEN";
 }
 
 function increment(target: Record<string, number>, key: string): void { target[key || "unknown"] = (target[key || "unknown"] ?? 0) + 1; }
 
+export function isActionableFinding(finding: DekoCleanFinding): boolean {
+  return finding.severity !== "info" || finding.recommendedActions.some((action) => ["repair", "restore", "recreate", "quarantine"].includes(action));
+}
+
 export function selectNeedsReviewFindings(findings: DekoCleanFinding[]): { findings: DekoCleanFinding[]; breakdown: NeedsReviewCountBreakdown } {
   const resolvedRecordsExcluded = findings.filter((finding) => ["RESOLVED", "IGNORED"].includes(canonicalStatus(finding))).length;
   const lifecycleActive = findings.filter((finding) => ["OPEN", "FAILED"].includes(canonicalStatus(finding)));
-  const actionable = (finding: DekoCleanFinding) => finding.severity !== "info" || finding.recommendedActions.some((action) => ["repair", "restore", "recreate", "quarantine"].includes(action));
-  const active = lifecycleActive.filter(actionable);
+  const active = lifecycleActive.filter(isActionableFinding);
   const seen = new Set<string>();
   const canonical = active.filter((finding) => { const identity = finding.fingerprint || finding.id; if (seen.has(identity)) return false; seen.add(identity); return true; });
   const breakdown: NeedsReviewCountBreakdown = { total: canonical.length, byDetector: {}, byType: {}, bySeverity: {}, duplicateRecordsExcluded: active.length - canonical.length, resolvedRecordsExcluded, historicalRecordsExcluded: 0, informationalRecordsExcluded: lifecycleActive.length - active.length };
@@ -39,6 +53,24 @@ export function selectInspectionFindings(findings: DekoCleanFinding[]): DekoClea
       seen.add(identity);
       return true;
     });
+}
+
+export function selectVisibleInspectionFindings(findings: DekoCleanFinding[], findingIds?: string[]): DekoCleanFinding[] {
+  const active = selectInspectionFindings(findings);
+  if (!findingIds) return active;
+  const visibleIds = new Set(findingIds);
+  return active.filter((finding) => visibleIds.has(finding.id));
+}
+
+export function calculateInspectionCounters(findings: DekoCleanFinding[]): InspectionCounters {
+  const active = selectInspectionFindings(findings);
+  return {
+    totalFindings: active.length,
+    actionableFindings: active.filter(isActionableFinding).length,
+    uniqueAffectedFiles: new Set(active.flatMap((finding) => finding.affectedFiles)).size,
+    ignoredFindings: findings.filter((finding) => canonicalStatus(finding) === "IGNORED").length,
+    resolvedFindings: findings.filter((finding) => canonicalStatus(finding) === "RESOLVED").length,
+  };
 }
 
 export function selectSecurityFindings(findings: DekoCleanFinding[]): DekoCleanFinding[] {

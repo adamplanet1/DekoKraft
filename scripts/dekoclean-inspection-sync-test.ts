@@ -5,17 +5,21 @@ import path from "node:path";
 
 import { enrichFinding } from "../lib/dekoclean/findingEngine.ts";
 import { readFindings, saveDetectedFindings, writeFindings } from "../lib/dekoclean/findingStore.ts";
-import { selectInspectionFindings } from "../lib/dekoclean/findingSelectors.ts";
+import { calculateInspectionCounters, selectInspectionFindings, selectVisibleInspectionFindings } from "../lib/dekoclean/findingSelectors.ts";
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "dekoclean-inspection-"));
 try {
   const active = enrichFinding({ id: "current-id", findingId: "current-id", type: "duplicate-file", severity: "info", title: "Duplicate", explanation: "Same content", affectedPaths: ["public/a.webp"], evidence: ["sha256:same"], detectedBy: "dekoclean", detectedAt: "2026-07-21T00:00:00.000Z", recommendedActions: ["validate"], requiresAdminConfirmation: false, status: "new" });
   const ignored = enrichFinding({ id: "ignored-id", findingId: "ignored-id", type: "unknown", severity: "high", title: "Ignored manifest", explanation: "Previously ignored", affectedPaths: ["data/manifest.json"], evidence: ["invalid"], detectedBy: "dekoclean", detectedAt: "2026-07-21T00:00:00.000Z", recommendedActions: ["validate"], requiresAdminConfirmation: false, status: "ignored" });
-  writeFindings([active, ignored], root);
+  const actionable = enrichFinding({ id: "actionable-id", findingId: "actionable-id", type: "duplicate-file", severity: "low", title: "Actionable duplicate", explanation: "Can be quarantined", affectedPaths: ["public/a.webp", "public/b.webp"], evidence: ["duplicate"], detectedBy: "dekoclean", detectedAt: "2026-07-21T00:00:00.000Z", recommendedActions: ["quarantine", "ignore"], requiresAdminConfirmation: true, status: "new" });
+  const resolved = enrichFinding({ id: "resolved-id", findingId: "resolved-id", type: "unknown", severity: "info", title: "Resolved", explanation: "Resolved finding", affectedPaths: ["public/resolved.webp"], evidence: ["resolved"], detectedBy: "dekoclean", detectedAt: "2026-07-21T00:00:00.000Z", recommendedActions: ["validate"], requiresAdminConfirmation: false, status: "resolved" });
+  writeFindings([active, actionable, ignored, resolved], root);
 
   const stored = readFindings(root);
   assert.equal(stored.find((finding) => finding.id === "ignored-id")?.lifecycle?.status, "IGNORED", "legacy ignored state stays excluded");
-  assert.deepEqual(selectInspectionFindings(stored).map((finding) => finding.id), ["current-id"], "inspection includes active informational findings and excludes ignored findings");
+  assert.deepEqual(selectInspectionFindings(stored).map((finding) => finding.id).sort(), ["actionable-id", "current-id"], "total findings includes every active finding before filtering");
+  assert.equal(selectVisibleInspectionFindings(stored, ["current-id"]).length, 1, "visible findings equals the rendered-card selection");
+  assert.deepEqual(calculateInspectionCounters(stored), { totalFindings: 2, actionableFindings: 1, uniqueAffectedFiles: 2, ignoredFindings: 1, resolvedFindings: 1 }, "counters separate cards, actionable findings, deduplicated paths, ignored, and resolved records");
 
   const recurring = { ...active, id: "detector-new-id", findingId: "detector-new-id", detectedAt: "2026-07-21T01:00:00.000Z" };
   const saved = saveDetectedFindings([recurring], root);
