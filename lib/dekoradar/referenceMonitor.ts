@@ -24,7 +24,7 @@ export function detectReferenceFindings(files: ScannedFile[], config: DekoCleanC
   const known = new Set(files.map((file) => file.path));
 
   for (const file of files) {
-    if (/(?:\.test\.|dekoclean-(?:security-)?test\.ts$|next-env\.d\.ts$)/.test(file.path)) continue;
+    if (/(?:\.test\.|scripts\/dekoclean-.*-test\.ts$|next-env\.d\.ts$)/.test(file.path)) continue;
     if (!config.textExtensions.includes(file.extension) || file.sizeBytes > config.maxTextFileBytes) continue;
     let content: string;
     try { content = fs.readFileSync(file.absolutePath, "utf8"); } catch { continue; }

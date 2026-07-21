@@ -1,9 +1,24 @@
 import type { MagicEngineWorkspaceText } from "../../../config/magicEngineTranslations";
 
-const healthScores = [92, 88, 96, 74];
+export type StudioHealthData = {
+  source: "demo" | "diagnostic";
+  scores: readonly number[];
+};
 
-export default function StudioHealthCard({ text }: { text: MagicEngineWorkspaceText["studioHealth"] }) {
-  const healthIndicators = text.indicators.map((label, index) => ({ label, score: healthScores[index] }));
+// Demo-only values. A future diagnostics adapter can supply the same shape without changing the card UI.
+export const studioHealthDemoData: StudioHealthData = {
+  source: "demo",
+  scores: [92, 88, 96, 74],
+};
+
+export default function StudioHealthCard({
+  text,
+  data = studioHealthDemoData,
+}: {
+  text: MagicEngineWorkspaceText["studioHealth"];
+  data?: StudioHealthData;
+}) {
+  const healthIndicators = text.indicators.map((label, index) => ({ label, score: data.scores[index] ?? 0 }));
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-5 flex items-start justify-between gap-4">

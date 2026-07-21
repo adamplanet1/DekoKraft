@@ -45,15 +45,25 @@ export type DkBrainStatKey =
   | "confidence"
   | "lastLearning";
 
-export const dkBrainStats: Array<{ labelKey: DkBrainStatKey; value: string }> = [
-  { labelKey: "learnedProducts", value: "0" },
-  { labelKey: "savedCorrections", value: "0" },
-  { labelKey: "knowledgeRules", value: "0" },
-  { labelKey: "confidence", value: "0%" },
-  { labelKey: "lastLearning", value: "noLearningYet" },
-];
+export type DkBrainStatsData = {
+  source: "demo" | "diagnostic";
+  items: Array<{ labelKey: DkBrainStatKey; value: string }>;
+};
+
+// Demo-only empty state. Real learning diagnostics can replace this object through the same data shape.
+export const dkBrainStatsData: DkBrainStatsData = {
+  source: "demo",
+  items: [
+    { labelKey: "learnedProducts", value: "0" },
+    { labelKey: "savedCorrections", value: "0" },
+    { labelKey: "knowledgeRules", value: "0" },
+    { labelKey: "confidence", value: "0%" },
+    { labelKey: "lastLearning", value: "noLearningYet" },
+  ],
+};
+
+export const dkBrainStats = dkBrainStatsData.items;
 
 export function isDkBrainProgressSlug(value: string) {
   return dkBrainProgressItems.some((item) => item.slug === value);
 }
-

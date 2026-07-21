@@ -19,8 +19,9 @@ function shouldIgnoreFile(name: string): boolean {
   return ignoredGeneratedFile.test(name) || name === ".DS_Store" || /^Thumbs\.db$/i.test(name);
 }
 
-function shouldIgnoreDirectory(name: string, config: DekoCleanConfig): boolean {
-  return mandatoryIgnoredDirectories.has(name) || config.ignoredDirectories.includes(name) || config.buildDirectories.includes(name) ||
+function shouldIgnoreDirectory(name: string, relativePath: string, config: DekoCleanConfig): boolean {
+  return mandatoryIgnoredDirectories.has(name) || config.ignoredDirectories.includes(name) ||
+    config.ignoredDirectories.includes(relativePath) || config.buildDirectories.includes(name) ||
     config.cacheDirectories.includes(name) || config.dependencyDirectories.includes(name);
 }
 
@@ -55,7 +56,7 @@ export function scanProject(config: DekoCleanConfig): DekoCleanScanResult {
       const relativePath = normalizeRelativePath(config.projectRoot, absolutePath);
       const topLevelName = relativePath.split("/")[0] ?? relativePath;
 
-      if ((entry.isDirectory() || entry.isSymbolicLink()) && shouldIgnoreDirectory(entry.name, config)) continue;
+      if ((entry.isDirectory() || entry.isSymbolicLink()) && shouldIgnoreDirectory(entry.name, relativePath, config)) continue;
       if (entry.isFile() && shouldIgnoreFile(entry.name)) continue;
 
       if (entry.isSymbolicLink()) {
@@ -74,7 +75,7 @@ export function scanProject(config: DekoCleanConfig): DekoCleanScanResult {
       }
 
       if (entry.isDirectory()) {
-        if (config.ignoredDirectories.includes(topLevelName) || shouldIgnoreDirectory(entry.name, config)) continue;
+        if (config.ignoredDirectories.includes(topLevelName) || shouldIgnoreDirectory(entry.name, relativePath, config)) continue;
 
         if (config.dependencyDirectories.includes(topLevelName)) {
           regenerableDependenciesBytes += directorySize(absolutePath, config.projectRoot);

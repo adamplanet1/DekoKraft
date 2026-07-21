@@ -124,7 +124,12 @@ export function enrichFinding(input: DekoCleanFindingInput): DekoCleanFinding {
 }
 
 function rootCauseKey(finding: DekoCleanFinding): string {
-  return finding.fingerprint ?? stableFingerprint({ detectedBy: finding.detectedBy, type: finding.type, affectedPaths: finding.affectedPaths, recommendedAction: finding.recommendedAction });
+  if (!finding.evidenceKey) {
+    return finding.fingerprint ?? stableFingerprint({ detectedBy: finding.detectedBy, type: finding.type, affectedPaths: finding.affectedPaths, recommendedAction: finding.recommendedAction });
+  }
+  return createHash("sha256")
+    .update([finding.detectedBy, finding.type, finding.evidenceKey, finding.recommendedAction].join("\n"))
+    .digest("hex");
 }
 
 function groupedId(key: string): string {
@@ -184,6 +189,7 @@ export function organizeFindings(inputs: DekoCleanFindingInput[]): DekoCleanFind
 
 export function isIgnoredFindingPath(filePath: string): boolean {
   const normalized = filePath.replace(/\\/g, "/");
+  if (normalized === "github-pages/public" || normalized.startsWith("github-pages/public/")) return true;
   const segments = normalized.split("/");
   const ignoredDirectories = new Set([".next", "out", "dist", "build", "coverage", "node_modules", ".git", ".vercel", ".cache", "tmp", "temp"]);
   if (segments.some((segment) => ignoredDirectories.has(segment))) return true;

@@ -31,6 +31,6 @@ export const categories = [
     folder: "services",
     title: "الخدمات",
     description: "طلبات خاصة، تصليح، طباعة وطرز",
-    image: publicPath("/images/homepage/services/service-01/service-01-01.jpg"),
+    image: publicPath("/images/homepage/services/service-03/service-01-01.jpg"),
   },
 ];

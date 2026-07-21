@@ -149,15 +149,31 @@ function completeProduct(
   folder: string
 ): ProductData {
   const extension = product.extension || "webp";
-
-  const thumbnail =
-    product.thumbnail || `${product.id}-01-600.${extension}`;
-
-  const mainImage =
-    product.mainImage || `${product.id}-01-1200.${extension}`;
-
-  const images: string[] = [];
-  const thumbnails: string[] = [];
+  const productDirectory = path.join(process.cwd(), "public", "images", "homepage", folder, product.id);
+  const availableImages = fs.existsSync(productDirectory)
+    ? fs.readdirSync(productDirectory).filter((name) => /\.(?:png|jpe?g|webp|gif|svg|avif)$/i.test(name)).sort()
+    : [];
+  const availableImageSet = new Set(availableImages);
+  const preferredMainImages = availableImages.filter((name) => /-1200\.[^.]+$/i.test(name));
+  const fallbackMainImages = availableImages.filter((name) => !/-600\.[^.]+$/i.test(name));
+  const galleryFiles = preferredMainImages.length ? preferredMainImages : fallbackMainImages.length ? fallbackMainImages : availableImages;
+  const requestedMainImage = product.mainImage || `${product.id}-01-1200.${extension}`;
+  const requestedThumbnail = product.thumbnail || `${product.id}-01-600.${extension}`;
+  const mainImage = availableImageSet.has(requestedMainImage) ? requestedMainImage : galleryFiles[0] ?? "";
+  const pairedMainThumbnail = mainImage.replace(/-1200(\.[^.]+)$/i, "-600$1");
+  const thumbnail = availableImageSet.has(requestedThumbnail)
+    ? requestedThumbnail
+    : availableImageSet.has(pairedMainThumbnail)
+      ? pairedMainThumbnail
+      : mainImage;
+  const assetUrl = (name: string) => publicPath(
+    `/images/homepage/${encodeURIComponent(folder)}/${encodeURIComponent(product.id)}/${encodeURIComponent(name)}`
+  );
+  const images = galleryFiles.map(assetUrl);
+  const thumbnails = galleryFiles.map((name) => {
+    const pairedThumbnail = name.replace(/-1200(\.[^.]+)$/i, "-600$1");
+    return assetUrl(availableImageSet.has(pairedThumbnail) ? pairedThumbnail : name);
+  });
   const dimensions = legacyDimensions(product as ProductData & Record<string, unknown>);
   const productDNA = normalizeProductDNA({
     ...(product.productDNA ?? {}),
@@ -174,22 +190,6 @@ function completeProduct(
     notes: product.productDNA?.notes || product.description,
   });
 
-  for (let i = 1; i <= product.imageCount; i++) {
-    const number = String(i).padStart(2, "0");
-
-    images.push(
-      publicPath(
-        `/images/homepage/${folder}/${product.id}/${product.id}-${number}-1200.${extension}`
-      )
-    );
-
-    thumbnails.push(
-      publicPath(
-        `/images/homepage/${folder}/${product.id}/${product.id}-${number}-600.${extension}`
-      )
-    );
-  }
-
   return {
     ...product,
     category: categorySlug,
@@ -205,7 +205,8 @@ function completeProduct(
 }
 
 export function firstProductImage(product: ProductData): string {
+  if (!product.thumbnail) return "";
   return publicPath(
-    `/images/homepage/${product.folder}/${product.id}/${product.thumbnail}`
+    `/images/homepage/${encodeURIComponent(product.folder)}/${encodeURIComponent(product.id)}/${encodeURIComponent(product.thumbnail)}`
   );
 }

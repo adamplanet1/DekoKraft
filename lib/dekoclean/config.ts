@@ -50,6 +50,7 @@ export function createDekoCleanConfig(
     ignoredDirectories: [
       ".next", "out", "dist", "build", "coverage", "node_modules", ".git",
       ".vercel", ".cache", ".turbo", ".parcel-cache", "tmp", "temp", ".dekoclean",
+      "github-pages/public",
     ],
     sourceExtensions: [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".css"],
     assetExtensions: [

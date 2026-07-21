@@ -6,6 +6,7 @@ const infoSections = {
   about: "servicesCenter.about",
   comments: "welcome.cards.comments",
   suggestions: "welcome.cards.suggestions",
+  services: "welcome.cards.services",
   favorites: "toolbar.favorites",
   cart: "toolbar.cart",
   settings: "toolbar.settings",

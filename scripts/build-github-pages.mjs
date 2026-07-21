@@ -15,5 +15,14 @@ const result = spawnSync(process.execPath, [path.join(root, "node_modules", "nex
 if (result.status !== 0) process.exit(result.status ?? 1);
 fs.rmSync(rootOutput, { recursive: true, force: true });
 fs.cpSync(pagesOutput, rootOutput, { recursive: true });
-for (const required of ["index.html", "404.html", "studio/index.html"]) if (!fs.existsSync(path.join(rootOutput, required))) throw new Error(`Static export is missing ${required}.`);
+for (const required of [
+  "index.html",
+  "404.html",
+  "studio/index.html",
+  "market/index.html",
+  "register/index.html",
+  "login/index.html",
+  "seller/login/index.html",
+  "info/services/index.html",
+]) if (!fs.existsSync(path.join(rootOutput, required))) throw new Error(`Static export is missing ${required}.`);
 console.log(`GitHub Pages static export copied to ${rootOutput}`);

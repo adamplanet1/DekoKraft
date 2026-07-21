@@ -17,10 +17,12 @@ const root = fs.mkdtempSync(path.join(os.tmpdir(), "dekoclean-smart-scan-"));
 fs.mkdirSync(path.join(root, "app"), { recursive: true });
 fs.mkdirSync(path.join(root, "public", "images"), { recursive: true });
 fs.mkdirSync(path.join(root, ".next", "server"), { recursive: true });
+fs.mkdirSync(path.join(root, "github-pages", "public", "images"), { recursive: true });
 fs.writeFileSync(path.join(root, "app", "page.tsx"), "export default function Page(){return <img src=\"/images/item-600.webp\"/>}\n");
 fs.writeFileSync(path.join(root, "app", "broken.json"), "{broken");
 fs.writeFileSync(path.join(root, "public", "images", "item-600.webp"), "fixture");
 fs.writeFileSync(path.join(root, ".next", "server", "ignored.js"), "generated");
+fs.writeFileSync(path.join(root, "github-pages", "public", "images", "item-600.webp"), "fixture");
 
 const config = createDekoCleanConfig(root);
 const scan = scanProject(config);
@@ -28,6 +30,7 @@ assert.equal(DEKO_SCAN_PROFILES.length, 8, "Eight profiles must be registered.")
 assert.equal(new Set(DEKO_SCAN_PROFILES.map((profile) => profile.id)).size, 8, "Profile ids must be unique.");
 assert(DEKO_SCAN_PROFILES.every((profile) => profile.detectorIds.every((id) => id in DEKO_SCAN_DETECTORS)), "Every profile must resolve through the shared detector registry.");
 assert(!scan.files.some((file) => file.path.startsWith(".next/")), "Generated folders must never enter the scan.");
+assert(!scan.files.some((file) => file.path.startsWith("github-pages/public/")), "Copied GitHub Pages public assets must never enter the scan.");
 
 const context = { projectRoot: root, config, scan, profileId: "full" as const, changedFiles: new Set(scan.files.map((file) => file.path)), deletedFiles: [], forceFull: true };
 const jsonResult = await DEKO_SCAN_DETECTORS["invalid-json"](context);
