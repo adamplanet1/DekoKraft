@@ -1,11 +1,11 @@
 "use client";
 
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Activity, AlertTriangle, BarChart3, Brain, CheckCircle2, Clock3, Gauge, History, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
 
 import type { DekoDomainKey, DekoIndexHistoryPoint, DekoScoreStatus, MissionControlAnalytics } from "../../../lib/dekoclean/missionControlTypes";
-import { calculatePerformanceScore, formatPerformanceBytes, parsePerformanceSnapshots, PERFORMANCE_STORAGE_KEY, type PerformanceSnapshot } from "../../../lib/dekoclean/performance";
+import { calculatePerformanceScore, formatPerformanceBytes, parsePerformanceSnapshots, PERFORMANCE_STORAGE_KEY, serializePerformanceSnapshots, type PerformanceSnapshot } from "../../../lib/dekoclean/performance";
 import { PERFORMANCE_CLEAR_EVENT, PERFORMANCE_MEASURE_EVENT, PERFORMANCE_UPDATED_EVENT } from "../../components/performance/DekoPerformanceMonitor";
 
 type RangeKey = "today" | "7d" | "30d" | "90d" | "all";
@@ -65,15 +65,49 @@ function LineChart({ points, keys, title }: { points: DekoIndexHistoryPoint[]; k
 
 type MissionControlRenderState = "loading" | "loaded" | "error" | "mission-error";
 
-export default function MissionControlAnalyticsPanel({ data, state, error, onRetry, onInspectFinding, onNavigate, quickActions }: { data: MissionControlAnalytics | null; state: MissionControlRenderState; error?: string; onRetry?: () => void; onInspectFinding: (id: string, action?: string) => void; onNavigate: (target: "overview" | "security" | "memory" | "timeline") => void; quickActions?: ReactNode }) {
+export default function MissionControlAnalyticsPanel({ data, state, error, onRetry, onInspectFinding, onNavigate, quickActions, onActionFeedback }: { data: MissionControlAnalytics | null; state: MissionControlRenderState; error?: string; onRetry?: () => void; onInspectFinding: (id: string, action?: string) => void; onNavigate: (target: "overview" | "security" | "memory" | "timeline") => void; quickActions?: ReactNode; onActionFeedback?: (kind: "success" | "error", message: string) => void }) {
   const [range, setRange] = useState<RangeKey>("7d");
   const [localPerformance, setLocalPerformance] = useState<PerformanceSnapshot[]>([]);
-  const reloadPerformance = () => { try { setLocalPerformance(parsePerformanceSnapshots(window.localStorage.getItem(PERFORMANCE_STORAGE_KEY))); } catch { setLocalPerformance([]); } };
+  const reloadPerformance = useCallback(async (notify = false) => {
+    try {
+      const local = parsePerformanceSnapshots(window.localStorage.getItem(PERFORMANCE_STORAGE_KEY));
+      const response = await fetch("/api/admin/dekoclean/performance-history", { cache: "no-store" });
+      const result = await response.json() as { snapshots?: PerformanceSnapshot[]; error?: string };
+      if (!response.ok) throw new Error(result.error ?? "تعذر تحديث قياسات الأداء.");
+      const merged = [...local, ...(result.snapshots ?? [])].filter((snapshot, index, all) => all.findIndex((entry) => entry.id === snapshot.id) === index).slice(0, 30);
+      window.localStorage.setItem(PERFORMANCE_STORAGE_KEY, serializePerformanceSnapshots(merged));
+      setLocalPerformance(merged);
+      if (notify) onActionFeedback?.("success", "تم تحديث قياسات الأداء من السجل المحفوظ.");
+    } catch (reloadError) {
+      setLocalPerformance(parsePerformanceSnapshots(window.localStorage.getItem(PERFORMANCE_STORAGE_KEY)));
+      if (notify) onActionFeedback?.("error", reloadError instanceof Error ? reloadError.message : "تعذر تحديث قياسات الأداء.");
+    }
+  }, [onActionFeedback]);
+  const persistPerformance = useCallback(async () => {
+    try {
+      const snapshots = parsePerformanceSnapshots(window.localStorage.getItem(PERFORMANCE_STORAGE_KEY));
+      setLocalPerformance(snapshots);
+      const response = await fetch("/api/admin/dekoclean/performance-history", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ snapshots }) });
+      const result = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "تعذر حفظ قياس الأداء.");
+      onActionFeedback?.("success", "اكتمل قياس الأداء وحُفظ سجل القياسات.");
+    } catch (persistError) { onActionFeedback?.("error", persistError instanceof Error ? persistError.message : "تعذر حفظ قياس الأداء."); }
+  }, [onActionFeedback]);
+  const clearPerformance = async () => {
+    try {
+      const response = await fetch("/api/admin/dekoclean/performance-history", { method: "DELETE" });
+      const result = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "تعذر مسح سجل الأداء.");
+      window.dispatchEvent(new CustomEvent(PERFORMANCE_CLEAR_EVENT));
+      setLocalPerformance([]);
+      onActionFeedback?.("success", "تم مسح سجل الأداء المحلي والمحفوظ.");
+    } catch (clearError) { onActionFeedback?.("error", clearError instanceof Error ? clearError.message : "تعذر مسح سجل الأداء."); }
+  };
   useEffect(() => {
-    reloadPerformance();
-    window.addEventListener(PERFORMANCE_UPDATED_EVENT, reloadPerformance);
-    return () => window.removeEventListener(PERFORMANCE_UPDATED_EVENT, reloadPerformance);
-  }, []);
+    void reloadPerformance();
+    window.addEventListener(PERFORMANCE_UPDATED_EVENT, persistPerformance);
+    return () => window.removeEventListener(PERFORMANCE_UPDATED_EVENT, persistPerformance);
+  }, [persistPerformance, reloadPerformance]);
   const resolvedData = data ?? emptyMissionControl;
   const isLoading = state === "loading";
   const hasError = state === "error" || state === "mission-error";
@@ -120,7 +154,7 @@ export default function MissionControlAnalyticsPanel({ data, state, error, onRet
         <article><header><AlertTriangle aria-hidden="true" /><div><h4>النتائج حسب الخطورة</h4><p>كل رقم داخل بطاقة مستقلة لتسهيل القراءة.</p></div></header><div className="dkMissionCounts dkMissionSeverityCounts">{(["critical", "high", "medium", "low", "info"] as const).map((key) => <span key={key} className={`severity-${key} dkUnifiedKpiCard dkUnifiedKpiCard--micro`} data-kpi-tone={key === "critical" ? "rose" : key === "high" ? "orange" : key === "medium" ? "beige" : key === "low" ? "blue" : "cyan"}><b>{resolvedData.findingsBySeverity[key]}</b><small>{severityLabels[key]}</small></span>)}</div></article>
         <article><header><History aria-hidden="true" /><div><h4>نتائج الصيانة</h4><p>ملخص من Maintenance Timeline.</p></div></header><div className="dkMissionCounts dkMissionOutcomeCounts"><span className="is-success dkUnifiedKpiCard dkUnifiedKpiCard--micro" data-kpi-tone="green"><CheckCircle2 /><b>{resolvedData.maintenanceOutcomes.successful}</b><small>ناجحة</small></span><span className="is-failed dkUnifiedKpiCard dkUnifiedKpiCard--micro" data-kpi-tone="rose"><AlertTriangle /><b>{resolvedData.maintenanceOutcomes.failed}</b><small>فاشلة</small></span><span className="is-rollback dkUnifiedKpiCard dkUnifiedKpiCard--micro" data-kpi-tone="purple"><RotateCcw /><b>{resolvedData.maintenanceOutcomes.rolledBack}</b><small>Rollback</small></span><span className="is-pending dkUnifiedKpiCard dkUnifiedKpiCard--micro" data-kpi-tone="orange"><Clock3 /><b>{resolvedData.maintenanceOutcomes.awaitingConfirmation}</b><small>بانتظار التأكيد</small></span></div><button className="dkMissionButtonSecondary" type="button" onClick={() => onNavigate("timeline")}>فتح الخط الزمني</button></article>
         <article id="dk-performance-details" className="dkPerformanceDetails"><header><Activity aria-hidden="true" /><div><h4>مقاييس الأداء</h4><p>قياسات المتصفح وملفات production export الفعلية.</p></div></header>
-          <div className="dkPerformanceActions"><button className="dkMissionButtonPrimary" type="button" onClick={() => window.dispatchEvent(new CustomEvent(PERFORMANCE_MEASURE_EVENT))}>قياس الأداء الآن</button><button className="dkMissionButtonSecondary" type="button" onClick={reloadPerformance}>تحديث القياسات</button><button className="dkMissionButtonSecondary" type="button" onClick={() => window.dispatchEvent(new CustomEvent(PERFORMANCE_CLEAR_EVENT))}>مسح سجل الأداء</button></div>
+          <div className="dkPerformanceActions"><button className="dkMissionButtonPrimary" type="button" onClick={() => window.dispatchEvent(new CustomEvent(PERFORMANCE_MEASURE_EVENT))}>قياس الأداء الآن</button><button className="dkMissionButtonSecondary" type="button" onClick={() => void reloadPerformance(true)}>تحديث القياسات</button><button className="dkMissionButtonSecondary" type="button" onClick={() => void clearPerformance()}>مسح سجل الأداء</button></div>
           {!latestBrowser && !latestBuild ? <EmptyChart title="مقاييس الأداء غير متاحة">شغّل قياسًا حقيقيًا أو أكمل production build أولًا.</EmptyChart> : <div className="dkPerformanceSections">
             <section><h5>أداء المتصفح</h5><dl><div><dt>First Paint</dt><dd>{metricValue(latestBrowser?.firstPaintMs)}</dd></div><div><dt>FCP</dt><dd>{metricValue(latestBrowser?.fcpMs)}</dd></div><div><dt>LCP</dt><dd>{metricValue(latestBrowser?.lcpMs)}</dd></div><div><dt>CLS</dt><dd>{latestBrowser?.cls == null ? "غير متاح" : latestBrowser.cls.toFixed(3)}</dd></div><div><dt>TTFB</dt><dd>{metricValue(latestBrowser?.ttfbMs)}</dd></div><div><dt>DOM Content Loaded</dt><dd>{metricValue(latestBrowser?.domContentLoadedMs)}</dd></div><div><dt>Page Load</dt><dd>{metricValue(latestBrowser?.pageLoadMs)}</dd></div><div><dt>Navigation Duration</dt><dd>{metricValue(latestBrowser?.navigationDurationMs)}</dd></div><div><dt>Hydration</dt><dd>{metricValue(latestBrowser?.hydrationMs)}</dd></div></dl></section>
             <section><h5>أداء البناء</h5><dl><div><dt>Build Duration</dt><dd>{metricValue(latestBuild?.buildDurationMs)}</dd></div><div><dt>Bundle Size</dt><dd>{formatPerformanceBytes(latestBuild?.bundleSizeBytes ?? null)}</dd></div><div><dt>JavaScript</dt><dd>{formatPerformanceBytes(latestBuild?.javascriptSizeBytes ?? null)}</dd></div><div><dt>CSS</dt><dd>{formatPerformanceBytes(latestBuild?.cssSizeBytes ?? null)}</dd></div><div><dt>Static Assets</dt><dd>{formatPerformanceBytes(latestBuild?.staticAssetSizeBytes ?? null)}</dd></div><div><dt>Exported Files</dt><dd>{latestBuild?.exportedFileCount ?? "غير متاح"}</dd></div></dl></section>

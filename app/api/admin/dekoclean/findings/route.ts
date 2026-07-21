@@ -8,12 +8,14 @@ import { readMaintenanceTimeline } from "../../../../../lib/dekoclean/timeline";
 import { getMissionControlAnalytics } from "../../../../../lib/dekoclean/missionControl";
 import { withDekoCleanAdmin } from "../_shared";
 import { calculateSecurityScore, selectNeedsReviewFindings, selectSecurityFindings } from "../../../../../lib/dekoclean/findingSelectors";
+import { ensureDekoCleanActionStorage } from "../../../../../lib/dekoclean/actionStorage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   return withDekoCleanAdmin(async () => {
+    ensureDekoCleanActionStorage();
     const requestedStatus = new URL(request.url).searchParams.get("status");
     const allFindings = readFindings();
     const selectedReview = selectNeedsReviewFindings(allFindings);

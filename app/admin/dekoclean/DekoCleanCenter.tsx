@@ -249,6 +249,7 @@ export default function DekoCleanCenter() {
       method: "POST", body: JSON.stringify({ findingId: selected.id }),
     });
     setRecommendation(result.recommendation);
+    setMessage("اكتمل تحليل البديل وعُرضت التوصية دون تعديل ملفات المشروع.");
   });
 
   const restoreLatest = () => runAction("restore", async () => {
@@ -317,6 +318,7 @@ export default function DekoCleanCenter() {
               error={data?.missionControlError ?? (!data && error ? "تعذر تحميل بيانات DekoClean." : undefined)}
               onRetry={data?.missionControlError || (!data && error) ? () => void load() : undefined}
               quickActions={quickActions}
+              onActionFeedback={(kind, text) => kind === "success" ? (setError(""), setMessage(text)) : (setMessage(""), setError(text))}
               onNavigate={(target) => navigateWorkspace(target)}
               onInspectFinding={(id, action) => openFindingPlan(id, action)}
             />

@@ -15,6 +15,7 @@ import { appendAuditTimeline } from "./timeline.ts";
 import { recordDekoIndexSnapshot } from "./missionControl.ts";
 import type { DekoIndexTrigger } from "./missionControlTypes.ts";
 import { createRecoveryPoint } from "../dekorebuild/recoveryPoints.ts";
+import { recordIgnoredFindings } from "./actionStorage.ts";
 
 function checksums(paths: string[], projectRoot: string): Record<string, string> {
   return Object.fromEntries(paths.flatMap((relativePath) => {
@@ -73,6 +74,7 @@ export async function executeDekoCleanPlan(options: ExecutePlanOptions): Promise
   try {
     if (plan.action === "ignore") {
       for (const finding of findings) updateFindingStatus(finding.id, "ignored", projectRoot);
+      recordIgnoredFindings(findings.map((finding) => finding.id), options.adminReference, projectRoot);
     } else if (plan.action === "validate" || plan.action === "scan") {
       validationResult = await validateDekoCleanOperation(projectRoot, operationId);
     } else if (plan.action === "quarantine") {
