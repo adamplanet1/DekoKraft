@@ -16,6 +16,9 @@
 # next.js
 /.next/
 /out/
+/github-pages/public/
+/github-pages/out/
+/github-pages/.next/
 
 # production
 /build

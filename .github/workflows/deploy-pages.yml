@@ -41,7 +41,7 @@ jobs:
       - name: Upload static export
         uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: ./out
 
   deploy:
     environment:
