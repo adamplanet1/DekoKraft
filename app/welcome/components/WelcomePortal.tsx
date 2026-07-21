@@ -21,7 +21,7 @@ const cards: WelcomeCardDefinition[] = [
   { id: "comments", title: "التعليقات", icon: "💬", href: "/info/comments" },
   { id: "suggestions", title: "اقتراحات", icon: "💡", href: "/info/suggestions" },
   { id: "services", title: "مركز الخدمات", icon: "🛠️", href: "/info/services" },
-  { id: "studio", title: "الاستوديوهات الذكية", icon: "🧠", href: "/echo" },
+  { id: "studio", title: "الاستوديوهات الذكية", icon: "🧠", href: "/studio" },
 ];
 
 export default function WelcomePortal() {

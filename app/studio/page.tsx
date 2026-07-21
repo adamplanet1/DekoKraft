@@ -20,8 +20,8 @@ export default function ImageStudioPage() {
             isMaximized={isMaximized}
             onMaximize={() => setIsMaximized(true)}
             onRestore={() => setIsMaximized(false)}
-            onBack={() => router.push("/echo")}
-            onCloseStudio={() => router.push("/echo")}
+            onBack={() => router.push("/")}
+            onCloseStudio={() => router.push("/")}
           />
         </WorkspaceProvider>
       </section>

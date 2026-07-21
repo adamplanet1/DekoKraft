@@ -8,13 +8,12 @@ export const routes = {
   login: "/login",
   register: "/register",
   studio: "/studio",
-  echo: "/echo",
   smartEdit: ({ participantId, sellerId, productId }: { participantId?: string; sellerId?: string; productId?: string } = {}) => {
     const query = new URLSearchParams({ open: "smart-edit", workspace: "image" });
     if (participantId) query.set("participantId", participantId);
     if (sellerId) query.set("sellerId", sellerId);
     if (productId) query.set("productId", productId);
-    return `/echo?${query.toString()}`;
+    return `/studio?${query.toString()}`;
   },
   studios: {
     laser: "/studio/laser",
@@ -98,7 +97,6 @@ export const requiredPublicRoutes = [
   routes.login,
   routes.register,
   routes.studio,
-  routes.echo,
   routes.studios.laser,
   routes.studios.threeDForm,
   routes.studios.embroidery,

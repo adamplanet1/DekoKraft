@@ -40,10 +40,10 @@ jobs:
         env:
           DEKOKRAFT_GITHUB_PAGES: "true"
 
-      - name: Verify Echo export and base-path link
+      - name: Verify Studio export and base-path link
         run: |
-          test -f out/echo/index.html
-          grep -q 'href="/DekoKraft/echo/"' out/welcome/index.html
+          test -f out/studio/index.html
+          grep -q 'href="/DekoKraft/studio/"' out/welcome/index.html
 
       - name: Upload static export
         uses: actions/upload-pages-artifact@v3
