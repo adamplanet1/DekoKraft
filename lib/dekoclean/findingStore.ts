@@ -13,6 +13,7 @@ function lifecyclePath(projectRoot: string): string { return path.join(projectRo
 export function findingLifecycleStatus(finding: DekoCleanFinding): FindingStatus {
   if (finding.lifecycle?.status) return finding.lifecycle.status;
   if (finding.status === "resolved") return "RESOLVED";
+  if (finding.status === "ignored") return "IGNORED";
   if (finding.status === "failed") return "FAILED";
   return "OPEN";
 }
@@ -101,7 +102,8 @@ export function updateFindingStatus(id: string, status: DekoCleanFinding["status
   const findings = readFindings(projectRoot);
   const index = findings.findIndex((finding) => finding.id === id);
   if (index < 0) throw new Error("DekoClean finding not found.");
-  findings[index] = { ...findings[index], status };
+  const lifecycleStatus = status === "resolved" ? "RESOLVED" : status === "ignored" ? "IGNORED" : status === "failed" ? "FAILED" : "OPEN";
+  findings[index] = { ...findings[index], status, lifecycle: { ...findings[index].lifecycle, status: lifecycleStatus, updatedAt: new Date().toISOString(), resolvedAt: lifecycleStatus === "RESOLVED" ? new Date().toISOString() : undefined } };
   writeFindings(findings, projectRoot);
   return findings[index];
 }

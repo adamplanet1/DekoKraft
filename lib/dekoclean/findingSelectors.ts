@@ -29,6 +29,18 @@ export function selectNeedsReviewFindings(findings: DekoCleanFinding[]): { findi
   return { findings: canonical, breakdown };
 }
 
+export function selectInspectionFindings(findings: DekoCleanFinding[]): DekoCleanFinding[] {
+  const seen = new Set<string>();
+  return findings
+    .filter((finding) => ["OPEN", "FAILED"].includes(canonicalStatus(finding)))
+    .filter((finding) => {
+      const identity = finding.fingerprint || finding.id;
+      if (seen.has(identity)) return false;
+      seen.add(identity);
+      return true;
+    });
+}
+
 export function selectSecurityFindings(findings: DekoCleanFinding[]): DekoCleanFinding[] {
   const seen = new Set<string>();
   return findings.filter((finding) => ["OPEN", "FAILED"].includes(canonicalStatus(finding)) && ["security-alert", "suspicious-file", "integrity-mismatch"].includes(finding.type)).filter((finding) => { const key = finding.fingerprint || finding.id; if (seen.has(key)) return false; seen.add(key); return true; });

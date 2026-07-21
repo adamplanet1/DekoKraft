@@ -115,8 +115,8 @@ export async function executeDekoScanRun(scanId: string, adminReference: string)
     const grouped = organizeFindings(result.findings);
     patchScanRun(scanId, { phase: "حفظ التقرير وتحديث العدادات", progress: 97 }, root);
     const saved = profile.id === "full" ? replaceDetectedFindings(grouped, root) : saveDetectedFindings(grouped, root);
-    const runFindingIds = new Set(grouped.map((finding) => finding.id));
-    const savedForRun = saved.filter((finding) => runFindingIds.has(finding.id));
+    const runFindingFingerprints = new Set(grouped.map((finding) => finding.fingerprint || finding.id));
+    const savedForRun = saved.filter((finding) => runFindingFingerprints.has(finding.fingerprint || finding.id));
     if (profile.id === "quick" || profile.id === "full") writeFileState(root, scan);
     const healthAfter = recordHealthScore(root).value;
     const completedAt = new Date().toISOString();

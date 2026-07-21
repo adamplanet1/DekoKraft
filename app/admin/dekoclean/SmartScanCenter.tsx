@@ -29,7 +29,7 @@ function formatDuration(duration?: number): string {
 }
 
 export default function SmartScanCenter({ onResultsChanged, onShowResults, onActiveStateChange }: {
-  onResultsChanged: () => void;
+  onResultsChanged: (run: DekoScanRun) => Promise<void>;
   onShowResults: (profileId: DekoScanProfileId, findingIds: string[]) => void;
   onActiveStateChange?: (active: boolean) => void;
 }) {
@@ -63,7 +63,7 @@ export default function SmartScanCenter({ onResultsChanged, onShowResults, onAct
         if (!['queued', 'running'].includes(response.run.status)) {
           window.clearInterval(timer);
           await loadOverview();
-          onResultsChanged();
+          await onResultsChanged(response.run);
         }
       } catch (pollError) { setError(pollError instanceof Error ? pollError.message : "تعذر متابعة تقدم الفحص."); }
     }, 700);

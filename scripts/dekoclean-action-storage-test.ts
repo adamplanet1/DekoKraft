@@ -10,6 +10,7 @@ import {
   recordIgnoredFindings,
   writePerformanceHistory,
 } from "../lib/dekoclean/actionStorage.ts";
+import type { PerformanceSnapshot } from "../lib/dekoclean/performance.ts";
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "dekoclean-actions-"));
 
@@ -24,11 +25,33 @@ for (const directory of ["snapshots", "manifests", path.join("repair", "backups"
 const ignored = recordIgnoredFindings(["finding-1"], "admin@example.test", root);
 assert.equal(ignored[0]?.findingId, "finding-1");
 
-const snapshot = {
+const snapshot: PerformanceSnapshot = {
+  schemaVersion: 1,
   id: "browser-test",
   source: "browser" as const,
   timestamp: "2026-07-21T20:00:00.000Z",
   route: "/admin/dekoclean",
+  buildDurationMs: null,
+  bundleSizeBytes: null,
+  javascriptSizeBytes: null,
+  cssSizeBytes: null,
+  staticAssetSizeBytes: null,
+  totalOutputSizeBytes: null,
+  exportedFileCount: null,
+  firstPaintMs: null,
+  fcpMs: null,
+  lcpMs: null,
+  cls: null,
+  ttfbMs: null,
+  domContentLoadedMs: null,
+  pageLoadMs: null,
+  navigationDurationMs: null,
+  hydrationMs: null,
+  resourceCount: null,
+  transferredBytes: null,
+  decodedBytes: null,
+  supportedMetrics: [],
+  unavailableMetrics: [],
 };
 assert.deepEqual(writePerformanceHistory([snapshot], root), [snapshot]);
 assert.deepEqual(readPerformanceHistory(root), [snapshot]);

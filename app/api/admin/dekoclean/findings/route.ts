@@ -7,7 +7,7 @@ import { getDekoCleanSummary, listDekoCleanManifests } from "../../../../../lib/
 import { readMaintenanceTimeline } from "../../../../../lib/dekoclean/timeline";
 import { getMissionControlAnalytics } from "../../../../../lib/dekoclean/missionControl";
 import { withDekoCleanAdmin } from "../_shared";
-import { calculateSecurityScore, selectNeedsReviewFindings, selectSecurityFindings } from "../../../../../lib/dekoclean/findingSelectors";
+import { calculateSecurityScore, selectInspectionFindings, selectNeedsReviewFindings, selectSecurityFindings } from "../../../../../lib/dekoclean/findingSelectors";
 import { ensureDekoCleanActionStorage } from "../../../../../lib/dekoclean/actionStorage";
 
 export const runtime = "nodejs";
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     const selectedReview = selectNeedsReviewFindings(allFindings);
     const findings = requestedStatus === "resolved"
       ? allFindings.filter((finding) => finding.lifecycle?.status === "RESOLVED" || finding.status === "resolved")
-      : selectedReview.findings;
+      : selectInspectionFindings(allFindings);
     const missionResult = await getMissionControlAnalytics()
       .then((missionControl) => ({ missionControl, missionControlError: null }))
       .catch((error: unknown) => ({ missionControl: null, missionControlError: error instanceof Error ? error.message : "Mission Control unavailable" }));

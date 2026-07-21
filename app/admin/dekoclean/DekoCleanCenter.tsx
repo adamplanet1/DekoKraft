@@ -11,7 +11,7 @@ import type {
 import type { DekoCleanManifestSummary } from "../../../lib/dekoclean/summary";
 import type { NeedsReviewCountBreakdown } from "../../../lib/dekoclean/findingSelectors";
 import type { MissionControlAnalytics } from "../../../lib/dekoclean/missionControlTypes";
-import type { DekoScanProfileId } from "../../../lib/dekoclean/scan/types";
+import type { DekoScanProfileId, DekoScanRun } from "../../../lib/dekoclean/scan/types";
 import MissionControlAnalyticsPanel from "./MissionControlAnalytics";
 import SmartScanCenter from "./SmartScanCenter";
 import DekoRebuildPanel from "./DekoRebuildPanel";
@@ -273,9 +273,14 @@ export default function DekoCleanCenter() {
   const timelinePages = Math.max(1, Math.ceil(timeline.length / 20));
   const visibleTimeline = timeline.slice(timelinePage * 20, timelinePage * 20 + 20);
   const renderState = !data ? (error ? "error" : "loading") : data.missionControl ? "loaded" : "mission-error";
-  const runtimeVerification = data ? { dashboardSafe: data.summary.healthyFiles, safeDestination: data.summary.healthyFiles, dashboardReview: data.summary.reviewItems, reviewDestination: data.total, renderedCards: data.findings.length, paginationTotal: data.total, mismatch: data.summary.reviewItems !== data.total || data.findings.length !== data.total } : null;
+  const runtimeVerification = data ? { dashboardSafe: data.summary.healthyFiles, safeDestination: data.summary.healthyFiles, dashboardReview: data.summary.reviewItems, reviewDestination: data.needsReviewBreakdown.total, renderedCards: data.findings.length, paginationTotal: data.total, mismatch: data.summary.reviewItems !== data.needsReviewBreakdown.total || data.findings.length !== data.total } : null;
   const quickActions = <section className="dkCleanQuickActions" aria-labelledby="dk-quick-actions"><header><div><h2 id="dk-quick-actions">إجراءات سريعة</h2><p>كل فحص قراءة فقط، وأي تعديل حساس يتطلب تأكيد المدير.</p></div></header><div><button className="is-primary" type="button" onClick={() => void scan("scan")} disabled={Boolean(busy)}><FileSearch /> فحص المشروع</button><button className="is-secondary" type="button" onClick={() => void scan("radar-scan")} disabled={Boolean(busy)}><Radar /> تشغيل DekoRadar</button><button className="is-secondary" type="button" onClick={() => void securityScan()} disabled={Boolean(busy)}><ShieldCheck /> فحص الأمان</button><button className="is-secondary" type="button" onClick={() => { setTab("overview"); openAccordion("findings"); if (selected) void buildPlan("quarantine"); requestAnimationFrame(() => document.querySelector('[data-accordion-id="findings"]')?.scrollIntoView({ behavior: "smooth" })); }} disabled={!selected || Boolean(busy)}>معاينة خطة التنظيف</button></div></section>;
   const handleScanActiveState = useCallback((active: boolean) => { setSmartScanActive(active); if (active) openAccordion("smart-scan"); }, [openAccordion]);
+  const handleScanResultsChanged = useCallback(async (run: DekoScanRun) => {
+    setScanResultFilter(run.findingIds.length ? { profileId: run.profileId, findingIds: run.findingIds } : null);
+    setSelectedId(run.findingIds[0] ?? "");
+    await load();
+  }, [load]);
   const handleRecoveryActiveState = useCallback((active: boolean) => { setRecoveryActive(active); if (active) openAccordion("dekorebuild"); }, [openAccordion]);
 
   function navigateWorkspace(target: Tab) {
@@ -333,7 +338,7 @@ export default function DekoCleanCenter() {
 
         <DekoAccordionSection id="smart-scan" title="مركز الفحص الذكي" subtitle="اختر نوع الفحص المناسب، ولن يبدأ أي فحص تلقائيًا." icon={<FileSearch />} badge="8 أنواع فحص" isOpen={accordionOpen["smart-scan"]} onToggle={toggleAccordion} lockedOpen={smartScanActive}>
           <SmartScanCenter
-          onResultsChanged={load}
+          onResultsChanged={handleScanResultsChanged}
           onActiveStateChange={handleScanActiveState}
           onShowResults={(profileId, findingIds) => {
             setScanResultFilter({ profileId, findingIds });
