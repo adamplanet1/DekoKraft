@@ -1568,15 +1568,15 @@ export default function EchoImageStudio({
       <header className="echoImageStudio__header">
         <div className="echoImageStudio__headerControls">
           <div className="echoImageStudio__windowControls">
-            <button
-              type="button"
-              className="echoImageIconButton"
-              aria-label={t("studio.image.closeStudio")}
-              title={t("studio.image.closeStudio")}
-              onClick={onCloseStudio}
-            >
-              <X size={18} aria-hidden="true" />
-            </button>
+            {isMaximized ? (
+              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.restore")} title={t("studio.image.restore")} aria-pressed="true" onClick={onRestore}>
+                <Minimize2 size={18} aria-hidden="true" />
+              </button>
+            ) : (
+              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.maximize")} title={t("studio.image.maximize")} aria-pressed="false" onClick={onMaximize}>
+                <Maximize2 size={18} aria-hidden="true" />
+              </button>
+            )}
             <button
               type="button"
               className="echoImageIconButton echoImageStudio__back"
@@ -1587,15 +1587,15 @@ export default function EchoImageStudio({
             >
               <ArrowLeft size={19} aria-hidden="true" />
             </button>
-            {isMaximized ? (
-              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.restore")} title={t("studio.image.restore")} aria-pressed="true" onClick={onRestore}>
-                <Minimize2 size={18} aria-hidden="true" />
-              </button>
-            ) : (
-              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.maximize")} title={t("studio.image.maximize")} aria-pressed="false" onClick={onMaximize}>
-                <Maximize2 size={18} aria-hidden="true" />
-              </button>
-            )}
+            <button
+              type="button"
+              className="echoImageIconButton"
+              aria-label={t("studio.image.closeStudio")}
+              title={t("studio.image.closeStudio")}
+              onClick={onCloseStudio}
+            >
+              <X size={18} aria-hidden="true" />
+            </button>
           </div>
           <div className="echoImageStudio__processingTools">
             {activeTool === "smart-edit" && <div className="echoWorkspaceBreadcrumb" aria-label={`${activeWorkspaceLabel} > ${t("studio.smartEditProcessing.processing")}`}>
