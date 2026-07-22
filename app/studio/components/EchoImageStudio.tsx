@@ -10,7 +10,6 @@ import {
   useState,
   useCallback,
   type ChangeEvent,
-  type CSSProperties,
   type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -35,6 +34,7 @@ import SmartEditActionsPanel from "./SmartEditActionsPanel";
 import SmartEditFiltersPanel from "./SmartEditFiltersPanel";
 import type { SmartEditExportFormat } from "./SmartEditToolsMenu";
 import SmartEditEngine from "./SmartEditEngine";
+import FloatingStudioPanel from "./FloatingStudioPanel";
 import type { PlatformProductSelection, ProductSelectionMode } from "./ProductMemoryPicker";
 import { analyzeProductImage } from "../../admin/lib/dekobrain/productAnalyzer";
 import { completeUploadedImageAnalysis, createPlatformProductMemory, createUploadedProductMemory, failUploadedImageAnalysis, loadProductMemoryByProductId, type ProductMemory } from "./ProductMemoryStore";
@@ -92,7 +92,6 @@ export default function EchoImageStudio({
   const [isImageDragging, setIsImageDragging] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState("");
-  const [imageSettingsWidth, setImageSettingsWidth] = useState(220);
   const [activeProductMemory, setActiveProductMemory] = useState<ProductMemory | null>(null);
   const [brightness, setBrightness] = useState(DEFAULT_FILTERS.brightness);
   const [contrast, setContrast] = useState(DEFAULT_FILTERS.contrast);
@@ -1584,18 +1583,6 @@ export default function EchoImageStudio({
     }
   }, [createSmartEditExportBlob, smartEditExportingFormat, smartEditPreviewUrl, t]);
 
-  const activeWorkspaceLabel = activeWorkspace === "video"
-    ? t("studio.video.imageProcessing")
-    : activeWorkspace === "3d"
-      ? t("studio.threeDImage.processing")
-      : activeWorkspace === "laser"
-        ? t("studio.laserProcessing.processing")
-        : activeWorkspace === "cnc"
-          ? "الليزر CNC"
-        : activeWorkspace === "embroidery"
-          ? t("studio.embroideryProcessing.processing")
-          : t("studio.image.imageProcessing");
-
   return (
     <div ref={studioWindowRef} className="echoImageStudio" dir={direction}>
       <div className={`echoImageStudio__layout${isSmartEditOpen ? " echoImageStudio__layout--smart-open" : ""}`}>
@@ -1633,9 +1620,6 @@ export default function EchoImageStudio({
             </button>
           </div>
           <div className="echoImageStudio__processingTools">
-            {activeTool === "smart-edit" && <div className="echoWorkspaceBreadcrumb" aria-label={`${activeWorkspaceLabel} > ${t("studio.smartEditProcessing.processing")}`}>
-              <span>{activeWorkspaceLabel}</span><b aria-hidden="true">›</b><strong>{t("studio.smartEditProcessing.processing")}</strong><b aria-hidden="true">›</b><span>Echo Guide</span><b aria-hidden="true">›</b><span>قرار التنفيذ</span>
-            </div>}
             <div ref={imageToolsRef} className="echoImageStudio__headerTools">
             <button
               ref={imageToolsToggleRef}
@@ -1839,42 +1823,8 @@ export default function EchoImageStudio({
       </aside>
 
       <div
-        className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}${isFiltersOpen || isActionsOpen ? " echoImageStudio__workspace--image-settings" : ""}`}
-        style={{ "--image-settings-width": `${imageSettingsWidth}px` } as CSSProperties}
+        className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}`}
       >
-        <FloatingImageToolPanel
-          isOpen={isFiltersOpen || isActionsOpen}
-          mode={isActionsOpen ? "actions" : "filters"}
-          width={imageSettingsWidth}
-          onWidthChange={setImageSettingsWidth}
-          closeButtonRef={isActionsOpen ? actionsCloseRef : filtersCloseRef}
-          hasImage={Boolean(previewUrl)}
-          isComparing={isComparing}
-          brightness={brightness}
-          contrast={contrast}
-          saturation={saturation}
-          sharpness={sharpness}
-          blur={blur}
-          grayscale={grayscale}
-          sepia={sepia}
-          hueRotate={hueRotate}
-          onClose={isActionsOpen ? closeActions : closeFilters}
-          onReset={resetFilters}
-          onCompareStart={(event) => {
-            event.currentTarget.setPointerCapture(event.pointerId);
-            setIsComparing(true);
-          }}
-          onCompareStop={stopComparing}
-          onCompareKeyChange={setIsComparing}
-          onBrightnessChange={setBrightness}
-          onContrastChange={setContrast}
-          onSaturationChange={setSaturation}
-          onSharpnessChange={setSharpness}
-          onBlurChange={setBlur}
-          onGrayscaleChange={setGrayscale}
-          onSepiaChange={setSepia}
-          onHueRotateChange={setHueRotate}
-        />
         <div className="echoImagePreviewColumn">
           {activeProcessingMode === "video" ? (
             <VideoProcessingWorkspace filterValue={videoFilterValue} isComparing={isVideoComparing} />
@@ -2167,21 +2117,26 @@ export default function EchoImageStudio({
         <Sparkles size={20} aria-hidden="true" />
         <span>التعديل الذكي</span>
       </button>}
+      </div>
 
-      {isSmartEditOpen && <aside className="echoStudioSmartPanel" aria-label="لوحة التعديل الذكي">
-        <button
-          ref={smartEditToolsToggleRef}
-          type="button"
-          className="echoSmartEditMainToolButton echoStudioSmartPanel__trigger"
-          data-active={activeTool === "smart-edit" ? "true" : undefined}
-          aria-expanded={isSmartEditOpen}
-          aria-controls="echo-smart-edit-chat"
-          onClick={toggleSmartEditTools}
-        >
-          <span className="echoSmartEditMainToolIcon"><Sparkles size={20} aria-hidden="true" /></span>
-          <span className="echoSmartEditMainToolLabel">التعديل الذكي</span>
-          <ChevronDown className={`echoSmartEditMainToolChevron${isSmartEditOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
-        </button>
+      {isSmartEditOpen && <FloatingStudioPanel
+        panelId="echo-smart-edit-panel"
+        title="التعديل الذكي"
+        icon={<Sparkles size={17} aria-hidden="true" />}
+        boundaryRef={studioWindowRef}
+        storageKey="dekokraft.studio.smartEditPanel"
+        initialSize={{ width: 390, height: 600 }}
+        initialSide="right"
+        minWidth={280}
+        minHeight={220}
+        maxWidthRatio={0.7}
+        maxHeightRatio={0.85}
+        onClose={() => {
+          selectTool(null);
+          window.requestAnimationFrame(() => smartEditToolsToggleRef.current?.focus());
+        }}
+        className="echoStudioSmartPanel"
+      >
         <div className="echoStudioSmartPanel__content">
           {(
             <SmartEditEngine
@@ -2214,8 +2169,40 @@ export default function EchoImageStudio({
             />
           )}
         </div>
-      </aside>}
-      </div>
+      </FloatingStudioPanel>}
+
+      <FloatingImageToolPanel
+        isOpen={isFiltersOpen || isActionsOpen}
+        mode={isActionsOpen ? "actions" : "filters"}
+        boundaryRef={studioWindowRef}
+        closeButtonRef={isActionsOpen ? actionsCloseRef : filtersCloseRef}
+        hasImage={Boolean(previewUrl)}
+        isComparing={isComparing}
+        brightness={brightness}
+        contrast={contrast}
+        saturation={saturation}
+        sharpness={sharpness}
+        blur={blur}
+        grayscale={grayscale}
+        sepia={sepia}
+        hueRotate={hueRotate}
+        onClose={isActionsOpen ? closeActions : closeFilters}
+        onReset={resetFilters}
+        onCompareStart={(event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+          setIsComparing(true);
+        }}
+        onCompareStop={stopComparing}
+        onCompareKeyChange={setIsComparing}
+        onBrightnessChange={setBrightness}
+        onContrastChange={setContrast}
+        onSaturationChange={setSaturation}
+        onSharpnessChange={setSharpness}
+        onBlurChange={setBlur}
+        onGrayscaleChange={setGrayscale}
+        onSepiaChange={setSepia}
+        onHueRotateChange={setHueRotate}
+      />
 
     </div>
   );

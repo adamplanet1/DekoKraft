@@ -3,35 +3,27 @@
 import {
   Droplets,
   Eraser,
-  GripVertical,
   ImageOff,
   Layers,
-  Maximize2,
-  Minus,
   RotateCcw,
   ScanEye,
   Shield,
+  SlidersHorizontal,
   Sparkles,
   Sun,
   WandSparkles,
-  X,
 } from "lucide-react";
-import {
-  useRef,
-  useState,
-  type PointerEvent,
-  type RefObject,
-} from "react";
+import { useState, type PointerEvent, type RefObject } from "react";
 import { useLanguage } from "../../components/LanguageProvider";
 import ImageFilterControl from "./ImageFilterControl";
+import FloatingStudioPanel from "./FloatingStudioPanel";
 
 export type FloatingImagePanelMode = "filters" | "actions";
 
 type FloatingImageToolPanelProps = {
   isOpen: boolean;
   mode: FloatingImagePanelMode;
-  width: number;
-  onWidthChange: (width: number) => void;
+  boundaryRef: RefObject<HTMLDivElement | null>;
   closeButtonRef: RefObject<HTMLButtonElement | null>;
   hasImage: boolean;
   isComparing: boolean;
@@ -61,8 +53,7 @@ type FloatingImageToolPanelProps = {
 export default function FloatingImageToolPanel({
   isOpen,
   mode,
-  width,
-  onWidthChange,
+  boundaryRef,
   closeButtonRef,
   hasImage,
   isComparing,
@@ -89,9 +80,6 @@ export default function FloatingImageToolPanel({
   onHueRotateChange,
 }: FloatingImageToolPanelProps) {
   const { direction, t } = useLanguage();
-  const panelRef = useRef<HTMLElement>(null);
-  const resizeStartRef = useRef<{ pointerId: number; x: number; width: number } | null>(null);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [placeholderMessage, setPlaceholderMessage] = useState("");
   const [shadowRemovalStrength, setShadowRemovalStrength] = useState(45);
   const [shadowDetectionSensitivity, setShadowDetectionSensitivity] = useState(55);
@@ -138,58 +126,26 @@ export default function FloatingImageToolPanel({
 
   const panelTitle = mode === "filters" ? t("studio.image.filtersTitle") : t("studio.image.actionsTitle");
 
-  const startWidthResize = (event: PointerEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    resizeStartRef.current = { pointerId: event.pointerId, x: event.clientX, width };
-  };
-
-  const resizeWidth = (event: PointerEvent<HTMLButtonElement>) => {
-    const start = resizeStartRef.current;
-    if (!start || start.pointerId !== event.pointerId) return;
-    onWidthChange(Math.min(320, Math.max(180, start.width + event.clientX - start.x)));
-  };
-
-  const stopWidthResize = () => {
-    resizeStartRef.current = null;
-  };
+  if (!isOpen) return null;
 
   return (
-    <aside
-      ref={panelRef}
-      className={`floatingImageToolPanel${isOpen ? " floatingImageToolPanel--open" : ""}${isMinimized ? " floatingImageToolPanel--minimized" : ""}`}
-      style={{ width }}
-      aria-label={panelTitle}
-      aria-hidden={!isOpen}
-      dir={direction}
+    <FloatingStudioPanel
+      panelId="echo-image-settings-panel"
+      title={panelTitle}
+      icon={<SlidersHorizontal size={17} aria-hidden="true" />}
+      boundaryRef={boundaryRef}
+      storageKey="dekokraft.studio.imageSettingsPanel"
+      initialSize={{ width: 300, height: 560 }}
+      initialSide="left"
+      minWidth={250}
+      minHeight={260}
+      maxWidthRatio={0.55}
+      maxHeightRatio={0.85}
+      closeButtonRef={closeButtonRef}
+      onClose={onClose}
+      className="floatingImageToolPanel"
     >
-      <button
-        type="button"
-        className="floatingImageToolPanel__widthHandle"
-        aria-label="تغيير عرض لوحة إعدادات الصورة"
-        title="اسحب لتغيير عرض اللوحة"
-        onPointerDown={startWidthResize}
-        onPointerMove={resizeWidth}
-        onPointerUp={stopWidthResize}
-        onPointerCancel={stopWidthResize}
-        onLostPointerCapture={stopWidthResize}
-      />
-      <div
-        className="floatingImageToolPanel__dragBar"
-      >
-        <GripVertical size={20} aria-label={t("studio.imageTools.dragPanel")} />
-        <strong>{panelTitle}</strong>
-        <div className="floatingImageToolPanel__headerActions">
-          <button type="button" aria-label={isMinimized ? t("studio.imageTools.expandPanel") : t("studio.imageTools.minimizePanel")} aria-pressed={isMinimized} onClick={() => setIsMinimized((current) => !current)}>
-            {isMinimized ? <Maximize2 size={17} aria-hidden="true" /> : <Minus size={17} aria-hidden="true" />}
-          </button>
-          <button ref={closeButtonRef} type="button" aria-label={mode === "filters" ? t("studio.image.closeFilters") : t("studio.image.closeActions")} tabIndex={isOpen ? 0 : -1} onClick={onClose}>
-            <X size={17} aria-hidden="true" />
-          </button>
-        </div>
-      </div>
-
-      <div className="floatingImageToolPanel__body">
+      <div className="floatingImageToolPanel__body" dir={direction}>
         {mode === "filters" ? (
           <div className="floatingImageToolPanel__filterContent">
             <section className="echoImageFilterGroup" aria-labelledby="floating-filter-lighting-title">
@@ -207,6 +163,9 @@ export default function FloatingImageToolPanel({
             <section className="echoImageFilterGroup" aria-labelledby="floating-filter-details-title">
               <h4 id="floating-filter-details-title">{t("studio.image.groupDetails")}</h4>
               <ImageFilterControl id="floating-echo-sharpness" label={t("studio.image.sharpness")} value={sharpness} min={0} max={100} note={t("studio.image.sharpnessPlaceholder")} onChange={onSharpnessChange} />
+            </section>
+            <section className="echoImageFilterGroup" aria-labelledby="floating-filter-effects-title">
+              <h4 id="floating-filter-effects-title">التأثيرات</h4>
               <ImageFilterControl id="floating-echo-blur" label={t("studio.image.blur")} value={blur} min={0} max={20} unit="px" onChange={onBlurChange} />
             </section>
           </div>
@@ -254,8 +213,7 @@ export default function FloatingImageToolPanel({
             {placeholderMessage && <p className="floatingImageToolPanel__notice" role="status">{placeholderMessage}</p>}
           </div>
         )}
-
       </div>
-    </aside>
+    </FloatingStudioPanel>
   );
 }

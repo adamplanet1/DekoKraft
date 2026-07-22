@@ -7562,6 +7562,8 @@ body.studioWindowIsResizing * { cursor: inherit; user-select: none; }
 .echoImageStudio,
 .echoImageStudio__layout { height: 100%; min-height: 0; }
 
+.echoImageStudio { width: 100%; overflow: hidden; }
+
 .echoImageStudio__layout {
   position: relative;
   display: grid;
@@ -7584,8 +7586,16 @@ body.studioWindowIsResizing * { cursor: inherit; user-select: none; }
   max-width: none;
 }
 
-.echoImageStudio__headerControls { display: grid; grid-template-rows: auto auto; align-items: center; gap: 6px; direction: ltr; }
-.echoImageStudio__windowControls { flex: 0 0 auto; order: 1; justify-self: start; direction: ltr; }
+.echoImageStudio__headerControls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  direction: ltr;
+}
+.echoImageStudio__windowControls { flex: 0 0 auto; order: 1; direction: ltr; }
 .echoImageStudio__processingTools {
   order: 2;
   flex: 1 1 auto;
@@ -7771,3 +7781,197 @@ body.studioWindowIsResizing * { cursor: inherit; user-select: none; }
 .studioLibraryCard__footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px; }
 .studioLibraryCard__footer button { display: inline-flex; align-items: center; gap: 6px; padding: 8px 11px; border: 0; border-radius: 10px; background: #315eea; color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
 @media (max-width: 640px) { .studioLibraryHeader { align-items: stretch; flex-direction: column; } .studioLibraryBack { width: fit-content; } }
+
+/* Shared floating windows for the active Studio panels. */
+.floatingStudioPanel {
+  position: absolute;
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  max-width: none;
+  max-height: none;
+  overflow: hidden;
+  border: 1px solid rgba(92, 126, 196, .24);
+  border-radius: 17px;
+  background: rgba(248, 251, 255, .98);
+  box-shadow: 0 18px 48px rgba(30, 64, 132, .2);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  isolation: isolate;
+}
+
+.floatingStudioPanel--interacting {
+  box-shadow: 0 24px 64px rgba(30, 64, 132, .3);
+  user-select: none;
+}
+
+.floatingStudioPanel--collapsed {
+  grid-template-rows: 48px;
+  min-height: 48px;
+  overflow: hidden;
+}
+
+.floatingStudioPanel__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  height: 48px;
+  padding: 7px 8px;
+  overflow: hidden;
+  border-block-end: 1px solid rgba(92, 126, 196, .16);
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(230,240,255,.96));
+  cursor: grab;
+  touch-action: none;
+}
+
+.floatingStudioPanel--interacting .floatingStudioPanel__header { cursor: grabbing; }
+.floatingStudioPanel__drag { display: grid; place-items: center; color: #6680b5; }
+.floatingStudioPanel__header strong { display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; color: #173a79; font-size: .82rem; white-space: nowrap; text-overflow: ellipsis; }
+.floatingStudioPanel__actions { display: flex; align-items: center; gap: 4px; direction: ltr; }
+.floatingStudioPanel__actions button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(92, 126, 196, .2);
+  border-radius: 9px;
+  background: rgba(255,255,255,.9);
+  color: #24457e;
+  cursor: pointer;
+}
+.floatingStudioPanel__actions button:hover { background: #edf4ff; }
+.floatingStudioPanel__actions button:focus-visible { outline: 2px solid #315eea; outline-offset: 1px; }
+.floatingStudioPanel__content { min-width: 0; min-height: 0; overflow: auto; border-radius: 0 0 16px 16px; }
+
+.floatingStudioPanel__resize {
+  position: absolute;
+  z-index: 4;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  touch-action: none;
+}
+.floatingStudioPanel__resize--top { top: 0; right: 10px; left: 10px; height: 7px; cursor: ns-resize; }
+.floatingStudioPanel__resize--bottom { right: 10px; bottom: 0; left: 10px; height: 7px; cursor: ns-resize; }
+.floatingStudioPanel__resize--left { top: 10px; bottom: 10px; left: 0; width: 7px; cursor: ew-resize; }
+.floatingStudioPanel__resize--right { top: 10px; right: 0; bottom: 10px; width: 7px; cursor: ew-resize; }
+.floatingStudioPanel__resize--top-left,
+.floatingStudioPanel__resize--top-right,
+.floatingStudioPanel__resize--bottom-left,
+.floatingStudioPanel__resize--bottom-right { width: 16px; height: 16px; }
+.floatingStudioPanel__resize--top-left { top: 0; left: 0; cursor: nwse-resize; }
+.floatingStudioPanel__resize--top-right { top: 0; right: 0; cursor: nesw-resize; }
+.floatingStudioPanel__resize--bottom-left { bottom: 0; left: 0; cursor: nesw-resize; }
+.floatingStudioPanel__resize--bottom-right { right: 0; bottom: 0; cursor: nwse-resize; }
+
+.echoImageStudio__workspace--image-settings { padding-left: 0; }
+
+.floatingStudioPanel.floatingImageToolPanel {
+  inset: auto;
+  display: grid;
+  min-width: 0;
+  max-width: none;
+  max-height: none;
+  overflow: hidden;
+  border-color: rgba(92, 126, 196, .24);
+  border-radius: 17px;
+  background: rgba(248, 251, 255, .98);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.floatingImageToolPanel .floatingStudioPanel__content { overflow: hidden; }
+.floatingImageToolPanel__body { height: 100%; padding: 10px; overflow: auto; }
+.floatingImageToolPanel__filterContent,
+.floatingImageToolPanel__actionsContent { gap: 9px; }
+.floatingImageToolPanel .echoImageFilterGroup { gap: 7px; padding: 9px; }
+.floatingImageToolPanel .echoImageFilterGroup h4 { font-size: .76rem; }
+.floatingImageToolPanel .echoImageFilterControl { gap: 5px; }
+.floatingImageToolPanel .echoImageFilterControl label { font-size: .72rem; }
+
+.floatingStudioPanel.echoStudioSmartPanel,
+.echoImageStudio__layout--smart-open .floatingStudioPanel.echoStudioSmartPanel {
+  position: absolute;
+  inset: auto;
+  display: grid;
+  grid-area: auto;
+  min-width: 0;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 17px;
+  background: rgba(248, 251, 255, .98);
+}
+.echoStudioSmartPanel > .floatingStudioPanel__content { margin: 0; overflow: hidden; }
+.echoStudioSmartPanel .echoStudioSmartPanel__content { height: 100%; min-height: 0; margin: 0; padding: 0; overflow: auto; }
+.echoStudioSmartPanel .smartEditChat,
+.echoStudioSmartPanel .smartEditChat--categories-open {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+@container studioWindow (max-width: 760px) {
+  .floatingStudioPanel.echoStudioSmartPanel,
+  .echoImageStudio__layout--smart-open .floatingStudioPanel.echoStudioSmartPanel {
+    inset: auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+/* Keep the active image canvas square against both workspace dimensions. */
+.echoImageStudio__workspace {
+  container-name: echoCanvasWorkspace;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.echoImagePreviewColumn {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.echoImagePreview {
+  box-sizing: border-box;
+  width: min(100%, 680px, calc(100dvh - 150px));
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+@supports (width: 1cqh) {
+  .echoImagePreview { width: min(100%, 680px, 100cqh); }
+}
