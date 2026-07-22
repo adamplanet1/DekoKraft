@@ -2,6 +2,7 @@
 
 import { ArrowRight, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Palette, Scissors, Sparkles, Video, WandSparkles, X } from "lucide-react";
 import NextImage from "next/image";
+import Link from "next/link";
 import {
   useEffect,
   useMemo,
@@ -9,6 +10,7 @@ import {
   useState,
   useCallback,
   type ChangeEvent,
+  type CSSProperties,
   type DragEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
@@ -90,6 +92,7 @@ export default function EchoImageStudio({
   const [isImageDragging, setIsImageDragging] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState("");
+  const [imageSettingsWidth, setImageSettingsWidth] = useState(220);
   const [activeProductMemory, setActiveProductMemory] = useState<ProductMemory | null>(null);
   const [brightness, setBrightness] = useState(DEFAULT_FILTERS.brightness);
   const [contrast, setContrast] = useState(DEFAULT_FILTERS.contrast);
@@ -191,6 +194,19 @@ export default function EchoImageStudio({
           ? "embroidery"
           : "image";
   const isSmartEditOpen = activeTool === "smart-edit";
+
+  useEffect(() => {
+    const librarySelection = sessionStorage.getItem("dekokraft.studio.librarySelection");
+    if (!librarySelection) return;
+    sessionStorage.removeItem("dekokraft.studio.librarySelection");
+    setActiveImageSource({ kind: "platform-product", previewUrl: librarySelection, originalUrl: librarySelection });
+    setVideoPreviewUrl(librarySelection);
+    setThreeDImagePreviewUrl(librarySelection);
+    setLaserPreviewUrl(librarySelection);
+    setEmbroideryPreviewUrl(librarySelection);
+    setSmartEditPreviewUrl(librarySelection);
+    setFileName("صورة من مكتبة الموقع");
+  }, []);
 
   useEffect(() => {
     if (!launchContext?.productId || activeImageSource || launchProductLoadedRef.current === launchContext.productId) return;
@@ -1822,7 +1838,43 @@ export default function EchoImageStudio({
       </header>
       </aside>
 
-      <div className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}`}>
+      <div
+        className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}${isFiltersOpen || isActionsOpen ? " echoImageStudio__workspace--image-settings" : ""}`}
+        style={{ "--image-settings-width": `${imageSettingsWidth}px` } as CSSProperties}
+      >
+        <FloatingImageToolPanel
+          isOpen={isFiltersOpen || isActionsOpen}
+          mode={isActionsOpen ? "actions" : "filters"}
+          width={imageSettingsWidth}
+          onWidthChange={setImageSettingsWidth}
+          closeButtonRef={isActionsOpen ? actionsCloseRef : filtersCloseRef}
+          hasImage={Boolean(previewUrl)}
+          isComparing={isComparing}
+          brightness={brightness}
+          contrast={contrast}
+          saturation={saturation}
+          sharpness={sharpness}
+          blur={blur}
+          grayscale={grayscale}
+          sepia={sepia}
+          hueRotate={hueRotate}
+          onClose={isActionsOpen ? closeActions : closeFilters}
+          onReset={resetFilters}
+          onCompareStart={(event) => {
+            event.currentTarget.setPointerCapture(event.pointerId);
+            setIsComparing(true);
+          }}
+          onCompareStop={stopComparing}
+          onCompareKeyChange={setIsComparing}
+          onBrightnessChange={setBrightness}
+          onContrastChange={setContrast}
+          onSaturationChange={setSaturation}
+          onSharpnessChange={setSharpness}
+          onBlurChange={setBlur}
+          onGrayscaleChange={setGrayscale}
+          onSepiaChange={setSepia}
+          onHueRotateChange={setHueRotate}
+        />
         <div className="echoImagePreviewColumn">
           {activeProcessingMode === "video" ? (
             <VideoProcessingWorkspace filterValue={videoFilterValue} isComparing={isVideoComparing} />
@@ -1865,9 +1917,12 @@ export default function EchoImageStudio({
               <div className="echoImagePreview__empty">
                 <ImagePlus size={42} aria-hidden="true" />
                 <p>{activeProductMemory?.productId ? "لا توجد صورة محفوظة لهذا المنتج." : t("studio.image.uploadHint")}</p>
-                <button type="button" className="echoImageActionButton" onClick={() => fileInputRef.current?.click()}>
-                  اختيار صورة
-                </button>
+                <div className="echoImageSourceActions">
+                  <button type="button" className="echoImageActionButton" onClick={() => fileInputRef.current?.click()}>
+                    اختيار صورة
+                  </button>
+                  <Link className="echoImageActionButton" href="/studio/library">مكتبة الموقع</Link>
+                </div>
               </div>
             )}
             {isImageLoading && <span className="echoImagePreview__state" role="status">جارٍ تحميل الصورة…</span>}
@@ -2162,38 +2217,6 @@ export default function EchoImageStudio({
       </aside>}
       </div>
 
-      <FloatingImageToolPanel
-        isOpen={isFiltersOpen || isActionsOpen}
-        mode={isActionsOpen ? "actions" : "filters"}
-        studioWindowRef={studioWindowRef}
-        closeButtonRef={isActionsOpen ? actionsCloseRef : filtersCloseRef}
-        hasImage={Boolean(previewUrl)}
-        isComparing={isComparing}
-        brightness={brightness}
-        contrast={contrast}
-        saturation={saturation}
-        sharpness={sharpness}
-        blur={blur}
-        grayscale={grayscale}
-        sepia={sepia}
-        hueRotate={hueRotate}
-        onClose={isActionsOpen ? closeActions : closeFilters}
-        onReset={resetFilters}
-        onCompareStart={(event) => {
-          event.currentTarget.setPointerCapture(event.pointerId);
-          setIsComparing(true);
-        }}
-        onCompareStop={stopComparing}
-        onCompareKeyChange={setIsComparing}
-        onBrightnessChange={setBrightness}
-        onContrastChange={setContrast}
-        onSaturationChange={setSaturation}
-        onSharpnessChange={setSharpness}
-        onBlurChange={setBlur}
-        onGrayscaleChange={setGrayscale}
-        onSepiaChange={setSepia}
-        onHueRotateChange={setHueRotate}
-      />
     </div>
   );
 }

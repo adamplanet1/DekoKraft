@@ -41,6 +41,7 @@ for (const required of [
   "index.html",
   "404.html",
   "studio/index.html",
+  "studio/library/index.html",
   "market/index.html",
   "register/index.html",
   "login/index.html",

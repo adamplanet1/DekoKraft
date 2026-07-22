@@ -8,7 +8,6 @@ import {
   Layers,
   Maximize2,
   Minus,
-  Move,
   RotateCcw,
   ScanEye,
   Shield,
@@ -18,8 +17,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  useCallback,
-  useEffect,
   useRef,
   useState,
   type PointerEvent,
@@ -33,7 +30,8 @@ export type FloatingImagePanelMode = "filters" | "actions";
 type FloatingImageToolPanelProps = {
   isOpen: boolean;
   mode: FloatingImagePanelMode;
-  studioWindowRef: RefObject<HTMLDivElement | null>;
+  width: number;
+  onWidthChange: (width: number) => void;
   closeButtonRef: RefObject<HTMLButtonElement | null>;
   hasImage: boolean;
   isComparing: boolean;
@@ -60,12 +58,11 @@ type FloatingImageToolPanelProps = {
   onHueRotateChange: (value: number) => void;
 };
 
-const DEFAULT_POSITION = { x: 24, y: 80 };
-
 export default function FloatingImageToolPanel({
   isOpen,
   mode,
-  studioWindowRef,
+  width,
+  onWidthChange,
   closeButtonRef,
   hasImage,
   isComparing,
@@ -93,79 +90,13 @@ export default function FloatingImageToolPanel({
 }: FloatingImageToolPanelProps) {
   const { direction, t } = useLanguage();
   const panelRef = useRef<HTMLElement>(null);
-  const dragOffsetRef = useRef({ x: 0, y: 0 });
-  const [panelPosition, setPanelPosition] = useState(DEFAULT_POSITION);
-  const [isDraggingPanel, setIsDraggingPanel] = useState(false);
+  const resizeStartRef = useRef<{ pointerId: number; x: number; width: number } | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
   const [placeholderMessage, setPlaceholderMessage] = useState("");
   const [shadowRemovalStrength, setShadowRemovalStrength] = useState(45);
   const [shadowDetectionSensitivity, setShadowDetectionSensitivity] = useState(55);
   const [shadowEdgeSoftness, setShadowEdgeSoftness] = useState(45);
   const [shadowDetailProtection, setShadowDetailProtection] = useState(80);
-
-  const clampPosition = useCallback((x: number, y: number) => {
-    const boundary = studioWindowRef.current;
-    const panel = panelRef.current;
-    if (!boundary || !panel) return { x, y };
-    const boundaryRect = boundary.getBoundingClientRect();
-    const panelRect = panel.getBoundingClientRect();
-    const maxX = Math.max(0, boundaryRect.width - panelRect.width);
-    const maxY = Math.max(0, boundaryRect.height - panelRect.height);
-    return {
-      x: Math.min(Math.max(0, x), maxX),
-      y: Math.min(Math.max(0, y), maxY),
-    };
-  }, [studioWindowRef]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const frame = window.requestAnimationFrame(() => {
-      setPanelPosition((current) => clampPosition(current.x, current.y));
-    });
-    const keepInsideBounds = () => setPanelPosition((current) => clampPosition(current.x, current.y));
-    const resizeObserver = typeof ResizeObserver === "undefined"
-      ? null
-      : new ResizeObserver(keepInsideBounds);
-    if (studioWindowRef.current) resizeObserver?.observe(studioWindowRef.current);
-    if (panelRef.current) resizeObserver?.observe(panelRef.current);
-    window.addEventListener("resize", keepInsideBounds);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      resizeObserver?.disconnect();
-      window.removeEventListener("resize", keepInsideBounds);
-    };
-  }, [clampPosition, isMinimized, isOpen, mode, studioWindowRef]);
-
-  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (window.matchMedia("(max-width: 720px)").matches || event.button !== 0) return;
-    if ((event.target as HTMLElement).closest("button")) return;
-    const panel = panelRef.current;
-    if (!panel) return;
-    const panelRect = panel.getBoundingClientRect();
-    dragOffsetRef.current = {
-      x: event.clientX - panelRect.left,
-      y: event.clientY - panelRect.top,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setIsDraggingPanel(true);
-  };
-
-  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingPanel) return;
-    const boundary = studioWindowRef.current;
-    if (!boundary) return;
-    const boundaryRect = boundary.getBoundingClientRect();
-    const nextX = event.clientX - boundaryRect.left - dragOffsetRef.current.x;
-    const nextY = event.clientY - boundaryRect.top - dragOffsetRef.current.y;
-    setPanelPosition(clampPosition(nextX, nextY));
-  };
-
-  const stopDragging = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    setIsDraggingPanel(false);
-  };
-
-  const resetPanelPosition = () => setPanelPosition(clampPosition(DEFAULT_POSITION.x, DEFAULT_POSITION.y));
 
   const applyShadowPreset = (preset: "light" | "medium" | "strong") => {
     const values = preset === "light"
@@ -207,28 +138,48 @@ export default function FloatingImageToolPanel({
 
   const panelTitle = mode === "filters" ? t("studio.image.filtersTitle") : t("studio.image.actionsTitle");
 
+  const startWidthResize = (event: PointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    resizeStartRef.current = { pointerId: event.pointerId, x: event.clientX, width };
+  };
+
+  const resizeWidth = (event: PointerEvent<HTMLButtonElement>) => {
+    const start = resizeStartRef.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+    onWidthChange(Math.min(320, Math.max(180, start.width + event.clientX - start.x)));
+  };
+
+  const stopWidthResize = () => {
+    resizeStartRef.current = null;
+  };
+
   return (
     <aside
       ref={panelRef}
-      className={`floatingImageToolPanel${isOpen ? " floatingImageToolPanel--open" : ""}${isMinimized ? " floatingImageToolPanel--minimized" : ""}${isDraggingPanel ? " floatingImageToolPanel--dragging" : ""}`}
-      style={{ transform: `translate3d(${panelPosition.x}px, ${panelPosition.y}px, 0)` }}
+      className={`floatingImageToolPanel${isOpen ? " floatingImageToolPanel--open" : ""}${isMinimized ? " floatingImageToolPanel--minimized" : ""}`}
+      style={{ width }}
       aria-label={panelTitle}
       aria-hidden={!isOpen}
       dir={direction}
     >
+      <button
+        type="button"
+        className="floatingImageToolPanel__widthHandle"
+        aria-label="تغيير عرض لوحة إعدادات الصورة"
+        title="اسحب لتغيير عرض اللوحة"
+        onPointerDown={startWidthResize}
+        onPointerMove={resizeWidth}
+        onPointerUp={stopWidthResize}
+        onPointerCancel={stopWidthResize}
+        onLostPointerCapture={stopWidthResize}
+      />
       <div
         className="floatingImageToolPanel__dragBar"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={stopDragging}
-        onPointerCancel={stopDragging}
       >
         <GripVertical size={20} aria-label={t("studio.imageTools.dragPanel")} />
         <strong>{panelTitle}</strong>
         <div className="floatingImageToolPanel__headerActions">
-          <button type="button" aria-label={t("studio.imageTools.resetPanelPosition")} title={t("studio.imageTools.resetPanelPosition")} onClick={resetPanelPosition}>
-            <Move size={17} aria-hidden="true" />
-          </button>
           <button type="button" aria-label={isMinimized ? t("studio.imageTools.expandPanel") : t("studio.imageTools.minimizePanel")} aria-pressed={isMinimized} onClick={() => setIsMinimized((current) => !current)}>
             {isMinimized ? <Maximize2 size={17} aria-hidden="true" /> : <Minus size={17} aria-hidden="true" />}
           </button>
@@ -304,9 +255,6 @@ export default function FloatingImageToolPanel({
           </div>
         )}
 
-        <button type="button" className="floatingImageToolPanel__resetPosition" onClick={resetPanelPosition}>
-          <Move size={17} aria-hidden="true" />{t("studio.imageTools.resetPanelPosition")}
-        </button>
       </div>
     </aside>
   );
