@@ -60,6 +60,8 @@ type ActiveImageSource = {
   originalUrl?: string;
 };
 
+type StudioTool = "image" | "video" | "3d" | "laser" | "cnc" | "embroidery" | "coloring" | null;
+
 const DEFAULT_FILTERS = {
   brightness: 100,
   contrast: 100,
@@ -81,6 +83,7 @@ export default function EchoImageStudio({
 }: EchoImageStudioProps) {
   const { direction, t } = useLanguage();
   const { activeWorkspace, activeTool, selectWorkspace, selectTool, openSmartEdit } = useWorkspace();
+  const [activeStudioTool, setActiveStudioTool] = useState<StudioTool>(null);
   const [activeImageSource, setActiveImageSource] = useState<ActiveImageSource | null>(null);
   const previewUrl = activeImageSource?.previewUrl ?? null;
   const originalPreviewUrl = activeImageSource?.originalUrl ?? activeImageSource?.previewUrl ?? null;
@@ -199,6 +202,7 @@ export default function EchoImageStudio({
     const librarySelection = sessionStorage.getItem("dekokraft.studio.librarySelection");
     if (!librarySelection) return;
     sessionStorage.removeItem("dekokraft.studio.librarySelection");
+    setActiveStudioTool("image");
     setActiveImageSource({ kind: "platform-product", previewUrl: librarySelection, originalUrl: librarySelection });
     setVideoPreviewUrl(librarySelection);
     setThreeDImagePreviewUrl(librarySelection);
@@ -213,6 +217,7 @@ export default function EchoImageStudio({
     launchProductLoadedRef.current = launchContext.productId;
     const memory = loadProductMemoryByProductId(launchContext.productId);
     if (!memory) return;
+    setActiveStudioTool("image");
     setActiveProductMemory(memory);
     const memoryUrl = memory.originalImage?.persistentUrl ?? memory.originalImage?.previewUrl ?? null;
     setProductMemoryImage(memoryUrl);
@@ -286,7 +291,7 @@ export default function EchoImageStudio({
       observer?.disconnect();
       window.removeEventListener("resize", verify);
     };
-  }, [isActionsOpen, isFiltersOpen, isMaximized, isSmartEditOpen]);
+  }, [activeStudioTool, isActionsOpen, isFiltersOpen, isMaximized, isSmartEditOpen]);
 
   useEffect(() => () => {
     if (previewUrl?.startsWith("blob:") && previewUrl !== originalPreviewUrl) URL.revokeObjectURL(previewUrl);
@@ -412,6 +417,11 @@ export default function EchoImageStudio({
     setIsSmartEditFiltersOpen(false);
     setIsSmartEditActionsOpen(false);
   }, [selectWorkspace]);
+
+  const activateImageTool = useCallback(() => {
+    setActiveStudioTool("image");
+    toggleImageTools();
+  }, [toggleImageTools]);
 
   const closeVideoFilters = useCallback(() => {
     setIsVideoFiltersOpen(false);
@@ -1661,11 +1671,12 @@ export default function EchoImageStudio({
             <button
               ref={imageToolsToggleRef}
               type="button"
-              className="echoImageMainToolButton"
-              data-active={activeWorkspace === "image" ? "true" : undefined}
+              className={`echoImageMainToolButton studio-tool-button${activeStudioTool === "image" ? " is-active" : ""}`}
+              data-active={activeStudioTool === "image" ? "true" : undefined}
+              aria-pressed={activeStudioTool === "image"}
               aria-expanded={isImageToolsOpen}
               aria-controls="echo-image-tools-menu"
-              onClick={openFilters}
+              onClick={activateImageTool}
             >
               <span className="echoImageMainToolIcon"><WandSparkles size={20} aria-hidden="true" /></span>
               <span className="echoImageMainToolLabel">{t("studio.image.imageProcessing")}</span>
@@ -1697,11 +1708,12 @@ export default function EchoImageStudio({
             <button
               ref={videoToolsToggleRef}
               type="button"
-              className="echoVideoMainToolButton"
-              data-active={activeWorkspace === "video" ? "true" : undefined}
+              className={`echoVideoMainToolButton studio-tool-button${activeStudioTool === "video" ? " is-active" : ""}`}
+              data-active={activeStudioTool === "video" ? "true" : undefined}
+              aria-pressed={activeStudioTool === "video"}
               aria-expanded={isVideoToolsOpen}
               aria-controls="echo-video-tools-menu"
-              onClick={openVideoFilters}
+              onClick={() => { setActiveStudioTool("video"); openVideoFilters(); }}
             >
               <span className="echoVideoMainToolIcon"><Video size={20} aria-hidden="true" /></span>
               <span className="echoVideoMainToolLabel">{t("studio.video.imageProcessing")}</span>
@@ -1733,11 +1745,12 @@ export default function EchoImageStudio({
             <button
               ref={threeDImageToolsToggleRef}
               type="button"
-              className="echoThreeDImageMainToolButton"
-              data-active={activeWorkspace === "3d" ? "true" : undefined}
+              className={`echoThreeDImageMainToolButton studio-tool-button${activeStudioTool === "3d" ? " is-active" : ""}`}
+              data-active={activeStudioTool === "3d" ? "true" : undefined}
+              aria-pressed={activeStudioTool === "3d"}
               aria-expanded={isThreeDImageToolsOpen}
               aria-controls="echo-three-d-image-tools-menu"
-              onClick={openThreeDImageFilters}
+              onClick={() => { setActiveStudioTool("3d"); openThreeDImageFilters(); }}
             >
               <span className="echoThreeDImageMainToolIcon"><Box size={20} aria-hidden="true" /></span>
               <span className="echoThreeDImageMainToolLabel">{t("studio.threeDImage.processing")}</span>
@@ -1768,9 +1781,10 @@ export default function EchoImageStudio({
             <div className="echoCncStudio__headerTools">
               <button
                 type="button"
-                className="echoCncMainToolButton"
-                data-active={activeWorkspace === "cnc" ? "true" : undefined}
-                onClick={openCncFilters}
+                className={`echoCncMainToolButton studio-tool-button${activeStudioTool === "cnc" ? " is-active" : ""}`}
+                data-active={activeStudioTool === "cnc" ? "true" : undefined}
+                aria-pressed={activeStudioTool === "cnc"}
+                onClick={() => { setActiveStudioTool("cnc"); openCncFilters(); }}
               >
                 <span className="echoLaserMainToolIcon"><Crosshair size={20} aria-hidden="true" /></span>
                 <span className="echoLaserMainToolLabel">الليزر CNC</span>
@@ -1780,11 +1794,12 @@ export default function EchoImageStudio({
               <button
                 ref={laserToolsToggleRef}
                 type="button"
-                className="echoLaserMainToolButton"
-                data-active={activeWorkspace === "laser" ? "true" : undefined}
+                className={`echoLaserMainToolButton studio-tool-button${activeStudioTool === "laser" ? " is-active" : ""}`}
+                data-active={activeStudioTool === "laser" ? "true" : undefined}
+                aria-pressed={activeStudioTool === "laser"}
                 aria-expanded={isLaserToolsOpen}
                 aria-controls="echo-laser-tools-menu"
-                onClick={openLaserFilters}
+                onClick={() => { setActiveStudioTool("laser"); openLaserFilters(); }}
               >
                 <span className="echoLaserMainToolIcon"><Scissors size={20} aria-hidden="true" /></span>
                 <span className="echoLaserMainToolLabel">المقص الكهربائي</span>
@@ -1816,11 +1831,12 @@ export default function EchoImageStudio({
               <button
                 ref={embroideryToolsToggleRef}
                 type="button"
-                className="echoEmbroideryMainToolButton"
-                data-active={activeWorkspace === "embroidery" ? "true" : undefined}
+                className={`echoEmbroideryMainToolButton studio-tool-button${activeStudioTool === "embroidery" ? " is-active" : ""}`}
+                data-active={activeStudioTool === "embroidery" ? "true" : undefined}
+                aria-pressed={activeStudioTool === "embroidery"}
                 aria-expanded={isEmbroideryToolsOpen}
                 aria-controls="echo-embroidery-tools-menu"
-                onClick={openEmbroideryFilters}
+                onClick={() => { setActiveStudioTool("embroidery"); openEmbroideryFilters(); }}
               >
                 <span className="echoEmbroideryMainToolIcon"><Palette size={20} aria-hidden="true" /></span>
                 <span className="echoEmbroideryMainToolLabel">{t("studio.embroideryProcessing.processing")}</span>
@@ -1863,7 +1879,19 @@ export default function EchoImageStudio({
         className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}`}
       >
         <div className="echoImagePreviewColumn">
-          {activeProcessingMode === "video" ? (
+          {activeStudioTool === null ? (
+            <section ref={canvasRef} className="echoImagePreview studio-welcome-state" aria-label="مرحبًا بكم في EchoDeko Studio">
+              <div className="studio-welcome-mark">
+                <span className="studio-welcome-icon" aria-hidden="true"><Sparkles size={32} /></span>
+                <h2>مرحبًا بكم في EchoDeko Studio</h2>
+                <p>
+                  يمكنكم حاليًا استخدام أداة معالجة الصور،<br />
+                  بينما نعمل على تطوير بقية الأنشطة وتفعيلها تباعًا.
+                </p>
+                <p className="studio-welcome-note">يسعدنا أن تشاركونا رحلتنا الإبداعية.</p>
+              </div>
+            </section>
+          ) : activeProcessingMode === "video" ? (
             <VideoProcessingWorkspace filterValue={videoFilterValue} isComparing={isVideoComparing} />
           ) : activeProcessingMode === "threeDImage" ? (
             <ThreeDProcessingWorkspace />
@@ -2144,7 +2172,7 @@ export default function EchoImageStudio({
         />
       </div>
 
-      {!isSmartEditOpen && <button
+      {activeStudioTool === "image" && !isSmartEditOpen && <button
         ref={smartEditToolsToggleRef}
         type="button"
         className="echoSmartEditMainToolButton echoStudioSmartEditLauncher"
