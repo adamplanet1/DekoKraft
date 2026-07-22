@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Palette, Sparkles, Video, WandSparkles, X } from "lucide-react";
+import { ArrowRight, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Palette, Scissors, Sparkles, Video, WandSparkles, X } from "lucide-react";
 import NextImage from "next/image";
 import {
   useEffect,
@@ -179,12 +179,14 @@ export default function EchoImageStudio({
   const [isSmartEditFiltersOpen, setIsSmartEditFiltersOpen] = useState(false);
   const [isSmartEditActionsOpen, setIsSmartEditActionsOpen] = useState(false);
   const launchProductLoadedRef = useRef<string | null>(null);
-  const activeProcessingMode: "image" | "video" | "threeDImage" | "laser" | "embroidery" | "smartEdit" = activeWorkspace === "video"
+  const activeProcessingMode: "image" | "video" | "threeDImage" | "laser" | "cnc" | "embroidery" | "smartEdit" = activeWorkspace === "video"
     ? "video"
     : activeWorkspace === "3d"
       ? "threeDImage"
       : activeWorkspace === "laser"
         ? "laser"
+        : activeWorkspace === "cnc"
+          ? "cnc"
         : activeWorkspace === "embroidery"
           ? "embroidery"
           : "image";
@@ -636,6 +638,21 @@ export default function EchoImageStudio({
     selectWorkspace("laser");
     setIsLaserActionsOpen(true);
     setIsLaserFiltersOpen(false);
+    setIsFiltersOpen(false);
+    setIsActionsOpen(false);
+    setIsVideoFiltersOpen(false);
+    setIsVideoActionsOpen(false);
+    setIsThreeDImageFiltersOpen(false);
+    setIsThreeDImageActionsOpen(false);
+    setIsEmbroideryFiltersOpen(false);
+    setIsEmbroideryActionsOpen(false);
+    setIsLaserToolsOpen(false);
+  }, [selectWorkspace]);
+
+  const openCncFilters = useCallback(() => {
+    selectWorkspace("cnc");
+    setIsLaserFiltersOpen(true);
+    setIsLaserActionsOpen(false);
     setIsFiltersOpen(false);
     setIsActionsOpen(false);
     setIsVideoFiltersOpen(false);
@@ -1557,13 +1574,15 @@ export default function EchoImageStudio({
       ? t("studio.threeDImage.processing")
       : activeWorkspace === "laser"
         ? t("studio.laserProcessing.processing")
+        : activeWorkspace === "cnc"
+          ? "الليزر CNC"
         : activeWorkspace === "embroidery"
           ? t("studio.embroideryProcessing.processing")
           : t("studio.image.imageProcessing");
 
   return (
     <div ref={studioWindowRef} className="echoImageStudio" dir={direction}>
-      <div className="echoImageStudio__layout">
+      <div className={`echoImageStudio__layout${isSmartEditOpen ? " echoImageStudio__layout--smart-open" : ""}`}>
       <aside className="echoImageStudio__toolsColumn" dir={direction}>
       <header className="echoImageStudio__header">
         <div className="echoImageStudio__headerControls">
@@ -1585,7 +1604,7 @@ export default function EchoImageStudio({
               autoFocus
               onClick={onBack}
             >
-              <ArrowLeft size={19} aria-hidden="true" />
+              <ArrowRight size={19} aria-hidden="true" />
             </button>
             <button
               type="button"
@@ -1609,7 +1628,7 @@ export default function EchoImageStudio({
               data-active={activeWorkspace === "image" ? "true" : undefined}
               aria-expanded={isImageToolsOpen}
               aria-controls="echo-image-tools-menu"
-              onClick={toggleImageTools}
+              onClick={openFilters}
             >
               <span className="echoImageMainToolIcon"><WandSparkles size={20} aria-hidden="true" /></span>
               <span className="echoImageMainToolLabel">{t("studio.image.imageProcessing")}</span>
@@ -1645,7 +1664,7 @@ export default function EchoImageStudio({
               data-active={activeWorkspace === "video" ? "true" : undefined}
               aria-expanded={isVideoToolsOpen}
               aria-controls="echo-video-tools-menu"
-              onClick={toggleVideoTools}
+              onClick={openVideoFilters}
             >
               <span className="echoVideoMainToolIcon"><Video size={20} aria-hidden="true" /></span>
               <span className="echoVideoMainToolLabel">{t("studio.video.imageProcessing")}</span>
@@ -1681,7 +1700,7 @@ export default function EchoImageStudio({
               data-active={activeWorkspace === "3d" ? "true" : undefined}
               aria-expanded={isThreeDImageToolsOpen}
               aria-controls="echo-three-d-image-tools-menu"
-              onClick={toggleThreeDImageTools}
+              onClick={openThreeDImageFilters}
             >
               <span className="echoThreeDImageMainToolIcon"><Box size={20} aria-hidden="true" /></span>
               <span className="echoThreeDImageMainToolLabel">{t("studio.threeDImage.processing")}</span>
@@ -1709,6 +1728,17 @@ export default function EchoImageStudio({
               }}
             />
             </div>
+            <div className="echoCncStudio__headerTools">
+              <button
+                type="button"
+                className="echoCncMainToolButton"
+                data-active={activeWorkspace === "cnc" ? "true" : undefined}
+                onClick={openCncFilters}
+              >
+                <span className="echoLaserMainToolIcon"><Crosshair size={20} aria-hidden="true" /></span>
+                <span className="echoLaserMainToolLabel">الليزر CNC</span>
+              </button>
+            </div>
             <div ref={laserToolsRef} className="echoLaserStudio__headerTools">
               <button
                 ref={laserToolsToggleRef}
@@ -1717,9 +1747,9 @@ export default function EchoImageStudio({
                 data-active={activeWorkspace === "laser" ? "true" : undefined}
                 aria-expanded={isLaserToolsOpen}
                 aria-controls="echo-laser-tools-menu"
-                onClick={toggleLaserTools}
+                onClick={openLaserFilters}
               >
-                <span className="echoLaserMainToolIcon"><Crosshair size={20} aria-hidden="true" /></span>
+                <span className="echoLaserMainToolIcon"><Scissors size={20} aria-hidden="true" /></span>
                 <span className="echoLaserMainToolLabel">المقص الكهربائي</span>
                 <ChevronDown className={`echoLaserMainToolChevron${isLaserToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
               </button>
@@ -1753,7 +1783,7 @@ export default function EchoImageStudio({
                 data-active={activeWorkspace === "embroidery" ? "true" : undefined}
                 aria-expanded={isEmbroideryToolsOpen}
                 aria-controls="echo-embroidery-tools-menu"
-                onClick={toggleEmbroideryTools}
+                onClick={openEmbroideryFilters}
               >
                 <span className="echoEmbroideryMainToolIcon"><Palette size={20} aria-hidden="true" /></span>
                 <span className="echoEmbroideryMainToolLabel">{t("studio.embroideryProcessing.processing")}</span>
@@ -1826,6 +1856,8 @@ export default function EchoImageStudio({
                     ? isEmbroideryComparing ? "none" : embroideryFilterValue
                     : activeProcessingMode === "laser"
                       ? isLaserComparing ? "none" : laserFilterValue
+                      : activeProcessingMode === "cnc"
+                        ? isLaserComparing ? "none" : laserFilterValue
                     : isComparing ? "none" : filterValue,
                 }}
               />
@@ -2069,7 +2101,19 @@ export default function EchoImageStudio({
         />
       </div>
 
-      <aside className="echoStudioSmartPanel" aria-label="لوحة التعديل الذكي">
+      {!isSmartEditOpen && <button
+        ref={smartEditToolsToggleRef}
+        type="button"
+        className="echoSmartEditMainToolButton echoStudioSmartEditLauncher"
+        aria-expanded="false"
+        aria-controls="echo-smart-edit-chat"
+        onClick={toggleSmartEditTools}
+      >
+        <Sparkles size={20} aria-hidden="true" />
+        <span>التعديل الذكي</span>
+      </button>}
+
+      {isSmartEditOpen && <aside className="echoStudioSmartPanel" aria-label="لوحة التعديل الذكي">
         <button
           ref={smartEditToolsToggleRef}
           type="button"
@@ -2084,8 +2128,7 @@ export default function EchoImageStudio({
           <ChevronDown className={`echoSmartEditMainToolChevron${isSmartEditOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
         </button>
         <div className="echoStudioSmartPanel__content">
-          {!isSmartEditOpen && <p className="echoStudioSmartPanel__placeholder">افتح التعديل الذكي لعرض المساعد وأدواته هنا.</p>}
-          {isSmartEditOpen && (
+          {(
             <SmartEditEngine
               key={activeProductMemory?.memoryId ?? "empty-product-memory"}
               product={{
@@ -2116,7 +2159,7 @@ export default function EchoImageStudio({
             />
           )}
         </div>
-      </aside>
+      </aside>}
       </div>
 
       <FloatingImageToolPanel

@@ -26,7 +26,7 @@ const resizeHandles: Array<{ direction: ResizeDirection; label: string }> = [
 function clampBounds(bounds: StudioBounds): StudioBounds {
   const availableWidth = Math.max(300, window.innerWidth - SAFE_MARGIN * 2);
   const availableHeight = Math.max(360, window.innerHeight - SAFE_MARGIN * 2);
-  const minWidth = Math.min(760, availableWidth);
+  const minWidth = Math.min(820, availableWidth);
   const minHeight = Math.min(560, availableHeight);
   const width = Math.min(Math.max(bounds.width, minWidth), availableWidth);
   const height = Math.min(Math.max(bounds.height, minHeight), availableHeight);
