@@ -8,7 +8,7 @@ import { WorkspaceProvider } from "./engine/WorkspaceContext";
 type StudioBounds = { x: number; y: number; width: number; height: number };
 type ResizeDirection = "top" | "bottom" | "left" | "right" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-const STORAGE_KEY = "dekokraft-studio-window-bounds";
+const STORAGE_KEY = "dekokraft-studio-window-bounds-v2";
 const SAFE_MARGIN = 12;
 const DEFAULT_SIZE = { width: 1180, height: 820 };
 

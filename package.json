@@ -34,7 +34,8 @@
     "dekoclean:echo-recovery-test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/dekoclean-echo-recovery-test.ts",
     "dekoclean:repair-wiring-test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/dekoclean-repair-wiring-test.ts",
     "dekoclean:finding-lifecycle-test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/dekoclean-finding-lifecycle-test.ts",
-    "participant-maintenance:test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/participant-maintenance-test.ts"
+    "participant-maintenance:test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/participant-maintenance-test.ts",
+    "studio:layout-test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/studio-layout-verification-test.ts"
   },
   "dependencies": {
     "konva": "^10.3.0",

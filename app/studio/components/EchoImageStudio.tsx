@@ -41,6 +41,7 @@ import { completeUploadedImageAnalysis, createPlatformProductMemory, createUploa
 import type { ProductDNA } from "../../../lib/echo/echoProductDNA";
 import { useWorkspace } from "../engine/WorkspaceContext";
 import type { SmartEditLaunchContext } from "../engine/workspaceTypes";
+import { verifyStudioLayoutGeometry } from "../lib/verifyStudioLayout";
 
 type EchoImageStudioProps = {
   launchContext?: SmartEditLaunchContext | null;
@@ -250,6 +251,42 @@ export default function EchoImageStudio({
   const smartEditFiltersCloseRef = useRef<HTMLButtonElement>(null);
   const smartEditActionsCloseRef = useRef<HTMLButtonElement>(null);
   const studioWindowRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production") return;
+    const studio = studioWindowRef.current;
+    const toolbar = toolbarRef.current;
+    const canvas = canvasRef.current;
+    if (!studio || !toolbar || !canvas) return;
+    let frame = 0;
+    const verify = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const issues = verifyStudioLayoutGeometry({
+          viewport: { top: 0, left: 0, right: window.innerWidth, bottom: window.innerHeight, width: window.innerWidth, height: window.innerHeight },
+          studio: studio.getBoundingClientRect(),
+          toolbar: toolbar.getBoundingClientRect(),
+          canvas: canvas.getBoundingClientRect(),
+          panels: Array.from(studio.querySelectorAll<HTMLElement>(".floatingStudioPanel")).map((panel) => panel.getBoundingClientRect()),
+        });
+        studio.dataset.layoutVerification = issues.length === 0 ? "passed" : "failed";
+        studio.dataset.layoutIssues = issues.join(",");
+      });
+    };
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(verify);
+    observer?.observe(studio);
+    observer?.observe(toolbar);
+    observer?.observe(canvas);
+    window.addEventListener("resize", verify);
+    verify();
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("resize", verify);
+    };
+  }, [isActionsOpen, isFiltersOpen, isMaximized, isSmartEditOpen]);
 
   useEffect(() => () => {
     if (previewUrl?.startsWith("blob:") && previewUrl !== originalPreviewUrl) URL.revokeObjectURL(previewUrl);
@@ -1619,7 +1656,7 @@ export default function EchoImageStudio({
               <X size={18} aria-hidden="true" />
             </button>
           </div>
-          <div className="echoImageStudio__processingTools">
+          <div ref={toolbarRef} className="echoImageStudio__processingTools">
             <div ref={imageToolsRef} className="echoImageStudio__headerTools">
             <button
               ref={imageToolsToggleRef}
@@ -1832,6 +1869,7 @@ export default function EchoImageStudio({
             <ThreeDProcessingWorkspace />
           ) : (
             <section
+              ref={canvasRef}
               className={`echoImagePreview${isImageDragging ? " echoImagePreview--dragging" : ""}`}
               aria-label={t("studio.image.title")}
               onDragEnter={(event) => { event.preventDefault(); setIsImageDragging(true); }}
@@ -2119,12 +2157,13 @@ export default function EchoImageStudio({
       </button>}
       </div>
 
+      <div className="echoImageStudio__floatingLayer" aria-label="لوحات الاستوديو العائمة">
       {isSmartEditOpen && <FloatingStudioPanel
         panelId="echo-smart-edit-panel"
         title="التعديل الذكي"
         icon={<Sparkles size={17} aria-hidden="true" />}
         boundaryRef={studioWindowRef}
-        storageKey="dekokraft.studio.smartEditPanel"
+        storageKey="dekokraft.studio.smartEditPanel.v2"
         initialSize={{ width: 390, height: 600 }}
         initialSide="right"
         minWidth={280}
@@ -2203,6 +2242,7 @@ export default function EchoImageStudio({
         onSepiaChange={setSepia}
         onHueRotateChange={setHueRotate}
       />
+      </div>
 
     </div>
   );
