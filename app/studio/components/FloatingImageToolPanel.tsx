@@ -24,6 +24,7 @@ type FloatingImageToolPanelProps = {
   isOpen: boolean;
   mode: FloatingImagePanelMode;
   boundaryRef: RefObject<HTMLDivElement | null>;
+  initialAnchorRef: RefObject<HTMLElement | null>;
   closeButtonRef: RefObject<HTMLButtonElement | null>;
   hasImage: boolean;
   isComparing: boolean;
@@ -54,6 +55,7 @@ export default function FloatingImageToolPanel({
   isOpen,
   mode,
   boundaryRef,
+  initialAnchorRef,
   closeButtonRef,
   hasImage,
   isComparing,
@@ -134,7 +136,8 @@ export default function FloatingImageToolPanel({
       title={panelTitle}
       icon={<SlidersHorizontal size={17} aria-hidden="true" />}
       boundaryRef={boundaryRef}
-      storageKey="dekokraft.studio.imageSettingsPanel.v2"
+      initialAnchorRef={initialAnchorRef}
+      storageKey="dekokraft.studio.imageSettingsPanel.v3"
       initialSize={{ width: 300, height: 560 }}
       initialSide="left"
       minWidth={250}

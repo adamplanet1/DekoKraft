@@ -13,7 +13,7 @@ const rect = (left: number, top: number, width: number, height: number): LayoutR
 const valid = verifyStudioLayoutGeometry({
   viewport: rect(0, 0, 1200, 900),
   studio: rect(12, 12, 1176, 876),
-  toolbar: rect(32, 32, 1136, 48),
+  toolbar: rect(270, 70, 620, 42),
   canvas: rect(270, 120, 620, 620),
   panels: [rect(42, 110, 280, 420), rect(790, 110, 360, 560)],
 });
@@ -29,6 +29,8 @@ const invalid = verifyStudioLayoutGeometry({
 assert.deepEqual(invalid, [
   "studio-outside-viewport",
   "toolbar-outside-studio",
+  "toolbar-canvas-width-mismatch",
+  "toolbar-canvas-inline-mismatch",
   "canvas-not-square",
   "panel-0-outside-studio",
 ]);

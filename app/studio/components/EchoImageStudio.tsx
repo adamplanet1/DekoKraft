@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Palette, Scissors, Sparkles, Video, WandSparkles, X } from "lucide-react";
+import { ArrowRight, Clapperboard, Cuboid, ImagePlus, Images, Lightbulb, Maximize2, Minimize2, ScanLine, ScissorsLineDashed, Sparkles, Spool, X } from "lucide-react";
 import NextImage from "next/image";
 import Link from "next/link";
 import {
@@ -42,6 +42,7 @@ import type { ProductDNA } from "../../../lib/echo/echoProductDNA";
 import { useWorkspace } from "../engine/WorkspaceContext";
 import type { SmartEditLaunchContext } from "../engine/workspaceTypes";
 import { verifyStudioLayoutGeometry } from "../lib/verifyStudioLayout";
+import { publicPath } from "../../lib/publicPath";
 
 type EchoImageStudioProps = {
   launchContext?: SmartEditLaunchContext | null;
@@ -60,7 +61,8 @@ type ActiveImageSource = {
   originalUrl?: string;
 };
 
-type StudioTool = "image" | "video" | "3d" | "laser" | "cnc" | "embroidery" | "coloring" | null;
+type StudioTool = "image" | "video" | "3d" | "laser" | "cnc" | "embroidery" | "coloring" | "suggestion" | null;
+type StudioPanelMode = "activity" | "smart-edit";
 
 const DEFAULT_FILTERS = {
   brightness: 100,
@@ -84,6 +86,8 @@ export default function EchoImageStudio({
   const { direction, t } = useLanguage();
   const { activeWorkspace, activeTool, selectWorkspace, selectTool, openSmartEdit } = useWorkspace();
   const [activeStudioTool, setActiveStudioTool] = useState<StudioTool>(null);
+  const [panelMode, setPanelMode] = useState<StudioPanelMode>("activity");
+  const [isSmartEditInfoOpen, setIsSmartEditInfoOpen] = useState(false);
   const [activeImageSource, setActiveImageSource] = useState<ActiveImageSource | null>(null);
   const previewUrl = activeImageSource?.previewUrl ?? null;
   const originalPreviewUrl = activeImageSource?.originalUrl ?? activeImageSource?.previewUrl ?? null;
@@ -196,7 +200,8 @@ export default function EchoImageStudio({
         : activeWorkspace === "embroidery"
           ? "embroidery"
           : "image";
-  const isSmartEditOpen = activeTool === "smart-edit";
+  const isSmartEditOpen = panelMode === "smart-edit" && activeTool === "smart-edit";
+  const activityPanelsVisible = panelMode === "activity";
 
   useEffect(() => {
     const librarySelection = sessionStorage.getItem("dekokraft.studio.librarySelection");
@@ -255,9 +260,21 @@ export default function EchoImageStudio({
   const smartEditToolsToggleRef = useRef<HTMLButtonElement>(null);
   const smartEditFiltersCloseRef = useRef<HTMLButtonElement>(null);
   const smartEditActionsCloseRef = useRef<HTMLButtonElement>(null);
+  const brandJunctionRef = useRef<HTMLDivElement>(null);
   const studioWindowRef = useRef<HTMLDivElement>(null);
+  const floatingLayerRef = useRef<HTMLDivElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!isSmartEditInfoOpen) return;
+    const closeInfoOnOutsideClick = (event: PointerEvent) => {
+      if (!brandJunctionRef.current?.contains(event.target as Node)) setIsSmartEditInfoOpen(false);
+    };
+    document.addEventListener("pointerdown", closeInfoOnOutsideClick);
+    return () => {
+      document.removeEventListener("pointerdown", closeInfoOnOutsideClick);
+    };
+  }, [isSmartEditInfoOpen]);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
@@ -420,8 +437,29 @@ export default function EchoImageStudio({
 
   const activateImageTool = useCallback(() => {
     setActiveStudioTool("image");
+    if (panelMode === "smart-edit") {
+      setPanelMode("activity");
+      selectWorkspace("image");
+      selectTool(null);
+      return;
+    }
+    setPanelMode("activity");
+    selectTool(null);
     toggleImageTools();
-  }, [toggleImageTools]);
+  }, [panelMode, selectTool, selectWorkspace, toggleImageTools]);
+
+  const activateSuggestionTool = useCallback(() => {
+    setActiveStudioTool("suggestion");
+    setPanelMode("activity");
+    selectTool(null);
+    setIsImageToolsOpen(false);
+    setIsVideoToolsOpen(false);
+    setIsThreeDImageToolsOpen(false);
+    setIsLaserToolsOpen(false);
+    setIsEmbroideryToolsOpen(false);
+    setIsFiltersOpen(false);
+    setIsActionsOpen(false);
+  }, [selectTool]);
 
   const closeVideoFilters = useCallback(() => {
     setIsVideoFiltersOpen(false);
@@ -650,26 +688,21 @@ export default function EchoImageStudio({
   }, [selectTool]);
 
   const toggleSmartEditTools = useCallback(() => {
-    if (isSmartEditOpen) selectTool(null);
-    else openSmartEdit();
+    if (panelMode === "smart-edit") {
+      setPanelMode("activity");
+      selectTool(null);
+    } else {
+      setPanelMode("smart-edit");
+      openSmartEdit();
+    }
     setIsImageToolsOpen(false);
     setIsVideoToolsOpen(false);
     setIsThreeDImageToolsOpen(false);
     setIsLaserToolsOpen(false);
     setIsEmbroideryToolsOpen(false);
-    setIsFiltersOpen(false);
-    setIsActionsOpen(false);
-    setIsVideoFiltersOpen(false);
-    setIsVideoActionsOpen(false);
-    setIsThreeDImageFiltersOpen(false);
-    setIsThreeDImageActionsOpen(false);
-    setIsLaserFiltersOpen(false);
-    setIsLaserActionsOpen(false);
-    setIsEmbroideryFiltersOpen(false);
-    setIsEmbroideryActionsOpen(false);
     setIsSmartEditFiltersOpen(false);
     setIsSmartEditActionsOpen(false);
-  }, [isSmartEditOpen, openSmartEdit, selectTool]);
+  }, [openSmartEdit, panelMode, selectTool]);
 
   const closeLaserFilters = useCallback(() => {
     setIsLaserFiltersOpen(false);
@@ -836,10 +869,12 @@ export default function EchoImageStudio({
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || (!isImageToolsOpen && !isVideoToolsOpen && !isThreeDImageToolsOpen && !isLaserToolsOpen && !isEmbroideryToolsOpen && !isSmartEditOpen && !isFiltersOpen && !isActionsOpen && !isVideoFiltersOpen && !isVideoActionsOpen && !isThreeDImageFiltersOpen && !isThreeDImageActionsOpen && !isLaserFiltersOpen && !isLaserActionsOpen && !isEmbroideryFiltersOpen && !isEmbroideryActionsOpen && !isSmartEditFiltersOpen && !isSmartEditActionsOpen)) return;
+      if (event.key !== "Escape" || (!isSmartEditInfoOpen && !isImageToolsOpen && !isVideoToolsOpen && !isThreeDImageToolsOpen && !isLaserToolsOpen && !isEmbroideryToolsOpen && !isSmartEditOpen && !isFiltersOpen && !isActionsOpen && !isVideoFiltersOpen && !isVideoActionsOpen && !isThreeDImageFiltersOpen && !isThreeDImageActionsOpen && !isLaserFiltersOpen && !isLaserActionsOpen && !isEmbroideryFiltersOpen && !isEmbroideryActionsOpen && !isSmartEditFiltersOpen && !isSmartEditActionsOpen)) return;
       event.preventDefault();
       event.stopImmediatePropagation();
-      if (isImageToolsOpen) {
+      if (isSmartEditInfoOpen) {
+        setIsSmartEditInfoOpen(false);
+      } else if (isImageToolsOpen) {
         setIsImageToolsOpen(false);
         window.requestAnimationFrame(() => imageToolsToggleRef.current?.focus());
       } else if (isVideoToolsOpen) {
@@ -855,6 +890,7 @@ export default function EchoImageStudio({
         setIsEmbroideryToolsOpen(false);
         window.requestAnimationFrame(() => embroideryToolsToggleRef.current?.focus());
       } else if (isSmartEditOpen) {
+        setPanelMode("activity");
         selectTool(null);
         window.requestAnimationFrame(() => smartEditToolsToggleRef.current?.focus());
       } else if (isActionsOpen) closeActions();
@@ -873,7 +909,7 @@ export default function EchoImageStudio({
 
     window.addEventListener("keydown", closeOnEscape, true);
     return () => window.removeEventListener("keydown", closeOnEscape, true);
-  }, [closeActions, closeEmbroideryActions, closeEmbroideryFilters, closeFilters, closeLaserActions, closeLaserFilters, closeSmartEditActions, closeSmartEditFilters, closeThreeDImageActions, closeThreeDImageFilters, closeVideoActions, closeVideoFilters, isActionsOpen, isEmbroideryActionsOpen, isEmbroideryFiltersOpen, isEmbroideryToolsOpen, isFiltersOpen, isImageToolsOpen, isLaserActionsOpen, isLaserFiltersOpen, isLaserToolsOpen, isSmartEditActionsOpen, isSmartEditFiltersOpen, isSmartEditOpen, isThreeDImageActionsOpen, isThreeDImageFiltersOpen, isThreeDImageToolsOpen, isVideoActionsOpen, isVideoFiltersOpen, isVideoToolsOpen, selectTool]);
+  }, [closeActions, closeEmbroideryActions, closeEmbroideryFilters, closeFilters, closeLaserActions, closeLaserFilters, closeSmartEditActions, closeSmartEditFilters, closeThreeDImageActions, closeThreeDImageFilters, closeVideoActions, closeVideoFilters, isActionsOpen, isEmbroideryActionsOpen, isEmbroideryFiltersOpen, isEmbroideryToolsOpen, isFiltersOpen, isImageToolsOpen, isLaserActionsOpen, isLaserFiltersOpen, isLaserToolsOpen, isSmartEditActionsOpen, isSmartEditFiltersOpen, isSmartEditInfoOpen, isSmartEditOpen, isThreeDImageActionsOpen, isThreeDImageFiltersOpen, isThreeDImageToolsOpen, isVideoActionsOpen, isVideoFiltersOpen, isVideoToolsOpen, selectTool]);
 
   const closeActivePanel = () => {
     if (isActionsOpen) closeActions();
@@ -890,7 +926,9 @@ export default function EchoImageStudio({
     else if (isSmartEditFiltersOpen) closeSmartEditFilters();
   };
 
-  const isPanelOpen = isFiltersOpen || isActionsOpen || isVideoFiltersOpen || isVideoActionsOpen || isThreeDImageFiltersOpen || isThreeDImageActionsOpen || isLaserFiltersOpen || isLaserActionsOpen || isEmbroideryFiltersOpen || isEmbroideryActionsOpen || isSmartEditFiltersOpen || isSmartEditActionsOpen;
+  const isActivityPanelOpen = isFiltersOpen || isActionsOpen || isVideoFiltersOpen || isVideoActionsOpen || isThreeDImageFiltersOpen || isThreeDImageActionsOpen || isLaserFiltersOpen || isLaserActionsOpen || isEmbroideryFiltersOpen || isEmbroideryActionsOpen;
+  const isSmartEditPanelOpen = isSmartEditFiltersOpen || isSmartEditActionsOpen;
+  const isPanelOpen = panelMode === "activity" ? isActivityPanelOpen : isSmartEditPanelOpen;
 
   const filterValue = useMemo(
     () => [
@@ -1630,57 +1668,75 @@ export default function EchoImageStudio({
     }
   }, [createSmartEditExportBlob, smartEditExportingFormat, smartEditPreviewUrl, t]);
 
+  const windowControls = (
+    <div className="echoImageStudio__windowControls studioWindowControls" dir="ltr">
+      {isMaximized ? (
+        <button type="button" className="echoImageIconButton" aria-label={t("studio.image.restore")} title={t("studio.image.restore")} aria-pressed="true" onClick={onRestore}>
+          <Minimize2 size={18} aria-hidden="true" />
+        </button>
+      ) : (
+        <button type="button" className="echoImageIconButton" aria-label={t("studio.image.maximize")} title={t("studio.image.maximize")} aria-pressed="false" onClick={onMaximize}>
+          <Maximize2 size={18} aria-hidden="true" />
+        </button>
+      )}
+      <button type="button" className="echoImageIconButton echoImageStudio__back" aria-label={t("studio.image.back")} title={t("studio.image.back")} onClick={onBack}>
+        <ArrowRight size={19} aria-hidden="true" />
+      </button>
+      <button type="button" className="echoImageIconButton" aria-label={t("studio.image.closeStudio")} title={t("studio.image.closeStudio")} onClick={onCloseStudio}>
+        <X size={18} aria-hidden="true" />
+      </button>
+    </div>
+  );
+
+  const smartEditTrigger = (
+    <button
+      ref={smartEditToolsToggleRef}
+      type="button"
+      className={`echoSmartEditMainToolButton studio-smart-edit-rail${isSmartEditOpen ? " is-open" : ""}`}
+      aria-expanded={isSmartEditOpen}
+      aria-controls="echo-smart-edit-panel"
+      onClick={toggleSmartEditTools}
+    >
+      <Sparkles size={18} aria-hidden="true" />
+      <span>التعديل الذكي</span>
+    </button>
+  );
+
   return (
-    <div ref={studioWindowRef} className="echoImageStudio" dir={direction}>
+    <div ref={studioWindowRef} className="echoImageStudio" data-active-activity={activeStudioTool ?? "image"} dir={direction}>
+      {windowControls}
       <div className={`echoImageStudio__layout${isSmartEditOpen ? " echoImageStudio__layout--smart-open" : ""}`}>
       <aside className="echoImageStudio__toolsColumn" dir={direction}>
       <header className="echoImageStudio__header">
-        <div className="echoImageStudio__headerControls">
-          <div className="echoImageStudio__windowControls">
-            {isMaximized ? (
-              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.restore")} title={t("studio.image.restore")} aria-pressed="true" onClick={onRestore}>
-                <Minimize2 size={18} aria-hidden="true" />
-              </button>
-            ) : (
-              <button type="button" className="echoImageIconButton" aria-label={t("studio.image.maximize")} title={t("studio.image.maximize")} aria-pressed="false" onClick={onMaximize}>
-                <Maximize2 size={18} aria-hidden="true" />
-              </button>
-            )}
-            <button
-              type="button"
-              className="echoImageIconButton echoImageStudio__back"
-              aria-label={t("studio.image.back")}
-              title={t("studio.image.back")}
-              autoFocus
-              onClick={onBack}
-            >
-              <ArrowRight size={19} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="echoImageIconButton"
-              aria-label={t("studio.image.closeStudio")}
-              title={t("studio.image.closeStudio")}
-              onClick={onCloseStudio}
-            >
-              <X size={18} aria-hidden="true" />
-            </button>
-          </div>
-          <div ref={toolbarRef} className="echoImageStudio__processingTools">
-            <div ref={imageToolsRef} className="echoImageStudio__headerTools">
+        {exportMessage && <span className="echoImageToolsStatus" role="status" aria-live="polite">{exportMessage}</span>}
+        {videoExportMessage && <span className="echoVideoToolsStatus" role="status" aria-live="polite">{videoExportMessage}</span>}
+        {threeDImageExportMessage && <span className="echoThreeDImageToolsStatus" role="status" aria-live="polite">{threeDImageExportMessage}</span>}
+        {laserExportMessage && <span className="echoLaserToolsStatus" role="status" aria-live="polite">{laserExportMessage}</span>}
+        {embroideryExportMessage && <span className="echoEmbroideryToolsStatus" role="status" aria-live="polite">{embroideryExportMessage}</span>}
+        {smartEditExportMessage && <span className="echoSmartEditToolsStatus" role="status" aria-live="polite">{smartEditExportMessage}</span>}
+      </header>
+      </aside>
+
+      <div
+        className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}`}
+      >
+        <div className="studio-main-unit">
+        <div className="studio-unified-toolbar">
+        <div className="studio-activities-scroll">
+        <div ref={toolbarRef} className="studio-tab-strip">
+            <div ref={imageToolsRef} className="echoImageStudio__headerTools studio-activity-item" data-activity="image" data-tooltip="معالجة الصور">
             <button
               ref={imageToolsToggleRef}
               type="button"
-              className={`echoImageMainToolButton studio-tool-button${activeStudioTool === "image" ? " is-active" : ""}`}
+              className={`echoImageMainToolButton studio-tab-button${activeStudioTool === "image" ? " is-active" : ""}`}
               data-active={activeStudioTool === "image" ? "true" : undefined}
               aria-pressed={activeStudioTool === "image"}
               aria-expanded={isImageToolsOpen}
               aria-controls="echo-image-tools-menu"
+              aria-label="معالجة الصور"
               onClick={activateImageTool}
             >
-              <span className="echoImageMainToolIcon"><WandSparkles size={20} aria-hidden="true" /></span>
-              <span className="echoImageMainToolLabel">{t("studio.image.imageProcessing")}</span>
-              <ChevronDown className={`echoImageMainToolChevron${isImageToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
+              <span className="echoImageMainToolIcon"><Images size={20} aria-hidden="true" /></span>
             </button>
             <ImageToolsMenu
               isOpen={isImageToolsOpen}
@@ -1704,20 +1760,21 @@ export default function EchoImageStudio({
               }}
             />
             </div>
-            <div ref={videoToolsRef} className="echoVideoStudio__headerTools">
+            <div ref={videoToolsRef} className="echoVideoStudio__headerTools studio-activity-item" data-activity="video" data-tooltip="معالجة الفيديو — قريبًا" tabIndex={0} aria-label="معالجة الفيديو — قريبًا">
             <button
               ref={videoToolsToggleRef}
               type="button"
-              className={`echoVideoMainToolButton studio-tool-button${activeStudioTool === "video" ? " is-active" : ""}`}
+              className={`echoVideoMainToolButton studio-tab-button${activeStudioTool === "video" ? " is-active" : ""}`}
               data-active={activeStudioTool === "video" ? "true" : undefined}
               aria-pressed={activeStudioTool === "video"}
+              aria-disabled="true"
               aria-expanded={isVideoToolsOpen}
               aria-controls="echo-video-tools-menu"
+              disabled
+              aria-label="معالجة الفيديو"
               onClick={() => { setActiveStudioTool("video"); openVideoFilters(); }}
             >
-              <span className="echoVideoMainToolIcon"><Video size={20} aria-hidden="true" /></span>
-              <span className="echoVideoMainToolLabel">{t("studio.video.imageProcessing")}</span>
-              <ChevronDown className={`echoVideoMainToolChevron${isVideoToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
+              <span className="echoVideoMainToolIcon"><Clapperboard size={20} aria-hidden="true" /></span>
             </button>
             <VideoToolsMenu
               isOpen={isVideoToolsOpen}
@@ -1741,20 +1798,21 @@ export default function EchoImageStudio({
               }}
             />
             </div>
-            <div ref={threeDImageToolsRef} className="echoThreeDImageStudio__headerTools">
+            <div ref={threeDImageToolsRef} className="echoThreeDImageStudio__headerTools studio-activity-item" data-activity="3d" data-tooltip="معالجة صور 3D — قريبًا" tabIndex={0} aria-label="معالجة صور 3D — قريبًا">
             <button
               ref={threeDImageToolsToggleRef}
               type="button"
-              className={`echoThreeDImageMainToolButton studio-tool-button${activeStudioTool === "3d" ? " is-active" : ""}`}
+              className={`echoThreeDImageMainToolButton studio-tab-button${activeStudioTool === "3d" ? " is-active" : ""}`}
               data-active={activeStudioTool === "3d" ? "true" : undefined}
               aria-pressed={activeStudioTool === "3d"}
+              aria-disabled="true"
               aria-expanded={isThreeDImageToolsOpen}
               aria-controls="echo-three-d-image-tools-menu"
+              disabled
+              aria-label="معالجة صور 3D"
               onClick={() => { setActiveStudioTool("3d"); openThreeDImageFilters(); }}
             >
-              <span className="echoThreeDImageMainToolIcon"><Box size={20} aria-hidden="true" /></span>
-              <span className="echoThreeDImageMainToolLabel">{t("studio.threeDImage.processing")}</span>
-              <ChevronDown className={`echoThreeDImageMainToolChevron${isThreeDImageToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
+              <span className="echoThreeDImageMainToolIcon"><Cuboid size={20} aria-hidden="true" /></span>
             </button>
             <ThreeDImageToolsMenu
               isOpen={isThreeDImageToolsOpen}
@@ -1778,32 +1836,35 @@ export default function EchoImageStudio({
               }}
             />
             </div>
-            <div className="echoCncStudio__headerTools">
+            <div className="echoCncStudio__headerTools studio-activity-item" data-activity="cnc" data-tooltip="الليزر CNC — قريبًا" tabIndex={0} aria-label="الليزر CNC — قريبًا">
               <button
                 type="button"
-                className={`echoCncMainToolButton studio-tool-button${activeStudioTool === "cnc" ? " is-active" : ""}`}
+                className={`echoCncMainToolButton studio-tab-button${activeStudioTool === "cnc" ? " is-active" : ""}`}
                 data-active={activeStudioTool === "cnc" ? "true" : undefined}
                 aria-pressed={activeStudioTool === "cnc"}
+                aria-disabled="true"
+                disabled
+                aria-label="الليزر CNC"
                 onClick={() => { setActiveStudioTool("cnc"); openCncFilters(); }}
               >
-                <span className="echoLaserMainToolIcon"><Crosshair size={20} aria-hidden="true" /></span>
-                <span className="echoLaserMainToolLabel">الليزر CNC</span>
+                <span className="echoLaserMainToolIcon"><ScanLine size={20} aria-hidden="true" /></span>
               </button>
             </div>
-            <div ref={laserToolsRef} className="echoLaserStudio__headerTools">
+            <div ref={laserToolsRef} className="echoLaserStudio__headerTools studio-activity-item" data-activity="laser" data-tooltip="المقص الكهربائي — قريبًا" tabIndex={0} aria-label="المقص الكهربائي — قريبًا">
               <button
                 ref={laserToolsToggleRef}
                 type="button"
-                className={`echoLaserMainToolButton studio-tool-button${activeStudioTool === "laser" ? " is-active" : ""}`}
+                className={`echoLaserMainToolButton studio-tab-button${activeStudioTool === "laser" ? " is-active" : ""}`}
                 data-active={activeStudioTool === "laser" ? "true" : undefined}
                 aria-pressed={activeStudioTool === "laser"}
+                aria-disabled="true"
                 aria-expanded={isLaserToolsOpen}
                 aria-controls="echo-laser-tools-menu"
+                disabled
+                aria-label="المقص الكهربائي"
                 onClick={() => { setActiveStudioTool("laser"); openLaserFilters(); }}
               >
-                <span className="echoLaserMainToolIcon"><Scissors size={20} aria-hidden="true" /></span>
-                <span className="echoLaserMainToolLabel">المقص الكهربائي</span>
-                <ChevronDown className={`echoLaserMainToolChevron${isLaserToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
+                <span className="echoLaserMainToolIcon"><ScissorsLineDashed size={20} aria-hidden="true" /></span>
               </button>
               <LaserToolsMenu
                 isOpen={isLaserToolsOpen}
@@ -1827,20 +1888,21 @@ export default function EchoImageStudio({
                 }}
               />
             </div>
-            <div ref={embroideryToolsRef} className="echoEmbroideryStudio__headerTools">
+            <div ref={embroideryToolsRef} className="echoEmbroideryStudio__headerTools studio-activity-item" data-activity="embroidery" data-tooltip="التطريز — قريبًا" tabIndex={0} aria-label="التطريز — قريبًا">
               <button
                 ref={embroideryToolsToggleRef}
                 type="button"
-                className={`echoEmbroideryMainToolButton studio-tool-button${activeStudioTool === "embroidery" ? " is-active" : ""}`}
+                className={`echoEmbroideryMainToolButton studio-tab-button${activeStudioTool === "embroidery" ? " is-active" : ""}`}
                 data-active={activeStudioTool === "embroidery" ? "true" : undefined}
                 aria-pressed={activeStudioTool === "embroidery"}
+                aria-disabled="true"
                 aria-expanded={isEmbroideryToolsOpen}
                 aria-controls="echo-embroidery-tools-menu"
+                disabled
+                aria-label="التطريز"
                 onClick={() => { setActiveStudioTool("embroidery"); openEmbroideryFilters(); }}
               >
-                <span className="echoEmbroideryMainToolIcon"><Palette size={20} aria-hidden="true" /></span>
-                <span className="echoEmbroideryMainToolLabel">{t("studio.embroideryProcessing.processing")}</span>
-                <ChevronDown className={`echoEmbroideryMainToolChevron${isEmbroideryToolsOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
+                <span className="echoEmbroideryMainToolIcon"><Spool size={20} aria-hidden="true" /></span>
               </button>
               <EmbroideryToolsMenu
                 isOpen={isEmbroideryToolsOpen}
@@ -1864,31 +1926,72 @@ export default function EchoImageStudio({
                 }}
               />
             </div>
-          </div>
+            <div className="studio-activity-item" data-activity="suggestion" data-tooltip="اقتراح نشاط جديد">
+              <button
+                type="button"
+                className={`studio-tab-button studio-activity-suggestion${activeStudioTool === "suggestion" ? " is-active" : ""}`}
+                data-active={activeStudioTool === "suggestion" ? "true" : undefined}
+                aria-pressed={activeStudioTool === "suggestion"}
+                aria-label="اقتراح نشاط جديد"
+                onClick={activateSuggestionTool}
+              >
+                <Lightbulb size={20} aria-hidden="true" />
+              </button>
+            </div>
         </div>
-        {exportMessage && <span className="echoImageToolsStatus" role="status" aria-live="polite">{exportMessage}</span>}
-        {videoExportMessage && <span className="echoVideoToolsStatus" role="status" aria-live="polite">{videoExportMessage}</span>}
-        {threeDImageExportMessage && <span className="echoThreeDImageToolsStatus" role="status" aria-live="polite">{threeDImageExportMessage}</span>}
-        {laserExportMessage && <span className="echoLaserToolsStatus" role="status" aria-live="polite">{laserExportMessage}</span>}
-        {embroideryExportMessage && <span className="echoEmbroideryToolsStatus" role="status" aria-live="polite">{embroideryExportMessage}</span>}
-        {smartEditExportMessage && <span className="echoSmartEditToolsStatus" role="status" aria-live="polite">{smartEditExportMessage}</span>}
-      </header>
-      </aside>
-
-      <div
-        className={`echoImageStudio__workspace${isPanelOpen ? " echoImageStudio__workspace--panel-open" : " echoImageStudio__workspace--panel-closed"}`}
-      >
-        <div className="echoImagePreviewColumn">
-          {activeStudioTool === null ? (
-            <section ref={canvasRef} className="echoImagePreview studio-welcome-state" aria-label="مرحبًا بكم في EchoDeko Studio">
-              <div className="studio-welcome-mark">
-                <span className="studio-welcome-icon" aria-hidden="true"><Sparkles size={32} /></span>
-                <h2>مرحبًا بكم في EchoDeko Studio</h2>
-                <p>
-                  يمكنكم حاليًا استخدام أداة معالجة الصور،<br />
-                  بينما نعمل على تطوير بقية الأنشطة وتفعيلها تباعًا.
-                </p>
-                <p className="studio-welcome-note">يسعدنا أن تشاركونا رحلتنا الإبداعية.</p>
+        </div>
+        <div ref={brandJunctionRef} className="studio-brand-junction">
+          <button
+            type="button"
+            className="studio-brand-help-button"
+            aria-label="معلومات التعديل الذكي"
+            aria-haspopup="dialog"
+            aria-expanded={isSmartEditInfoOpen}
+            aria-controls="studio-smart-edit-info"
+            onClick={() => setIsSmartEditInfoOpen((current) => !current)}
+          >
+            <NextImage src={publicPath("/logo-dekokraft-600.webp")} alt="" width={34} height={34} aria-hidden="true" />
+          </button>
+          {isSmartEditInfoOpen && (
+            <section id="studio-smart-edit-info" className="studio-smart-edit-info" role="dialog" aria-modal="false" aria-labelledby="studio-smart-edit-info-title" dir="rtl">
+              <h2 id="studio-smart-edit-info-title">معلومات التعديل الذكي</h2>
+              <p>
+                تعتمد خدمة التعديل الذكي على تقنيات الذكاء الاصطناعي عبر OpenAI.
+                قد يترتب على بعض عمليات التعديل المتقدمة رسم أو عمولة رمزية، وفقًا لقواعد الاستخدام والتسعير المعتمدة من الشركة.
+                سيتم عرض التكلفة بوضوح للمستخدم قبل تأكيد أي عملية مدفوعة.
+              </p>
+              <div className="studio-smart-edit-info__actions">
+                <button type="button" onClick={() => setIsSmartEditInfoOpen(false)}>فهمت</button>
+              </div>
+            </section>
+          )}
+        </div>
+        </div>
+        <div className="studio-canvas-row">
+        <div className="echoImagePreviewColumn studio-canvas">
+          {activeStudioTool === "suggestion" ? (
+            <section ref={canvasRef} className="echoImagePreview studio-suggestion-state" aria-labelledby="studio-suggestion-title" dir="rtl">
+              <Lightbulb size={44} aria-hidden="true" />
+              <h1 id="studio-suggestion-title">اقترح نشاطًا جديدًا لإيشوديكو ستوديو</h1>
+              <p>يسعدنا استقبال فكرتك عن الأدوات والأنشطة التي ترغب في إضافتها إلى الاستوديو.</p>
+              <a
+                className="studio-suggestion-email"
+                href="mailto:?subject=%D8%A7%D9%82%D8%AA%D8%B1%D8%A7%D8%AD%20%D9%86%D8%B4%D8%A7%D8%B7%20%D8%AC%D8%AF%D9%8A%D8%AF%20%D9%84%D8%A5%D9%8A%D8%B4%D9%88%D8%AF%D9%8A%D9%83%D9%88%20%D8%B3%D8%AA%D9%88%D8%AF%D9%8A%D9%88"
+              >
+                إرسال الاقتراح عبر البريد الإلكتروني
+              </a>
+            </section>
+          ) : activeStudioTool === null ? (
+            <section ref={canvasRef} className="echoImagePreview studio-welcome-state" aria-label="إيشوديكو ستوديو">
+              <div className="studio-welcome" dir="rtl">
+                <h1>مرحبًا بكم في إيشوديكو ستوديو</h1>
+                <p dir="rtl">يمكنكم حاليًا استخدام أداة معالجة الصور.</p>
+                <p dir="rtl">نعمل على تطوير بقية الأنشطة وتفعيلها تباعًا.</p>
+                <p className="studio-welcome-final">يسرّنا أن تشاركونا رحلتنا الإبداعية.</p>
+                <p className="studio-participant-note">خاصية التعديل الذكي متاحة للمشاركين وفق قواعد الاستخدام المعتمدة.</p>
+                <div className="studio-welcome-logo" aria-hidden="true">
+                  <NextImage src={publicPath("/logo-dekokraft-600.webp")} alt="" width={52} height={52} />
+                </div>
               </div>
             </section>
           ) : activeProcessingMode === "video" ? (
@@ -1954,6 +2057,9 @@ export default function EchoImageStudio({
             </section>
           )}
         </div>
+        {smartEditTrigger}
+        </div>
+        </div>
 
         {activeProcessingMode !== "image" && <button
           type="button"
@@ -1987,7 +2093,7 @@ export default function EchoImageStudio({
         />}
 
         <VideoFiltersPanel
-          isOpen={isVideoFiltersOpen}
+          isOpen={activityPanelsVisible && isVideoFiltersOpen}
           closeButtonRef={videoFiltersCloseRef}
           brightness={videoBrightness}
           contrast={videoContrast}
@@ -2009,7 +2115,7 @@ export default function EchoImageStudio({
         />
 
         <VideoActionsPanel
-          isOpen={isVideoActionsOpen}
+          isOpen={activityPanelsVisible && isVideoActionsOpen}
           closeButtonRef={videoActionsCloseRef}
           hasVideo={Boolean(videoPreviewUrl)}
           isComparing={isVideoComparing}
@@ -2024,7 +2130,7 @@ export default function EchoImageStudio({
         />
 
         <ThreeDImageFiltersPanel
-          isOpen={isThreeDImageFiltersOpen}
+          isOpen={activityPanelsVisible && isThreeDImageFiltersOpen}
           closeButtonRef={threeDImageFiltersCloseRef}
           brightness={threeDImageBrightness}
           contrast={threeDImageContrast}
@@ -2046,7 +2152,7 @@ export default function EchoImageStudio({
         />
 
         <ThreeDImageActionsPanel
-          isOpen={isThreeDImageActionsOpen}
+          isOpen={activityPanelsVisible && isThreeDImageActionsOpen}
           closeButtonRef={threeDImageActionsCloseRef}
           hasThreeDImage={Boolean(threeDImagePreviewUrl)}
           isComparing={isThreeDImageComparing}
@@ -2061,7 +2167,7 @@ export default function EchoImageStudio({
         />
 
         <LaserFiltersPanel
-          isOpen={isLaserFiltersOpen}
+          isOpen={activityPanelsVisible && isLaserFiltersOpen}
           closeButtonRef={laserFiltersCloseRef}
           brightness={laserBrightness}
           contrast={laserContrast}
@@ -2083,7 +2189,7 @@ export default function EchoImageStudio({
         />
 
         <LaserActionsPanel
-          isOpen={isLaserActionsOpen}
+          isOpen={activityPanelsVisible && isLaserActionsOpen}
           closeButtonRef={laserActionsCloseRef}
           hasLaserImage={Boolean(laserPreviewUrl)}
           isComparing={isLaserComparing}
@@ -2098,7 +2204,7 @@ export default function EchoImageStudio({
         />
 
         <EmbroideryFiltersPanel
-          isOpen={isEmbroideryFiltersOpen}
+          isOpen={activityPanelsVisible && isEmbroideryFiltersOpen}
           closeButtonRef={embroideryFiltersCloseRef}
           brightness={embroideryBrightness}
           contrast={embroideryContrast}
@@ -2120,7 +2226,7 @@ export default function EchoImageStudio({
         />
 
         <EmbroideryActionsPanel
-          isOpen={isEmbroideryActionsOpen}
+          isOpen={activityPanelsVisible && isEmbroideryActionsOpen}
           closeButtonRef={embroideryActionsCloseRef}
           hasEmbroideryImage={Boolean(embroideryPreviewUrl)}
           isComparing={isEmbroideryComparing}
@@ -2172,25 +2278,14 @@ export default function EchoImageStudio({
         />
       </div>
 
-      {activeStudioTool === "image" && !isSmartEditOpen && <button
-        ref={smartEditToolsToggleRef}
-        type="button"
-        className="echoSmartEditMainToolButton echoStudioSmartEditLauncher"
-        aria-expanded="false"
-        aria-controls="echo-smart-edit-chat"
-        onClick={toggleSmartEditTools}
-      >
-        <Sparkles size={20} aria-hidden="true" />
-        <span>التعديل الذكي</span>
-      </button>}
       </div>
 
-      <div className="echoImageStudio__floatingLayer" aria-label="لوحات الاستوديو العائمة">
+      <div ref={floatingLayerRef} className="echoImageStudio__floatingLayer" aria-label="لوحات الاستوديو العائمة">
       {isSmartEditOpen && <FloatingStudioPanel
         panelId="echo-smart-edit-panel"
         title="التعديل الذكي"
         icon={<Sparkles size={17} aria-hidden="true" />}
-        boundaryRef={studioWindowRef}
+        boundaryRef={floatingLayerRef}
         storageKey="dekokraft.studio.smartEditPanel.v2"
         initialSize={{ width: 390, height: 600 }}
         initialSide="right"
@@ -2199,6 +2294,7 @@ export default function EchoImageStudio({
         maxWidthRatio={0.7}
         maxHeightRatio={0.85}
         onClose={() => {
+          setPanelMode("activity");
           selectTool(null);
           window.requestAnimationFrame(() => smartEditToolsToggleRef.current?.focus());
         }}
@@ -2230,6 +2326,7 @@ export default function EchoImageStudio({
                 setActiveImageSource((current) => current ? { ...current, previewUrl: imageUrl } : current);
               }}
               onClose={() => {
+                setPanelMode("activity");
                 selectTool(null);
                 window.requestAnimationFrame(() => smartEditToolsToggleRef.current?.focus());
               }}
@@ -2239,9 +2336,10 @@ export default function EchoImageStudio({
       </FloatingStudioPanel>}
 
       <FloatingImageToolPanel
-        isOpen={isFiltersOpen || isActionsOpen}
+        isOpen={activityPanelsVisible && (isFiltersOpen || isActionsOpen)}
         mode={isActionsOpen ? "actions" : "filters"}
-        boundaryRef={studioWindowRef}
+        boundaryRef={floatingLayerRef}
+        initialAnchorRef={canvasRef}
         closeButtonRef={isActionsOpen ? actionsCloseRef : filtersCloseRef}
         hasImage={Boolean(previewUrl)}
         isComparing={isComparing}

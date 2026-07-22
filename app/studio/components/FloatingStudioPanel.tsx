@@ -11,6 +11,7 @@ type FloatingStudioPanelProps = {
   title: string;
   icon: ReactNode;
   boundaryRef: RefObject<HTMLDivElement | null>;
+  initialAnchorRef?: RefObject<HTMLElement | null>;
   storageKey: string;
   initialSize: { width: number; height: number };
   initialSide: "left" | "right";
@@ -25,14 +26,17 @@ type FloatingStudioPanelProps = {
 };
 
 let highestPanelLayer = 80;
-const SAFE_GAP = 10;
-const SAFE_TOP = 72;
+const PANEL_EDGE_GAP = 12;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 export default function FloatingStudioPanel({
   panelId,
   title,
   icon,
   boundaryRef,
+  initialAnchorRef,
   storageKey,
   initialSize,
   initialSide,
@@ -55,7 +59,7 @@ export default function FloatingStudioPanel({
     y: number;
     bounds: PanelBounds;
   } | null>(null);
-  const [bounds, setBounds] = useState<PanelBounds>({ x: SAFE_GAP, y: SAFE_TOP, ...initialSize });
+  const [bounds, setBounds] = useState<PanelBounds>({ x: PANEL_EDGE_GAP, y: PANEL_EDGE_GAP, ...initialSize });
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -66,28 +70,72 @@ export default function FloatingStudioPanel({
   const clampBounds = useCallback((candidate: PanelBounds): PanelBounds => {
     const boundary = boundaryRef.current;
     if (!boundary) return candidate;
-    const boundaryRect = boundary.getBoundingClientRect();
-    const availableWidth = Math.max(180, boundaryRect.width - SAFE_GAP * 2);
-    const availableHeight = Math.max(180, boundaryRect.height - SAFE_TOP - SAFE_GAP);
+    const boundaryWidth = boundary.clientWidth;
+    const boundaryHeight = boundary.clientHeight;
+    const availableWidth = Math.max(0, boundaryWidth - PANEL_EDGE_GAP * 2);
+    const availableHeight = Math.max(0, boundaryHeight - PANEL_EDGE_GAP * 2);
     const effectiveMinWidth = Math.min(minWidth, availableWidth);
     const effectiveMinHeight = Math.min(minHeight, availableHeight);
-    const maximumWidth = Math.max(effectiveMinWidth, Math.min(availableWidth, boundaryRect.width * maxWidthRatio));
-    const maximumHeight = Math.max(effectiveMinHeight, Math.min(availableHeight, boundaryRect.height * maxHeightRatio));
+    const maximumWidth = Math.max(effectiveMinWidth, Math.min(availableWidth, boundaryWidth * maxWidthRatio));
+    const maximumHeight = Math.max(effectiveMinHeight, Math.min(availableHeight, boundaryHeight * maxHeightRatio));
     const width = Math.min(Math.max(candidate.width, effectiveMinWidth), maximumWidth);
     const height = Math.min(Math.max(candidate.height, effectiveMinHeight), maximumHeight);
+    const maximumX = Math.max(PANEL_EDGE_GAP, boundaryWidth - width - PANEL_EDGE_GAP);
+    const maximumY = Math.max(PANEL_EDGE_GAP, boundaryHeight - height - PANEL_EDGE_GAP);
     return {
       width,
       height,
-      x: Math.min(Math.max(candidate.x, SAFE_GAP), boundaryRect.width - width - SAFE_GAP),
-      y: Math.min(Math.max(candidate.y, SAFE_TOP), boundaryRect.height - height - SAFE_GAP),
+      x: clamp(candidate.x, PANEL_EDGE_GAP, maximumX),
+      y: clamp(candidate.y, PANEL_EDGE_GAP, maximumY),
     };
   }, [boundaryRef, maxHeightRatio, maxWidthRatio, minHeight, minWidth]);
 
+  const clampMeasuredPanel = useCallback(() => {
+    const boundary = boundaryRef.current;
+    const panel = panelRef.current;
+    if (!boundary || !panel) return;
+
+    const boundaryRect = boundary.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    const localX = panelRect.left - boundaryRect.left;
+    const localY = panelRect.top - boundaryRect.top;
+    const maximumX = Math.max(PANEL_EDGE_GAP, boundaryRect.width - panelRect.width - PANEL_EDGE_GAP);
+    const maximumY = Math.max(PANEL_EDGE_GAP, boundaryRect.height - panelRect.height - PANEL_EDGE_GAP);
+    const measuredX = clamp(localX, PANEL_EDGE_GAP, maximumX);
+    const measuredY = clamp(localY, PANEL_EDGE_GAP, maximumY);
+
+    setBounds((current) => {
+      const next = clampBounds({
+        ...current,
+        x: current.x + measuredX - localX,
+        y: current.y + measuredY - localY,
+      });
+      return next.x === current.x
+        && next.y === current.y
+        && next.width === current.width
+        && next.height === current.height
+        ? current
+        : next;
+    });
+  }, [boundaryRef, clampBounds]);
+
   const defaultBounds = useCallback((): PanelBounds => {
-    const boundaryWidth = boundaryRef.current?.getBoundingClientRect().width ?? initialSize.width + SAFE_GAP * 2;
-    const x = initialSide === "right" ? boundaryWidth - initialSize.width - SAFE_GAP : SAFE_GAP;
-    return clampBounds({ x, y: SAFE_TOP, width: initialSize.width, height: initialSize.height });
-  }, [boundaryRef, clampBounds, initialSide, initialSize.height, initialSize.width]);
+    const boundary = boundaryRef.current;
+    const boundaryWidth = boundary?.clientWidth ?? initialSize.width + PANEL_EDGE_GAP * 2;
+    const anchor = initialAnchorRef?.current;
+    if (boundary && anchor) {
+      const boundaryRect = boundary.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+      return clampBounds({
+        x: anchorRect.left - boundaryRect.left + PANEL_EDGE_GAP,
+        y: anchorRect.top - boundaryRect.top + PANEL_EDGE_GAP,
+        width: initialSize.width,
+        height: initialSize.height,
+      });
+    }
+    const x = initialSide === "right" ? boundaryWidth - initialSize.width - PANEL_EDGE_GAP : PANEL_EDGE_GAP;
+    return clampBounds({ x, y: PANEL_EDGE_GAP, width: initialSize.width, height: initialSize.height });
+  }, [boundaryRef, clampBounds, initialAnchorRef, initialSide, initialSize.height, initialSize.width]);
 
   useEffect(() => {
     let next = defaultBounds();
@@ -103,17 +151,33 @@ export default function FloatingStudioPanel({
     setIsReady(true);
 
     const boundary = boundaryRef.current;
+    const panel = panelRef.current;
     const observer = boundary && typeof ResizeObserver !== "undefined"
-      ? new ResizeObserver(() => setBounds((current) => clampBounds(current)))
+      ? new ResizeObserver(() => {
+          setBounds((current) => clampBounds(current));
+          window.requestAnimationFrame(clampMeasuredPanel);
+        })
       : null;
     if (boundary) observer?.observe(boundary);
-    const clampOnViewportResize = () => setBounds((current) => clampBounds(current));
+    if (panel) observer?.observe(panel);
+    const openingFrame = window.requestAnimationFrame(clampMeasuredPanel);
+    const clampOnViewportResize = () => {
+      setBounds((current) => clampBounds(current));
+      window.requestAnimationFrame(clampMeasuredPanel);
+    };
     window.addEventListener("resize", clampOnViewportResize);
     return () => {
+      window.cancelAnimationFrame(openingFrame);
       observer?.disconnect();
       window.removeEventListener("resize", clampOnViewportResize);
     };
-  }, [boundaryRef, clampBounds, defaultBounds, storageKey]);
+  }, [boundaryRef, clampBounds, clampMeasuredPanel, defaultBounds, storageKey]);
+
+  useEffect(() => {
+    if (!isReady) return;
+    const frame = window.requestAnimationFrame(clampMeasuredPanel);
+    return () => window.cancelAnimationFrame(frame);
+  }, [clampMeasuredPanel, isCollapsed, isReady]);
 
   useEffect(() => {
     if (skipInitialPersistRef.current) {
@@ -170,6 +234,7 @@ export default function FloatingStudioPanel({
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
     interactionRef.current = null;
     setIsInteracting(false);
+    window.requestAnimationFrame(clampMeasuredPanel);
   };
 
   const startDrag = (event: PointerEvent<HTMLElement>) => startInteraction(event, "drag");

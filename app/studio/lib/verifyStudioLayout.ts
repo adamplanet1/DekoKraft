@@ -19,6 +19,8 @@ export function verifyStudioLayoutGeometry({ viewport, studio, toolbar, canvas, 
   const issues: string[] = [];
   if (!isInside(studio, viewport)) issues.push("studio-outside-viewport");
   if (!isInside(toolbar, studio)) issues.push("toolbar-outside-studio");
+  if (Math.abs(toolbar.width - canvas.width) > 2) issues.push("toolbar-canvas-width-mismatch");
+  if (Math.abs(toolbar.left - canvas.left) > 2 || Math.abs(toolbar.right - canvas.right) > 2) issues.push("toolbar-canvas-inline-mismatch");
   if (!canvas.width || !canvas.height || Math.abs(canvas.width / canvas.height - 1) > 0.02) issues.push("canvas-not-square");
   if (!isInside(canvas, studio)) issues.push("canvas-outside-studio");
   panels.forEach((panel, index) => {
