@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Paintbrush, Palette, Sparkles, Video, WandSparkles, X } from "lucide-react";
+import { ArrowLeft, Box, ChevronDown, Crosshair, ImagePlus, Maximize2, Minimize2, Palette, Sparkles, Video, WandSparkles, X } from "lucide-react";
 import NextImage from "next/image";
 import {
   useEffect,
@@ -31,7 +31,7 @@ import EmbroideryFiltersPanel from "./EmbroideryFiltersPanel";
 import EmbroideryToolsMenu, { type EmbroideryExportFormat } from "./EmbroideryToolsMenu";
 import SmartEditActionsPanel from "./SmartEditActionsPanel";
 import SmartEditFiltersPanel from "./SmartEditFiltersPanel";
-import SmartEditToolsMenu, { type SmartEditExportFormat } from "./SmartEditToolsMenu";
+import type { SmartEditExportFormat } from "./SmartEditToolsMenu";
 import SmartEditEngine from "./SmartEditEngine";
 import type { PlatformProductSelection, ProductSelectionMode } from "./ProductMemoryPicker";
 import { analyzeProductImage } from "../../admin/lib/dekobrain/productAnalyzer";
@@ -229,7 +229,6 @@ export default function EchoImageStudio({
   const embroideryToolsToggleRef = useRef<HTMLButtonElement>(null);
   const embroideryFiltersCloseRef = useRef<HTMLButtonElement>(null);
   const embroideryActionsCloseRef = useRef<HTMLButtonElement>(null);
-  const smartEditToolsRef = useRef<HTMLDivElement>(null);
   const smartEditToolsToggleRef = useRef<HTMLButtonElement>(null);
   const smartEditFiltersCloseRef = useRef<HTMLButtonElement>(null);
   const smartEditActionsCloseRef = useRef<HTMLButtonElement>(null);
@@ -1779,53 +1778,6 @@ export default function EchoImageStudio({
                 onCopyEmbroideryImage={() => {
                   setIsEmbroideryToolsOpen(false);
                   void copyEmbroideryImage();
-                }}
-              />
-            </div>
-            <div className="echoColoringStudio__headerTools">
-              <button
-                type="button"
-                className="echoColoringMainToolButton"
-                data-active={activeWorkspace === "coloring" ? "true" : undefined}
-                onClick={() => selectWorkspace("coloring")}
-              >
-                <span className="echoColoringMainToolIcon"><Paintbrush size={20} aria-hidden="true" /></span>
-                <span className="echoColoringMainToolLabel">التلوين</span>
-                <span className="echoStudioDashboardStatus">متاح</span>
-              </button>
-            </div>
-            <div ref={smartEditToolsRef} className="echoSmartEditStudio__headerTools">
-              <button
-                type="button"
-                className="echoSmartEditMainToolButton"
-                data-active={activeTool === "smart-edit" ? "true" : undefined}
-                aria-expanded={isSmartEditOpen}
-                aria-controls="echo-smart-edit-chat"
-                onClick={toggleSmartEditTools}
-              >
-                <span className="echoSmartEditMainToolIcon"><Sparkles size={20} aria-hidden="true" /></span>
-                <span className="echoSmartEditMainToolLabel">التحليل الذكي</span>
-                <ChevronDown className={`echoSmartEditMainToolChevron${isSmartEditOpen ? " isOpen" : ""}`} size={18} aria-hidden="true" />
-              </button>
-              <SmartEditToolsMenu
-                isOpen={false}
-                hasSmartEditImage={Boolean(smartEditPreviewUrl)}
-                isFiltersOpen={isSmartEditFiltersOpen}
-                isActionsOpen={isSmartEditActionsOpen}
-                exportingFormat={smartEditExportingFormat}
-                onOpenFilters={openSmartEditFilters}
-                onOpenActions={openSmartEditActions}
-                onExportPng={() => {
-                  selectTool(null);
-                  void exportSmartEditImage("image/png", "png");
-                }}
-                onExportWebp={() => {
-                  selectTool(null);
-                  void exportSmartEditImage("image/webp", "webp", 0.92);
-                }}
-                onCopySmartEditImage={() => {
-                  selectTool(null);
-                  void copySmartEditImage();
                 }}
               />
             </div>

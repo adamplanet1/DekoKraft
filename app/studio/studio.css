@@ -7465,8 +7465,11 @@ button.smartStudioToolCard:hover,
 
 /* EchoDeko Studio dashboard layout (Phase 2). */
 .creativeStudiosDialog:has(.echoImageStudio) {
-  width: min(var(--studio-window-width, 1180px), calc(100vw - 32px));
-  height: min(var(--studio-window-height, 860px), calc(100dvh - 32px));
+  position: fixed;
+  top: var(--studio-window-top, 12px);
+  left: var(--studio-window-left, 12px);
+  width: var(--studio-window-width, min(1180px, calc(100vw - 24px)));
+  height: var(--studio-window-height, min(820px, calc(100dvh - 24px)));
   max-width: none;
   max-height: none;
   overflow: hidden;
@@ -7476,15 +7479,51 @@ button.smartStudioToolCard:hover,
 .creativeStudiosDialog__resizeHandle {
   position: absolute;
   z-index: 100;
-  bottom: 4px;
-  left: 4px;
-  width: 28px;
-  height: 28px;
   padding: 0;
   border: 0;
-  background: linear-gradient(135deg, transparent 48%, rgba(49, 94, 234, .38) 49% 58%, transparent 59% 68%, rgba(49, 94, 234, .72) 69% 78%, transparent 79%);
-  cursor: nesw-resize;
+  background: transparent;
   touch-action: none;
+}
+
+.creativeStudiosDialog__resizeHandle--top,
+.creativeStudiosDialog__resizeHandle--bottom { right: 16px; left: 16px; height: 10px; cursor: ns-resize; }
+.creativeStudiosDialog__resizeHandle--top { top: -3px; }
+.creativeStudiosDialog__resizeHandle--bottom { bottom: -3px; }
+.creativeStudiosDialog__resizeHandle--left,
+.creativeStudiosDialog__resizeHandle--right { top: 16px; bottom: 16px; width: 10px; cursor: ew-resize; }
+.creativeStudiosDialog__resizeHandle--left { left: -3px; }
+.creativeStudiosDialog__resizeHandle--right { right: -3px; }
+.creativeStudiosDialog__resizeHandle--top-left,
+.creativeStudiosDialog__resizeHandle--top-right,
+.creativeStudiosDialog__resizeHandle--bottom-left,
+.creativeStudiosDialog__resizeHandle--bottom-right { width: 22px; height: 22px; }
+.creativeStudiosDialog__resizeHandle--top-left { top: -3px; left: -3px; cursor: nwse-resize; }
+.creativeStudiosDialog__resizeHandle--top-right { top: -3px; right: -3px; cursor: nesw-resize; }
+.creativeStudiosDialog__resizeHandle--bottom-left { bottom: -3px; left: -3px; cursor: nesw-resize; }
+.creativeStudiosDialog__resizeHandle--bottom-right { right: -3px; bottom: -3px; cursor: nwse-resize; }
+.creativeStudiosDialog__resizeHandle--bottom-left::after {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  width: 12px;
+  height: 12px;
+  border-bottom: 2px solid rgba(49, 94, 234, .72);
+  border-left: 2px solid rgba(49, 94, 234, .72);
+  border-radius: 0 0 0 3px;
+  content: "";
+}
+.creativeStudiosOverlay--resizing,
+.creativeStudiosOverlay--resizing *,
+body.studioWindowIsResizing,
+body.studioWindowIsResizing * { cursor: inherit; user-select: none; }
+
+.creativeStudiosDialog--echoImageMaximized:has(.echoImageStudio) {
+  inset: 4px;
+  width: calc(100vw - 8px);
+  height: calc(100dvh - 8px);
+  max-width: none;
+  max-height: none;
+  border-radius: 12px;
 }
 
 .echoImageStudio,
@@ -7509,21 +7548,26 @@ button.smartStudioToolCard:hover,
 .echoImageStudio__headerControls { align-items: flex-start; }
 .echoImageStudio__windowControls { flex: 0 0 auto; }
 .echoImageStudio__processingTools {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  width: 100%;
-}
-
-.echoImageStudio__processingTools > div { min-width: 0; }
-.echoImageStudio__processingTools :is(.echoImageMainToolButton,.echoVideoMainToolButton,.echoThreeDImageMainToolButton,.echoLaserMainToolButton,.echoEmbroideryMainToolButton,.echoSmartEditMainToolButton,.echoColoringMainToolButton) {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 64px;
-  padding: 10px 12px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  direction: rtl;
+  scrollbar-width: none;
+}
+.echoImageStudio__processingTools::-webkit-scrollbar { display: none; }
+
+.echoImageStudio__processingTools > div { flex: 0 0 auto; min-width: 0; }
+.echoImageStudio__processingTools :is(.echoImageMainToolButton,.echoVideoMainToolButton,.echoThreeDImageMainToolButton,.echoLaserMainToolButton,.echoEmbroideryMainToolButton) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  min-height: 42px;
+  padding: 8px 14px;
   border: 1px solid rgba(148, 163, 184, .3);
   border-radius: 16px;
   background: rgba(255,255,255,.72);
@@ -7531,6 +7575,7 @@ button.smartStudioToolCard:hover,
   text-align: start;
   box-shadow: 0 8px 22px rgba(15,23,42,.06);
   cursor: pointer;
+  white-space: nowrap;
   transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 .echoImageStudio__processingTools button:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(15,23,42,.1); }
@@ -7584,20 +7629,11 @@ button.smartStudioToolCard:hover,
 }
 .echoStudioSmartPanel .smartEditChat__header { cursor: default; }
 
-@media (max-width: 980px) {
-  .echoImageStudio__processingTools { grid-template-columns: repeat(3, minmax(0,1fr)); }
-}
-
 @media (max-width: 760px) {
-  .creativeStudiosDialog:has(.echoImageStudio) { width: calc(100vw - 20px); height: calc(100dvh - 20px); padding: 12px; border-radius: 20px; }
+  .creativeStudiosDialog:has(.echoImageStudio) { top: 10px; left: 10px; width: calc(100vw - 20px); height: calc(100dvh - 20px); padding: 12px; border-radius: 20px; }
   .creativeStudiosDialog__resizeHandle { display: none; }
   .echoImageStudio__layout { grid-template-columns: 1fr; grid-template-rows: auto auto minmax(280px,1fr); grid-template-areas: "dashboard" "workspace" "smart"; overflow-y: auto; }
-  .echoImageStudio__processingTools { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .echoImageStudio__workspace { overflow: visible; }
   .echoImagePreview { width: min(100%, 520px); }
   .echoStudioSmartPanel { min-height: 360px; }
-}
-
-@media (max-width: 420px) {
-  .echoImageStudio__processingTools { grid-template-columns: 1fr; }
 }
