@@ -21,6 +21,7 @@ export type InspectionCounters = {
 
 export function canonicalStatus(finding: DekoCleanFinding): string {
   if (finding.status === "resolved") return "RESOLVED";
+  if (finding.status === "approved") return "RESOLVED";
   if (finding.status === "ignored") return "IGNORED";
   if (finding.status === "failed") return "FAILED";
   return finding.lifecycle?.status ?? "OPEN";
@@ -76,14 +77,16 @@ export function calculateInspectionCounters(findings: DekoCleanFinding[]): Inspe
 
 export function selectSecurityFindings(findings: DekoCleanFinding[]): DekoCleanFinding[] {
   const seen = new Set<string>();
-  return findings.filter((finding) => ["OPEN", "FAILED"].includes(canonicalStatus(finding)) && ["security-alert", "suspicious-file", "integrity-mismatch"].includes(finding.type)).filter((finding) => { const key = finding.fingerprint || finding.id; if (seen.has(key)) return false; seen.add(key); return true; });
+  return findings.filter((finding) => ["OPEN", "FAILED", "IGNORED"].includes(canonicalStatus(finding)) && ["security-alert", "suspicious-file", "integrity-mismatch"].includes(finding.type)).filter((finding) => { const key = finding.fingerprint || finding.id; if (seen.has(key)) return false; seen.add(key); return true; });
 }
 
-export type SecurityScoreExplanation = { baseScore: 100; criticalPenalty: number; highPenalty: number; mediumPenalty: number; finalScore: number };
+export const SECURITY_DEDUCTION = { critical: 20, high: 10, medium: 5, low: 2, info: 0 } as const;
+export type SecurityScoreExplanation = { baseScore: 100; criticalPenalty: number; highPenalty: number; mediumPenalty: number; lowPenalty: number; finalScore: number };
 export function calculateSecurityScore(findings: DekoCleanFinding[]): SecurityScoreExplanation {
   const current = selectSecurityFindings(findings);
-  const criticalPenalty = current.filter((f) => f.severity === "critical").length * 35;
-  const highPenalty = current.filter((f) => f.severity === "high").length * 15;
-  const mediumPenalty = current.filter((f) => f.severity === "medium").length * 6;
-  return { baseScore: 100, criticalPenalty, highPenalty, mediumPenalty, finalScore: Math.max(0, 100 - criticalPenalty - highPenalty - mediumPenalty) };
+  const criticalPenalty = current.filter((f) => f.severity === "critical").length * SECURITY_DEDUCTION.critical;
+  const highPenalty = current.filter((f) => f.severity === "high").length * SECURITY_DEDUCTION.high;
+  const mediumPenalty = current.filter((f) => f.severity === "medium").length * SECURITY_DEDUCTION.medium;
+  const lowPenalty = current.filter((f) => f.severity === "low").length * SECURITY_DEDUCTION.low;
+  return { baseScore: 100, criticalPenalty, highPenalty, mediumPenalty, lowPenalty, finalScore: Math.max(0, Math.min(100, 100 - criticalPenalty - highPenalty - mediumPenalty - lowPenalty)) };
 }

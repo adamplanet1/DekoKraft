@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType } from "react";
 import { getDashboardMenu } from "../config/dashboardMenu";
 
 export type ParticipantSection =
@@ -16,12 +16,22 @@ export type ParticipantSection =
   | "maintenance"
   | "support";
 
+export type ParticipantDashboardItem = {
+  id: string;
+  label: string;
+  description?: string;
+  href: string;
+  icon: ComponentType;
+  enabled: boolean;
+};
+
 export type ParticipantNavigationItem = {
   key: ParticipantSection;
   href: string;
-  icon: LucideIcon;
+  icon: ComponentType;
   labelKey: string;
   descriptionKey?: string;
+  enabled: boolean;
 };
 
 export const participantNavigationItems: ParticipantNavigationItem[] = getDashboardMenu("participant").map((item) => ({
@@ -30,4 +40,5 @@ export const participantNavigationItems: ParticipantNavigationItem[] = getDashbo
   icon: item.icon,
   labelKey: item.labelKey,
   descriptionKey: item.descriptionKey,
+  enabled: item.enabled,
 }));

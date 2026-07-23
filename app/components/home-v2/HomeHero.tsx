@@ -1,7 +1,9 @@
 "use client";
 
 import { useLanguage } from "../LanguageProvider";
+import { DkButton } from "../ui";
 import DkPageHero from "../ui/DkPageHero";
+import { routes } from "../../config/routes";
 
 export default function HomeHero() {
   const { t } = useLanguage();
@@ -12,6 +14,7 @@ export default function HomeHero() {
       eyebrow={t("homepage.eyebrow")}
       title={t("homepage.title")}
       description={t("home.heroDescription")}
+      actions={<DkButton href={routes.studio} variant="primary" size="md">{t("seller.openStudio")}</DkButton>}
       size="large"
     />
   );

@@ -98,6 +98,86 @@
   text-align: center;
 }
 
+.participantSecurityCard {
+  margin-block: 20px;
+  padding: 18px;
+  border: 1px solid rgba(96, 120, 170, 0.2);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 32px rgba(36, 62, 110, 0.1);
+}
+
+.participantSecurityCard > header,
+.participantSecurityCard > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.participantSecurityCard h3,
+.participantSecurityCard p {
+  margin: 0;
+}
+
+.participantSecurityCard > div {
+  margin-block-start: 14px;
+  flex-wrap: wrap;
+}
+
+.participantSecurityCard button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.participantProductsHeader,
+.participantProductsHeader > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.participantProductsHeader {
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.participantProductsHeader h2 {
+  margin: 0;
+}
+
+.participantProductsPrimary {
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: var(--dk-color-primary);
+  color: white;
+  text-decoration: none;
+}
+
+.participantStudioUpdateStatus {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.participantStudioUpdateStatus div {
+  padding: 9px;
+  border-radius: 10px;
+  background: rgba(49, 94, 234, 0.07);
+}
+
+.participantStudioUpdateStatus dt {
+  color: var(--dk-color-text-muted);
+  font-size: 0.78rem;
+}
+
+.participantStudioUpdateStatus dd {
+  margin: 4px 0 0;
+  font-weight: 750;
+}
+
 .participantNavigationDrawer {
   width: min(var(--dk-admin-sidebar-width), calc(100vw - 24px));
   padding: var(--dk-space-5);

@@ -1,5 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { DkButton, DkGlassPanel } from "../ui";
 import { classNames } from "../ui/classNames";
 
@@ -8,8 +7,9 @@ export type DkDashboardGridItem = {
   label: string;
   description?: string;
   href: string;
-  icon: LucideIcon;
+  icon: ComponentType;
   indicators?: ReactNode;
+  enabled?: boolean;
 };
 
 export default function DkDashboardGrid({
@@ -27,12 +27,13 @@ export default function DkDashboardGrid({
         const Icon = item.icon;
         return (
           <DkGlassPanel as="article" strength="normal" className="dk-dashboard-grid__card" key={item.id}>
-            <DkButton href={item.href} icon={<Icon />} variant="transparent" size="lg">
+            <DkButton href={item.enabled === false ? undefined : item.href} disabled={item.enabled === false} aria-label={item.label} icon={<Icon />} variant="transparent" size="lg">
               {item.description ? (
                 <span className="dk-dashboard-grid__content">
                   <strong>{item.label}</strong>
                   <small>{item.description}</small>
                   {item.indicators}
+                  {item.enabled === false && <span className="dk-dashboard-grid__badge">قريبًا</span>}
                 </span>
               ) : item.label}
             </DkButton>

@@ -7,6 +7,8 @@ export interface IgnoredFindingRecord {
   findingId: string;
   ignoredAt: string;
   ignoredBy: string;
+  expiresAt?: string;
+  reason?: string;
 }
 
 function stateRoot(projectRoot: string): string {
@@ -54,6 +56,28 @@ export function recordIgnoredFindings(findingIds: string[], ignoredBy: string, p
   const next = [...previous.filter((entry) => !ids.has(entry.findingId)), ...additions].slice(-2000);
   atomicJsonWrite(target, next);
   return next;
+}
+
+export function recordTemporarilyIgnoredFinding(
+  findingId: string,
+  ignoredBy: string,
+  expiresAt: string,
+  reason: string,
+  projectRoot = process.cwd(),
+): IgnoredFindingRecord[] {
+  const expiration = new Date(expiresAt);
+  if (!Number.isFinite(expiration.getTime()) || expiration.getTime() <= Date.now()) throw new Error("Temporary ignore expiration must be in the future.");
+  const target = jsonPath(projectRoot, "ignore.json");
+  const previous = readArray<IgnoredFindingRecord>(target);
+  const record: IgnoredFindingRecord = {
+    findingId,
+    ignoredAt: new Date().toISOString(),
+    ignoredBy: ignoredBy.slice(0, 160),
+    expiresAt: expiration.toISOString(),
+    reason: reason.slice(0, 500),
+  };
+  atomicJsonWrite(target, [...previous.filter((entry) => entry.findingId !== findingId), record].slice(-2000));
+  return readArray<IgnoredFindingRecord>(target);
 }
 
 export function readPerformanceHistory(projectRoot = process.cwd()): PerformanceSnapshot[] {

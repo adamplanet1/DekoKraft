@@ -1,0 +1,475 @@
+.studioV2Page {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(10px, 1.5vw, 20px);
+  overflow-x: hidden;
+  color: #17233f;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(116, 162, 255, 0.28), transparent 34%),
+    radial-gradient(circle at 88% 18%, rgba(160, 219, 255, 0.3), transparent 32%),
+    linear-gradient(145deg, #eef4ff 0%, #dfeafa 48%, #f5f8ff 100%);
+}
+
+.studioV2Page *,
+.studioV2Page *::before,
+.studioV2Page *::after {
+  box-sizing: border-box;
+}
+
+.studioV2Container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: min(100%, 1680px);
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.studioV2Header,
+.studioV2ActivityBar,
+.studioV2WorkspaceCard,
+.studioV2SettingsCard,
+.studioV2ContextSettings {
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 16px 44px rgba(25, 48, 88, 0.075);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+}
+
+.studioV2Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 16px;
+  border-radius: 22px;
+}
+
+.studioV2Brand,
+.studioV2TitleRow,
+.studioV2Language,
+.studioV2WelcomeActions,
+.studioV2Formats,
+.studioV2SettingsAction {
+  display: flex;
+  align-items: center;
+}
+
+.studioV2Brand { gap: 12px; }
+.studioV2Brand img { width: 52px; height: 52px; flex: 0 0 52px; border-radius: 15px; box-shadow: 0 8px 20px rgba(36, 82, 154, 0.14); }
+.studioV2Brand strong { font-size: 1rem; }
+.studioV2Heading { flex: 1 1 auto; min-width: 0; text-align: center; }
+.studioV2TitleRow { justify-content: center; gap: 10px; flex-wrap: wrap; }
+.studioV2Heading h1 { margin: 0; font-size: clamp(1.78rem, 3vw, 2.72rem); line-height: 1.1; }
+.studioV2Heading p { margin: 4px 0 0; color: #65728c; font-size: .88rem; line-height: 1.45; }
+.studioV2Status { padding: 5px 10px; border-radius: 999px; color: #2454b6; background: rgba(73, 125, 224, 0.12); font-size: 0.78rem; font-weight: 800; }
+.studioV2Language { gap: 7px; min-height: 40px; padding: 5px 9px; border: 1px solid rgba(73, 100, 150, 0.12); border-radius: 13px; background: rgba(255,255,255,.58); }
+.studioV2Language svg { width: 18px; }
+.studioV2Language span { font-size: 0.82rem; font-weight: 800; }
+.studioV2Language select { border: 0; background: transparent; color: inherit; font: inherit; }
+
+.studioV2Content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
+
+.studioV2Content[data-settings-visible="true"] {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+}
+
+.studioV2WorkspaceCard,
+.studioV2SettingsCard,
+.studioV2ContextSettings { border-radius: 24px; }
+.studioV2ActivityBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 20px;
+  scrollbar-width: thin;
+}
+
+.studioV2ActivityButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  min-width: max-content;
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid rgba(75, 98, 142, 0.13);
+  border-radius: 999px;
+  color: #53617c;
+  background: rgba(255, 255, 255, 0.54);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.studioV2ActivityButton svg { width: 23px; height: 23px; }
+.studioV2ActivityButton span { font-size: 0.78rem; font-weight: 800; line-height: 1.25; white-space: nowrap; }
+.studioV2ActivityButton:hover { transform: translateY(-1px); }
+.studioV2ActivityButton:focus-visible { outline: 3px solid rgba(49, 101, 211, 0.28); outline-offset: 2px; }
+.studioV2ActivityButton.is-active { border-color: rgba(30, 123, 82, .28); color: white; background: linear-gradient(135deg, #36a979, #207b57); box-shadow: 0 9px 22px rgba(32, 123, 87, .22); }
+.studioV2Accent--blue { --studio-v2-accent: #376fd2; --studio-v2-soft: rgba(55,111,210,.24); }
+.studioV2Accent--green { --studio-v2-accent: #278a69; --studio-v2-soft: rgba(39,138,105,.24); }
+.studioV2Accent--violet { --studio-v2-accent: #7352be; --studio-v2-soft: rgba(115,82,190,.24); }
+.studioV2Accent--cyan { --studio-v2-accent: #25829a; --studio-v2-soft: rgba(37,130,154,.24); }
+.studioV2Accent--amber { --studio-v2-accent: #a86b19; --studio-v2-soft: rgba(168,107,25,.24); }
+.studioV2Accent--indigo { --studio-v2-accent: #4f5db4; --studio-v2-soft: rgba(79,93,180,.24); }
+.studioV2Accent--orange { --studio-v2-accent: #b45d2c; --studio-v2-soft: rgba(180,93,44,.24); }
+.studioV2Accent--rose { --studio-v2-accent: #ad4d79; --studio-v2-soft: rgba(173,77,121,.24); }
+.studioV2Accent--slate { --studio-v2-accent: #5c6579; --studio-v2-soft: rgba(92,101,121,.24); }
+
+.studioV2Main { width: 100%; min-width: 0; }
+.studioV2WorkspaceCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-height: clamp(680px, 78dvh, 980px);
+  min-width: 0;
+  padding: clamp(10px, 1.2vw, 16px);
+}
+
+.studioV2WorkspaceCanvas {
+  position: relative;
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  border: 1px solid rgba(72, 96, 140, 0.16);
+  border-radius: 20px;
+  background-color: rgba(247, 250, 255, 0.75);
+  background-image:
+    linear-gradient(45deg, rgba(99, 116, 145, 0.055) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(99, 116, 145, 0.055) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(99, 116, 145, 0.055) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(99, 116, 145, 0.055) 75%);
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  background-size: 20px 20px;
+}
+.studioV2WorkspaceContent {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.studioV2Welcome,
+.studioV2ActivityPlaceholder,
+.studioV2UploadCanvas {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  width: min(100%, 680px);
+  padding: clamp(24px, 5vw, 56px);
+  text-align: center;
+}
+
+.studioV2WelcomeIcon,
+.studioV2ActivityPlaceholder > svg,
+.studioV2UploadCanvas > svg {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  padding: 18px;
+  border-radius: 24px;
+  color: #376fd2;
+  background: rgba(65, 118, 217, 0.12);
+}
+
+.studioV2WelcomeIcon svg { width: 100%; height: 100%; }
+.studioV2Welcome h2,
+.studioV2ActivityPlaceholder h2,
+.studioV2UploadCanvas h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); }
+.studioV2Welcome p,
+.studioV2ActivityPlaceholder p,
+.studioV2UploadCanvas p { max-width: 570px; margin: 0; color: #65728c; font-size: .9rem; line-height: 1.7; }
+.studioV2ActivityPlaceholder > span { padding: 6px 12px; border-radius: 999px; color: #835c17; background: #fff3d5; font-size: .82rem; font-weight: 800; }
+.studioV2WelcomeActions { justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.studioV2PrimaryButton,
+.studioV2SecondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+.studioV2PrimaryButton { color: white; background: #376fd2; }
+.studioV2SecondaryButton { color: #315a9f; border-color: rgba(55,111,210,.22); background: rgba(255,255,255,.72); }
+.studioV2PrimaryButton svg,
+.studioV2SecondaryButton svg { width: 18px; height: 18px; }
+.studioV2PrimaryButton input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.studioV2SmartEdit {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 58px;
+  min-width: 58px;
+}
+.studioV2SmartEditDock {
+  position: absolute;
+  z-index: 5;
+  inset-inline-end: 18px;
+  bottom: 18px;
+  max-width: calc(100% - 36px);
+}
+.studioV2SmartEdit.is-open { width: min(300px, 100%); }
+.studioV2SmartEditButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 13px;
+  border: 1px solid rgba(57, 111, 210, 0.2);
+  border-radius: 999px;
+  color: #315fa9;
+  background: rgba(226, 237, 255, 0.78);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.studioV2SmartEditButton span { writing-mode: horizontal-tb; }
+.studioV2SmartEditButton svg { width: 20px; }
+.studioV2SmartEditPanel { position: relative; padding: 18px; border: 1px solid rgba(55,111,210,.12); border-radius: 18px; background: rgba(255,255,255,.82); box-shadow: 0 14px 36px rgba(28,55,100,.12); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+.studioV2SmartEditPanel strong { display: block; margin-bottom: 8px; }
+.studioV2SmartEditPanel p { margin: 0; color: #65728c; font-size: .88rem; line-height: 1.7; }
+.studioV2IconButton { position: absolute; inset-block-start: 8px; inset-inline-end: 8px; display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 10px; background: rgba(55,111,210,.1); cursor: pointer; }
+.studioV2IconButton svg { width: 16px; }
+
+.studioV2SettingsArea { min-width: 0; }
+.studioV2SettingsCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100dvh - 150px);
+  min-width: 0;
+  overflow: hidden;
+  padding: 14px;
+}
+.studioV2SettingsCard > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid rgba(74,98,143,.12); }
+.studioV2SettingsCard header span { color: #72809a; font-size: .76rem; font-weight: 800; }
+.studioV2SettingsCard h2 { margin: 3px 0 0; font-size: 1.25rem; }
+.studioV2SettingsCard header button { border: 0; border-radius: 10px; padding: 8px 10px; color: #315fa9; background: rgba(55,111,210,.1); font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; }
+.studioV2SettingsScroll { display: grid; gap: 8px; min-height: 0; overflow-y: auto; padding-block-start: 10px; scrollbar-width: thin; }
+.studioV2SettingsGroup { min-width: 0; border: 1px solid rgba(72,96,140,.09); border-radius: 14px; background: rgba(255,255,255,.42); overflow: clip; }
+.studioV2SettingsGroup summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; color: #334b76; font-size: .86rem; font-weight: 900; cursor: pointer; list-style: none; }
+.studioV2SettingsGroup summary::-webkit-details-marker { display: none; }
+.studioV2SettingsGroup summary::after { content: "⌄"; color: #5473aa; font-size: 1rem; transition: transform 160ms ease; }
+.studioV2SettingsGroup[open] summary::after { transform: rotate(180deg); }
+.studioV2SettingsGroup > div { display: grid; gap: 10px; padding: 2px 12px 12px; }
+.studioV2ImageTools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.studioV2ImageTools button {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  min-height: 72px;
+  padding: 10px;
+  border: 1px solid rgba(57, 105, 150, .12);
+  border-radius: 13px;
+  color: #4d617e;
+  background: rgba(255,255,255,.62);
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.studioV2ImageTools button svg { width: 22px; height: 22px; }
+.studioV2ImageTools button.is-active { border-color: rgba(32,123,87,.32); color: white; background: linear-gradient(135deg,#36a979,#207b57); }
+.studioV2Slider { display: grid; gap: 4px; }
+.studioV2Slider span { display: flex; justify-content: space-between; gap: 8px; direction: ltr; color: #58667f; font-size: .76rem; font-weight: 700; }
+.studioV2Slider output { color: #315fa9; }
+.studioV2Slider input { width: 100%; height: 18px; margin: 0; accent-color: #2d946d; }
+.studioV2Color { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #58667f; font-size: .8rem; font-weight: 700; }
+.studioV2Color input { width: 44px; height: 32px; border: 0; background: transparent; }
+.studioV2SettingsAction { justify-content: center; gap: 7px; min-height: 40px; border: 1px solid rgba(55,111,210,.18); border-radius: 12px; color: #315fa9; background: rgba(55,111,210,.08); font: inherit; font-weight: 800; cursor: pointer; }
+.studioV2SettingsAction svg { width: 17px; }
+.studioV2Formats { gap: 6px; }
+.studioV2Formats button { flex: 1; min-height: 36px; border: 1px solid rgba(72,96,140,.14); border-radius: 10px; background: white; font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; }
+.studioV2SettingsDownload { color: white; background: #376fd2; }
+
+.studioV2VideoWorkspace,
+.studioV23DWorkspace {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  align-self: stretch;
+  padding: clamp(10px, 1.5vw, 18px);
+}
+
+.studioV2VideoPreview {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 10px;
+  width: min(100%, 1120px);
+  aspect-ratio: 16 / 9;
+  margin-inline: auto;
+  padding: 24px;
+  border: 1px solid rgba(94, 125, 180, .14);
+  border-radius: 20px;
+  color: #dbe9ff;
+  background: linear-gradient(145deg, #18243a, #273b5d);
+  text-align: center;
+}
+.studioV2VideoPreview > svg { width: 54px; height: 54px; color: #7fb4ff; }
+.studioV2VideoPreview h2,
+.studioV23DIntro h2 { margin: 0; font-size: clamp(1.45rem, 2.5vw, 2.2rem); }
+.studioV2VideoPreview p,
+.studioV23DIntro p { margin: 0; font-size: .88rem; opacity: .78; }
+.studioV2Transport { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.studioV2Transport button,
+.studioV23DViewTools button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  border: 1px solid rgba(66, 103, 164, .14);
+  border-radius: 12px;
+  color: #38577f;
+  background: rgba(255,255,255,.7);
+  font: inherit;
+  cursor: pointer;
+}
+.studioV2Transport button { width: 42px; padding: 0; }
+.studioV2Transport button:disabled,
+.studioV2ContextSettings button:disabled { cursor: not-allowed; opacity: .46; }
+.studioV2TransportPlay { color: white !important; background: #3978d6 !important; }
+.studioV2Transport svg { width: 18px; }
+.studioV2Transport output { min-width: 104px; color: #5f6f88; font: 700 .78rem/1 monospace; text-align: center; }
+.studioV2Timeline { display: grid; gap: 9px; padding: 12px; border: 1px solid rgba(74,105,158,.11); border-radius: 16px; background: rgba(255,255,255,.5); }
+.studioV2Timeline header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.studioV2Timeline header label { display: flex; align-items: center; gap: 6px; color: #60708a; font-size: .74rem; }
+.studioV2Timeline header svg { width: 15px; }
+.studioV2Timeline header input { width: 90px; accent-color: #3978d6; }
+.studioV2TimelineRuler { position: relative; height: 12px; border-radius: 999px; background: repeating-linear-gradient(90deg,rgba(63,89,132,.18) 0 1px,transparent 1px 24px); }
+.studioV2Playhead { position: absolute; inset-block: -3px; inset-inline-start: 20%; width: 2px; background: #e5485d; }
+.studioV2ClipLane { display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 8px; align-items: center; color: #68768d; font-size: .76rem; }
+.studioV2ClipLane div { min-height: 38px; padding: 11px; border: 1px dashed rgba(69,103,160,.25); border-radius: 10px; text-align: center; }
+
+.studioV23DViewport {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(460px, 58dvh, 720px);
+  overflow: hidden;
+  border: 1px solid rgba(128, 116, 205, .2);
+  border-radius: 20px;
+  color: #f2efff;
+  background:
+    linear-gradient(rgba(123,115,180,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123,115,180,.12) 1px, transparent 1px),
+    radial-gradient(circle at 50% 42%, #333354, #181928 70%);
+  background-size: 34px 34px, 34px 34px, auto;
+}
+.studioV23DCube svg { width: 110px; height: 110px; color: #a99cf3; filter: drop-shadow(0 18px 22px rgba(0,0,0,.34)); }
+.studioV23DIntro { position: absolute; inset-inline: 18px; bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; padding: 12px; border-radius: 16px; background: rgba(21,22,38,.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); text-align: center; }
+.studioV23DGizmo { position: absolute; inset-block-start: 16px; inset-inline-end: 16px; width: 48px; height: 48px; }
+.studioV23DGizmo i { position: absolute; inset: 23px auto auto 23px; width: 22px; height: 2px; background: #ef5d6d; transform-origin: left; }
+.studioV23DGizmo i:nth-child(2) { background: #54d28c; transform: rotate(120deg); }
+.studioV23DGizmo i:nth-child(3) { background: #639dff; transform: rotate(240deg); }
+.studioV23DViewTools { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.studioV23DViewTools button { padding: 8px 12px; }
+.studioV23DViewTools svg { width: 18px; }
+
+.studioV2ContextSettings {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100dvh - 150px);
+  min-width: 0;
+  overflow: hidden;
+  padding: 14px;
+}
+.studioV2ContextSettings > header { padding-bottom: 12px; border-bottom: 1px solid rgba(74,98,143,.1); }
+.studioV2ContextSettings header span { color: #72809a; font-size: .76rem; font-weight: 800; }
+.studioV2ContextSettings h2 { margin: 3px 0 0; font-size: 1.25rem; }
+.studioV2ContextSettingsScroll { display: grid; gap: 10px; min-height: 0; overflow-y: auto; padding-block-start: 10px; }
+.studioV2ContextSettingsScroll section { display: grid; gap: 9px; padding: 12px; border: 1px solid rgba(72,96,140,.09); border-radius: 14px; background: rgba(255,255,255,.42); }
+.studioV2ContextSettingsScroll h3 { margin: 0; color: #334b76; font-size: .86rem; }
+.studioV2ContextSettingsScroll label { display: grid; gap: 6px; color: #596a84; font-size: .78rem; font-weight: 700; }
+.studioV2ContextSettingsScroll input,
+.studioV2ContextSettingsScroll select { width: 100%; min-width: 0; accent-color: #6e57c7; }
+.studioV2ContextSettingsScroll select,
+.studioV2ContextSettingsScroll input[type="number"] { min-height: 36px; padding-inline: 8px; border: 1px solid rgba(70,96,143,.14); border-radius: 9px; background: rgba(255,255,255,.76); font: inherit; }
+.studioV2ContextSettingsScroll button { min-height: 40px; border: 1px solid rgba(75,91,155,.14); border-radius: 11px; color: #58618a; background: rgba(113,91,194,.08); font: inherit; font-weight: 800; }
+.studioV2ContextSettings dl { display: grid; gap: 7px; margin: 0; }
+.studioV2ContextSettings dl div { display: flex; justify-content: space-between; gap: 8px; }
+.studioV2ContextSettings dt { color: #71809a; }
+.studioV2ContextSettings dd { margin: 0; font-weight: 800; }
+.studioV23DObjectList { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.studioV23DObjectList li { padding: 7px 9px; border-radius: 8px; color: #64718a; background: rgba(255,255,255,.5); }
+.studioV23DObjectList li.is-active { color: #5c46ad; background: rgba(111,86,198,.12); font-weight: 800; }
+.studioV23DAxes { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+.studioV23DAxes label { text-align: center; }
+.studioV2Checkbox { grid-template-columns: auto minmax(0,1fr); align-items: center; }
+.studioV2Checkbox input { width: auto; }
+
+@media (max-width: 1050px) {
+  .studioV2Content,
+  .studioV2Content[data-settings-visible="true"] { grid-template-columns: minmax(0, 1fr); }
+  .studioV2SettingsArea { width: 100%; }
+  .studioV2SettingsCard { max-height: 620px; }
+  .studioV2ContextSettings { max-height: 620px; }
+}
+
+@media (max-width: 760px) {
+  .studioV2Page { padding: 10px; }
+  .studioV2Header { flex-wrap: wrap; justify-content: center; text-align: center; }
+  .studioV2Brand,
+  .studioV2Language { justify-self: center; }
+  .studioV2Heading { flex-basis: 100%; order: 3; }
+  .studioV2WorkspaceCard { min-height: 620px; }
+  .studioV2SmartEdit,
+  .studioV2SmartEdit.is-open { width: min(300px, calc(100% - 28px)); min-width: 0; }
+  .studioV2SmartEditButton { flex-direction: row; justify-content: center; min-height: 48px; }
+}
+
+@media (max-width: 480px) {
+  .studioV2WorkspaceCard { min-height: 560px; }
+  .studioV2Welcome,
+  .studioV2ActivityPlaceholder,
+  .studioV2UploadCanvas { padding: 22px 14px; }
+  .studioV2WelcomeActions,
+  .studioV2PrimaryButton,
+  .studioV2SecondaryButton { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studioV2ActivityButton { transition: none; }
+}

@@ -22,6 +22,23 @@ export type DekoCleanRecommendation =
 
 export type DekoCleanSeverity = "info" | "low" | "medium" | "high" | "critical";
 export type ProtectedFileChangeClassification = "authorized-project-change" | "unverified-change" | "unexpected-change" | "integrity-failure";
+export type SecurityFindingReviewClassification =
+  | "expected_project_change"
+  | "unexpected_safe_change"
+  | "suspicious_change"
+  | "stale_finding"
+  | "missing_file"
+  | "invalid_baseline";
+export interface SecurityFindingVerification {
+  classification: SecurityFindingReviewClassification;
+  verifiedAt: string;
+  filePath: string;
+  previousHash?: string;
+  currentHash?: string;
+  gitTracked: boolean;
+  latestCommit?: string;
+  reason: string;
+}
 
 export type DekoCleanAction =
   | "scan"
@@ -152,6 +169,8 @@ export interface DekoCleanFinding {
   migratedFromLegacy?: boolean;
   migrationVersion?: number;
   migrationReason?: string;
+  securityVerification?: SecurityFindingVerification;
+  temporaryIgnoreUntil?: string;
 }
 
 export interface DekoCleanActionPlan {
@@ -378,6 +397,7 @@ export interface DekoCleanAuditEntry {
   rollbackStatus: "not-required" | "available" | "completed" | "recommended";
   status: "planned" | "completed" | "failed";
   createdAt: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface DekoCleanSummary {

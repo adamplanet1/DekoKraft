@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Activity, AlertTriangle, ArchiveRestore, Brain, CheckCircle2, Clock3, FileSearch, Gauge, History, LoaderCircle, Radar, Recycle, ShieldCheck, Wrench, X } from "lucide-react";
+import { Activity, AlertTriangle, ArchiveRestore, Brain, CheckCircle2, Clock3, FileSearch, Gauge, History, LoaderCircle, Radar, Recycle, ScanSearch, ShieldCheck, Wrench, X } from "lucide-react";
 
 import type {
   DekoBrainSecurityRecommendation, DekoCleanAction, DekoCleanActionPlan, DekoCleanAuditEntry,
@@ -39,9 +39,38 @@ type CenterData = {
   needsReviewBreakdown: NeedsReviewCountBreakdown;
   inspectionCounters: InspectionCounters;
   securityFindings: DekoCleanFinding[];
-  securityScore: { baseScore: number; criticalPenalty: number; highPenalty: number; mediumPenalty: number; finalScore: number };
+  securityScore: { baseScore: number; criticalPenalty: number; highPenalty: number; mediumPenalty: number; lowPenalty: number; finalScore: number };
 };
 type Connector = { id: string; label: string; available: boolean; engineVersion?: string; signaturesUpdatedAt?: string };
+type SecurityFindingInspection = {
+  findingId: string;
+  classification: "expected_project_change" | "unexpected_safe_change" | "suspicious_change" | "stale_finding" | "missing_file" | "invalid_baseline";
+  verifiedAt: string;
+  filePath: string;
+  previousHash?: string;
+  currentHash?: string;
+  gitTracked: boolean;
+  latestCommit?: string;
+  latestCommitAt?: string;
+  latestCommitSubject?: string;
+  gitDiff: string;
+  changedLines: string[];
+  dangerousLines: string[];
+  currentMatchesStoredFinding: boolean;
+  canApprove: boolean;
+  canRestore: boolean;
+  reason: string;
+};
+type RootCauseAnalysis = {
+  findingId: string;
+  filePath: string;
+  classification: "expected-development-change" | "dependency-change" | "configuration-change" | "generated-file-change" | "suspicious-change" | "unknown";
+  confidence: "low" | "medium" | "high";
+  evidence: string[];
+  recommendation: "approve" | "compare" | "verify" | "restore" | "manual-review";
+  analyzedAt: string;
+};
+type CleanupPreview = { previewId: string; candidates: Array<{ label: string; bytes: number }>; estimatedBytes: number; preserved: string[] };
 type Tab = "overview" | "security" | "memory" | "audit" | "timeline" | "ui-inspector";
 type DekoCleanNavigationTarget = { type: "summary"; view: "healthy" | "quarantine" | "needs-review" | "radar" | "pending-decision" } | { type: "finding"; findingId: string; action?: DekoCleanAction };
 const accordionIds = ["project-health", "smart-scan", "overview", "scan-results", "findings", "repair", "dekorebuild", "operations", "maintenance", "recovery-points"] as const;
@@ -73,6 +102,18 @@ function primaryAction(finding: DekoCleanFinding): keyof typeof actionLabels {
 function abbreviated(value?: string): string { if (!value) return "غير متاح"; return value.length > 20 ? `${value.slice(0, 8)}…${value.slice(-6)}` : value; }
 const classificationLabels = { "authorized-project-change": "تغيير مشروع معروف", "unverified-change": "تغيير يحتاج تحقق", "unexpected-change": "تغيير غير متوقع", "integrity-failure": "فشل سلامة الملف" } as const;
 const approvalLabels = { "pending-baseline-approval": "ينتظر اعتماد خط الأساس", "baseline-approved": "معتمد ضمن خط الأساس" } as const;
+const rootCauseClassificationLabels: Record<RootCauseAnalysis["classification"], string> = {
+  "expected-development-change": "تغيير تطوير متوقع",
+  "dependency-change": "تغيير في التبعيات",
+  "configuration-change": "تغيير في الإعدادات",
+  "generated-file-change": "تغيير في ملف مولّد",
+  "suspicious-change": "تغيير يحتاج مراجعة أمنية",
+  unknown: "السبب غير محسوم",
+};
+const rootCauseEligibleTypes = new Set<DekoCleanFinding["type"]>(["integrity-mismatch", "suspicious-file", "security-alert", "missing-file", "broken-import", "invalid-json", "unexpected-file-change", "build-error"]);
+function canAnalyzeRootCause(finding: DekoCleanFinding | null | undefined): finding is DekoCleanFinding {
+  return Boolean(finding && finding.id && finding.affectedFiles.length > 0 && finding.severity !== "info" && rootCauseEligibleTypes.has(finding.type) && finding.lifecycle?.status !== "RESOLVED");
+}
 
 async function requestJson<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(url, { cache: "no-store", ...options, headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) } });
@@ -102,6 +143,10 @@ export default function DekoCleanCenter() {
   const [smartScanActive, setSmartScanActive] = useState(false);
   const [recoveryActive, setRecoveryActive] = useState(false);
   const [expandedSecurityId, setExpandedSecurityId] = useState("");
+  const [securityInspections, setSecurityInspections] = useState<Record<string, SecurityFindingInspection>>({});
+  const [rootCauseAnalyses, setRootCauseAnalyses] = useState<Record<string, RootCauseAnalysis>>({});
+  const [rootCauseErrors, setRootCauseErrors] = useState<Record<string, string>>({});
+  const [securityProgress, setSecurityProgress] = useState("");
   const accordionStorageReady = useRef(false);
 
   useEffect(() => {
@@ -179,13 +224,70 @@ export default function DekoCleanCenter() {
   });
 
   const securityScan = () => runAction("security", async () => {
-    const result = await requestJson<{ available: boolean }>("/api/admin/dekoclean/security/scan", { method: "POST" });
-    setMessage(result.available ? "تم استيراد تقارير الحماية المحلية المنظمة." : "لم يتم العثور على أداة حماية متصلة. ما زال فحص سلامة المشروع متاحًا.");
+    setSecurityProgress("تهيئة الفحص");
+    const started = await requestJson<{ run: DekoScanRun }>("/api/admin/dekoclean/scans", { method: "POST", body: JSON.stringify({ profileId: "security", forceFull: true }) });
+    let run = started.run;
+    while (["queued", "running"].includes(run.status)) {
+      await new Promise((resolve) => window.setTimeout(resolve, 250));
+      const current = await requestJson<{ run: DekoScanRun }>(`/api/admin/dekoclean/scans/${encodeURIComponent(run.scanId)}`);
+      run = current.run;
+      const progressLabel = run.progress < 20 ? "تهيئة الفحص" : run.progress < 50 ? "فحص سلامة الملفات" : run.progress < 72 ? "فحص الإعدادات" : run.progress < 94 ? "فحص الوصول" : run.progress < 100 ? "حساب النتيجة" : "اكتمل الفحص";
+      setSecurityProgress(progressLabel);
+    }
+    if (!["completed", "partially-completed"].includes(run.status)) throw new Error(run.error ?? "تعذر إكمال الفحص الأمني.");
+    setSecurityProgress("اكتمل الفحص");
+    setMessage(run.summary ?? "اكتمل الفحص الأمني الحقيقي وتحدّثت النتائج.");
   });
-  const acceptBaseline = (finding: DekoCleanFinding) => runAction("baseline-approval", async () => {
-    if (!window.confirm("هل تريد اعتماد hash الحالي كخط أساس موثوق؟ سيُحفظ الخط السابق في السجل.")) return;
-    await requestJson("/api/admin/dekoclean/security/baseline", { method: "POST", body: JSON.stringify({ findingId: finding.id, confirmed: true, scanId: finding.scanIds?.at(-1) ?? "legacy-reconciliation", reason: "Approved by local administrator after reviewing the current project change." }) });
-    setMessage("تم اعتماد التغيير والتحقق من خط الأساس الجديد.");
+  const analyzeRootCause = async (findingId: string) => {
+    setBusy(`root-cause-${findingId}`); setRootCauseErrors((current) => ({ ...current, [findingId]: "" })); setError(""); setMessage("");
+    try {
+      const result = await requestJson<{ analysis: RootCauseAnalysis }>("/api/admin/dekoclean/analyze-root-cause", { method: "POST", body: JSON.stringify({ findingId }) });
+      setRootCauseAnalyses((current) => ({ ...current, [findingId]: result.analysis }));
+      setExpandedSecurityId(findingId);
+      setMessage("اكتمل التحليل الحتمي للسبب الجذري دون تعديل أي ملف.");
+    } catch {
+      setRootCauseErrors((current) => ({ ...current, [findingId]: "تعذر تحليل السبب" }));
+    } finally { setBusy(""); }
+  };
+  const localSimpleCleanup = () => runAction("local-cleanup", async () => {
+    const { preview } = await requestJson<{ preview: CleanupPreview }>("/api/admin/dekoclean/cleanup", { method: "POST", body: JSON.stringify({ action: "preview" }) });
+    const candidates = preview.candidates.length ? preview.candidates.map((item) => `• ${item.label} — ${item.bytes} بايت`).join("\n") : "لا توجد عناصر قابلة للتنظيف.";
+    if (!preview.candidates.length) { setMessage(candidates); return; }
+    const preserved = preview.preserved.map((item) => `• ${item}`).join("\n");
+    if (!window.confirm(`العناصر التي ستُنظف:\n${candidates}\n\nالحجم التقريبي: ${preview.estimatedBytes} بايت\n\nالعناصر المحفوظة:\n${preserved}\n\nتنظيف الآن؟`)) return;
+    const { result } = await requestJson<{ result: { deletedItems: number; reclaimedBytes: number; failures: string[]; completedAt: string } }>("/api/admin/dekoclean/cleanup", { method: "POST", body: JSON.stringify({ action: "execute", previewId: preview.previewId, confirmed: true }) });
+    setMessage(`حُذف ${result.deletedItems} عنصر، وحُرر ${result.reclaimedBytes} بايت، وتعذر حذف ${result.failures.length} عنصر. ${result.completedAt}`);
+  });
+  const inspectSecurity = (findingId: string, validate = false) => runAction(`security-${validate ? "validate" : "diff"}`, async () => {
+    const result = await requestJson<{ inspection: SecurityFindingInspection }>(`/api/admin/dekoclean/security/findings/${encodeURIComponent(findingId)}`, validate ? { method: "POST", body: JSON.stringify({ action: "validate" }) } : undefined);
+    setSecurityInspections((current) => ({ ...current, [findingId]: result.inspection }));
+    setExpandedSecurityId(findingId);
+    setMessage(validate
+      ? result.inspection.classification === "stale_finding" ? "أُغلقت النتيجة القديمة بعد مطابقة البصمة الحالية مع خط الأساس." : "اكتملت إعادة حساب SHA-256 والتحقق من حالة النتيجة."
+      : "تم تحميل الفرق والبصمات وبيانات Git الحالية.");
+  });
+  const approveSecurity = (findingId: string) => runAction("baseline-approval", async () => {
+    const inspection = securityInspections[findingId];
+    if (!inspection?.canApprove) throw new Error("يجب تشغيل «تحقق» بنجاح قبل اعتماد التغيير.");
+    const reason = window.prompt("سبب اعتماد التغيير الموثق:", inspection.reason);
+    if (!reason?.trim()) return;
+    if (!window.confirm("هل تريد اعتماد SHA-256 الحالي كخط أساس موثوق بعد مراجعة الفرق؟")) return;
+    await requestJson(`/api/admin/dekoclean/security/findings/${encodeURIComponent(findingId)}`, { method: "POST", body: JSON.stringify({ action: "approve", confirmed: true, reason }) });
+    setMessage("تم اعتماد تغيير المشروع وتحديث خط الأساس وتسجيل قرار التدقيق.");
+  });
+  const restoreSecurity = (findingId: string) => runAction("security-restore", async () => {
+    const inspection = securityInspections[findingId];
+    if (!inspection?.canRestore) throw new Error("لا توجد نسخة baseline موثقة وقابلة للتحقق للاستعادة.");
+    if (!window.confirm("سيتم حفظ Snapshot ثم استعادة النسخة الموثقة وإعادة التحقق. هل تريد المتابعة؟")) return;
+    await requestJson(`/api/admin/dekoclean/security/findings/${encodeURIComponent(findingId)}`, { method: "POST", body: JSON.stringify({ action: "restore", confirmed: true }) });
+    setMessage("تمت الاستعادة من مصدر موثوق وأعيد التحقق من SHA-256.");
+  });
+  const ignoreSecurityTemporarily = (findingId: string) => runAction("security-ignore", async () => {
+    const reason = window.prompt("سبب التجاهل المؤقت:");
+    if (!reason?.trim()) return;
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    await requestJson(`/api/admin/dekoclean/security/findings/${encodeURIComponent(findingId)}`, { method: "POST", body: JSON.stringify({ action: "ignore-temporarily", expiresAt, reason }) });
+    setMessage("تم تسجيل التجاهل لمدة 7 أيام. تبقى النتيجة مفتوحة ويستمر خصمها من Security Score.");
   });
 
   async function buildPlan(action: DekoCleanAction) {
@@ -312,8 +414,52 @@ export default function DekoCleanCenter() {
       </nav>
       {process.env.NODE_ENV === "development" && runtimeVerification && <aside className={`dkRuntimeVerification ${runtimeVerification.mismatch ? "is-mismatch" : ""}`} aria-label="DekoClean runtime count verification"><strong>Runtime verification</strong><span>ملفات سليمة في البطاقة: {runtimeVerification.dashboardSafe}</span><span>ملفات سليمة في الوجهة: {runtimeVerification.safeDestination}</span><span>تحتاج مراجعة في البطاقة: {runtimeVerification.dashboardReview}</span><span>تحتاج مراجعة في الوجهة: {runtimeVerification.reviewDestination}</span><span>البطاقات المعروضة: {runtimeVerification.renderedCards}</span><span>إجمالي الصفحات: {runtimeVerification.paginationTotal}</span><b>mismatch: {String(runtimeVerification.mismatch)}</b></aside>}
       {tab === "ui-inspector" && <UIInspectorPanel onOpen={(record) => { if (!record.target) return; if (record.id.startsWith("quick-")) { setTab("overview"); openAccordion("smart-scan"); return; } if (["overview", "security", "memory", "audit", "timeline"].includes(record.target)) { navigateWorkspace(record.target as Tab); return; } setTab("overview"); const section = accordionIds.includes(record.target as AccordionId) ? record.target as AccordionId : record.target.includes("finding") ? "findings" : "overview"; openAccordion(section); requestAnimationFrame(() => document.querySelector(`[data-accordion-id="${section}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" })); }} />}
-      {tab === "security" && data && <section className="dkCleanPanel dkCompactSecurity" aria-labelledby="dk-compact-security-title"><header><div><h2 id="dk-compact-security-title">نتائج الأمان النشطة</h2><p>{data.securityFindings.length ? `1–${data.securityFindings.length} من ${data.securityFindings.length}` : "لا توجد نتائج في هذا القسم حاليًا."}</p></div><span>{data.securityFindings.length}</span></header><div>{data.securityFindings.map((finding) => { const expanded = expandedSecurityId === finding.id; const classification = finding.protectedChangeClassification ?? "unverified-change"; const approval = finding.baselineApprovalStatus ?? "pending-baseline-approval"; const eligible = ["authorized-project-change", "unverified-change"].includes(classification) && approval === "pending-baseline-approval" && (finding.lifecycle?.status ?? "OPEN") === "OPEN" && Boolean(finding.fileHashSha256 && finding.affectedFiles[0]); return <article key={finding.findingId ?? finding.id} data-finding-id={finding.findingId ?? finding.id} className={expanded ? "is-expanded" : ""}><header><strong>{classificationLabels[classification]}</strong><span className={`severity-${finding.severity}`}>{finding.severity}</span><span>{finding.lifecycle?.status ?? finding.status}</span><span>{approvalLabels[approval]}</span></header><code title={finding.affectedFiles[0]} dir="ltr">{finding.affectedFiles[0] ?? "غير متاح"}</code><dl><div><dt>المصدر</dt><dd>{finding.detector ?? finding.detectedBy}</dd></div><div><dt>أول ظهور</dt><dd>{finding.firstSeenAt ? new Date(finding.firstSeenAt).toLocaleDateString("ar") : "غير متاح"}</dd></div><div><dt>آخر ظهور</dt><dd>{finding.lastSeenAt ? new Date(finding.lastSeenAt).toLocaleDateString("ar") : "غير متاح"}</dd></div><div><dt>التكرار</dt><dd>{finding.occurrenceCount ?? 1}</dd></div></dl>{expanded && <section className="dkSecurityTechnical"><div><b>المسار</b><code dir="ltr">{finding.affectedFiles[0] ?? "غير متاح"}</code></div><div><b>Finding ID</b><code dir="ltr">{finding.findingId ?? finding.id}</code><button type="button" onClick={() => void navigator.clipboard.writeText(finding.findingId ?? finding.id)}>نسخ</button></div><div><b>Fingerprint</b><code dir="ltr">{finding.fingerprint ?? "غير متاح"}</code><button type="button" disabled={!finding.fingerprint} onClick={() => finding.fingerprint && void navigator.clipboard.writeText(finding.fingerprint)}>نسخ</button></div><div><b>البصمة السابقة</b><code dir="ltr">{finding.previousFileHashSha256 ?? "غير متاح"}</code><small>{abbreviated(finding.previousFileHashSha256)}</small></div><div><b>البصمة الحالية</b><code dir="ltr">{finding.fileHashSha256 ?? "غير متاح"}</code><small>{abbreviated(finding.fileHashSha256)}</small></div><div><b>Scan ID</b><code dir="ltr">{finding.scanIds?.at(-1) ?? "غير متاح"}</code></div><div><b>الإصدار</b><span>{finding.migrationVersion ?? "غير متاح"}</span></div><div><b>الدليل</b><span>{finding.evidence.join("، ") || "غير متاح"}</span></div></section>}<footer><button type="button" onClick={() => setExpandedSecurityId(expanded ? "" : finding.id)}>{expanded ? "إخفاء التفاصيل" : "عرض التفاصيل"}</button><button type="button" onClick={() => openFindingPlan(finding.id, "validate")}>تحقق</button>{eligible ? <button type="button" onClick={() => void acceptBaseline(finding)} disabled={Boolean(busy)}>اعتماد التغيير</button> : approval === "baseline-approved" ? <span>معتمد مسبقًا</span> : null}{finding.recommendedAction === "restore" && finding.previousFileHashSha256 && <button type="button" onClick={() => openFindingPlan(finding.id, "restore")}>استعادة</button>}</footer></article>; })}</div></section>}
-      {tab === "security" && data?.securityScore && <details className="dkCleanPanel dkSecurityScoreExplanation"><summary>كيف تم حساب النتيجة؟</summary><div><span>الدرجة الأساسية <b>{data.securityScore.baseScore}</b></span><span>خصم حرج <b>-{data.securityScore.criticalPenalty}</b></span><span>خصم مرتفع <b>-{data.securityScore.highPenalty}</b></span><span>خصم متوسط <b>-{data.securityScore.mediumPenalty}</b></span><span>النتيجة النهائية <b>{data.securityScore.finalScore}%</b></span></div></details>}
+      {tab === "security" && data && <section className="dkCleanPanel dkCompactSecurity" aria-labelledby="dk-compact-security-title">
+        <header><div><h2 id="dk-compact-security-title">نتائج الأمان النشطة</h2><p>{data.securityFindings.length ? `1–${data.securityFindings.length} من ${data.securityFindings.length}` : "لا توجد نتائج في هذا القسم حاليًا."}</p></div><div className="dkCleanActions"><button type="button" aria-label="Local Simple Cleanup" onClick={() => void localSimpleCleanup()} disabled={Boolean(busy)}>التنظيف</button><button type="button" aria-label="Security Scan" onClick={() => void securityScan()} disabled={Boolean(busy)}>الفحص</button><span>{data.securityFindings.length}</span></div></header>
+        {securityProgress && <p role="status">{securityProgress}</p>}
+        <div>{data.securityFindings.map((finding) => {
+          const expanded = expandedSecurityId === finding.id;
+          const classification = finding.protectedChangeClassification ?? "unverified-change";
+          const approval = finding.baselineApprovalStatus ?? "pending-baseline-approval";
+          const inspection = securityInspections[finding.id];
+          const rootCause = rootCauseAnalyses[finding.id];
+          const rootCauseError = rootCauseErrors[finding.id];
+          return <article key={finding.findingId ?? finding.id} data-finding-id={finding.findingId ?? finding.id} className={expanded ? "is-expanded" : ""}>
+            <header><strong>{classificationLabels[classification]}</strong><span className={`severity-${finding.severity}`}>{finding.severity}</span><span>{finding.lifecycle?.status ?? finding.status}</span><span>{approvalLabels[approval]}</span></header>
+            <code title={finding.affectedFiles[0]} dir="ltr">{finding.affectedFiles[0] ?? "غير متاح"}</code>
+            <dl><div><dt>المصدر</dt><dd>{finding.detector ?? finding.detectedBy}</dd></div><div><dt>أول ظهور</dt><dd>{finding.firstSeenAt ? new Date(finding.firstSeenAt).toLocaleDateString("ar") : "غير متاح"}</dd></div><div><dt>آخر ظهور</dt><dd>{finding.lastSeenAt ? new Date(finding.lastSeenAt).toLocaleDateString("ar") : "غير متاح"}</dd></div><div><dt>التكرار</dt><dd>{finding.occurrenceCount ?? 1}</dd></div></dl>
+            {expanded && <section className="dkSecurityTechnical">
+              <div><b>المسار</b><code dir="ltr">{finding.affectedFiles[0] ?? "غير متاح"}</code></div>
+              <div><b>Finding ID</b><code dir="ltr">{finding.findingId ?? finding.id}</code><button type="button" onClick={() => void navigator.clipboard.writeText(finding.findingId ?? finding.id)}>نسخ</button></div>
+              <div><b>Fingerprint</b><code dir="ltr">{finding.fingerprint ?? "غير متاح"}</code><button type="button" disabled={!finding.fingerprint} onClick={() => finding.fingerprint && void navigator.clipboard.writeText(finding.fingerprint)}>نسخ</button></div>
+              <div><b>البصمة السابقة</b><code dir="ltr">{inspection?.previousHash ?? finding.previousFileHashSha256 ?? "غير متاح"}</code><small>{abbreviated(inspection?.previousHash ?? finding.previousFileHashSha256)}</small></div>
+              <div><b>البصمة الحالية</b><code dir="ltr">{inspection?.currentHash ?? finding.fileHashSha256 ?? "غير متاح"}</code><small>{abbreviated(inspection?.currentHash ?? finding.fileHashSha256)}</small></div>
+              <div><b>Scan ID</b><code dir="ltr">{finding.scanIds?.at(-1) ?? "غير متاح"}</code></div>
+              <div><b>الإصدار</b><span>{finding.migrationVersion ?? "غير متاح"}</span></div>
+              <div><b>الدليل</b><span>{finding.evidence.join("، ") || "غير متاح"}</span></div>
+              {inspection && <section className="dkSecurityDiff">
+                <header><strong>نتيجة التحقق: {inspection.classification}</strong><span>{new Date(inspection.verifiedAt).toLocaleString("ar")}</span></header>
+                <p>{inspection.reason}</p>
+                <dl><div><dt>Git tracked</dt><dd>{inspection.gitTracked ? "نعم" : "لا"}</dd></div><div><dt>آخر commit</dt><dd dir="ltr">{inspection.latestCommit ? abbreviated(inspection.latestCommit) : "غير متاح"}</dd></div><div><dt>عنوان commit</dt><dd>{inspection.latestCommitSubject ?? "غير متاح"}</dd></div></dl>
+                {inspection.dangerousLines.length > 0 && <aside role="alert"><strong>سطور حساسة تحتاج مراجعة</strong><pre dir="ltr">{inspection.dangerousLines.join("\n")}</pre></aside>}
+                <details><summary>Git diff والسطور المتغيرة</summary><pre dir="ltr">{inspection.gitDiff || "لا يوجد فرق Git قابل للعرض."}</pre></details>
+              </section>}
+              {rootCause && <section className="dkSecurityDiff" aria-label="تحليل السبب الجذري"><header><strong>تحليل السبب الجذري</strong><span>{new Date(rootCause.analyzedAt).toLocaleString("ar")}</span></header><dl><div><dt>الملف</dt><dd dir="ltr">{rootCause.filePath}</dd></div><div><dt>التصنيف</dt><dd>{rootCause.classification}</dd></div><div><dt>مستوى الثقة</dt><dd>{rootCause.confidence}</dd></div><div><dt>التوصية</dt><dd>{rootCause.recommendation}</dd></div></dl><p>{rootCause.evidence.join(" — ")}</p></section>}
+              {rootCauseError && <p role="alert">{rootCauseError} <button type="button" onClick={() => void analyzeRootCause(finding.id)}>أعد المحاولة</button></p>}
+            </section>}
+            <footer>
+              <button type="button" onClick={() => setExpandedSecurityId(expanded ? "" : finding.id)}>{expanded ? "إخفاء التفاصيل" : "عرض التفاصيل"}</button>
+              <button type="button" onClick={() => void inspectSecurity(finding.id)}>عرض الفرق</button>
+              <button type="button" onClick={() => void inspectSecurity(finding.id, true)}>تحقق</button>
+              {canAnalyzeRootCause(finding) && <button type="button" aria-label="Analyze Root Cause" onClick={() => void analyzeRootCause(finding.id)} disabled={Boolean(busy)}>{busy === `root-cause-${finding.id}` ? <LoaderCircle className="is-spinning" /> : <ScanSearch />} تحليل السبب</button>}
+              <button type="button" onClick={() => void approveSecurity(finding.id)} disabled={!inspection?.canApprove || inspection.classification === "suspicious_change" || Boolean(busy)}>اعتماد التغيير</button>
+              <button type="button" onClick={() => void restoreSecurity(finding.id)} disabled={!inspection?.canRestore || Boolean(busy)}>استعادة</button>
+              <button type="button" onClick={() => void ignoreSecurityTemporarily(finding.id)} disabled={Boolean(busy)}>تجاهل مؤقتًا</button>
+            </footer>
+          </article>;
+        })}</div>
+      </section>}
+      {tab === "security" && data?.securityScore && <details className="dkCleanPanel dkSecurityScoreExplanation"><summary>كيف تم حساب النتيجة؟</summary><div><span>الدرجة الأساسية <b>{data.securityScore.baseScore}</b></span><span>خصم حرج <b>-{data.securityScore.criticalPenalty}</b></span><span>خصم مرتفع <b>-{data.securityScore.highPenalty}</b></span><span>خصم متوسط <b>-{data.securityScore.mediumPenalty}</b></span><span>خصم منخفض <b>-{data.securityScore.lowPenalty}</b></span><span>النتيجة النهائية <b>{data.securityScore.finalScore}%</b></span></div></details>}
 
       <label className="dkAccordionPreference"><input type="checkbox" checked={singleOpen} onChange={(event) => setSingleOpen(event.target.checked)} /> فتح قسم واحد فقط</label>
 
@@ -376,7 +522,9 @@ export default function DekoCleanCenter() {
               <div className="dkCleanDiagnosisGrid"><section><b>الإجراء المقترح</b><span>{actionLabels[primaryAction(selected)]}</span></section><section><b>الثقة</b><span>{Math.round((recommendation?.securityMemoryMatch?.confidence ?? diagnosis.confidence) * 100)}%</span></section><section><b>تحليل DekoBrain</b><span>{recommendation?.riskExplanation ?? diagnosis.analysis}</span></section><section><b>الأثر المتوقع</b><span>{diagnosis.expectedImpact}</span></section><section><b>الملفات المتأثرة</b><span>{diagnosis.affectedFiles.length}</span></section></div>
               <details className="dkCleanTechnical"><summary>عرض التفاصيل</summary><dl><div><dt>الملفات المتأثرة</dt><dd dir="ltr">{diagnosis.affectedFiles.join("، ") || "General finding without a path"}</dd></div><div><dt>السبب</dt><dd>{diagnosis.cause}</dd></div><div><dt>الإجراء المقترح</dt><dd>{actionLabels[primaryAction(selected)]}</dd></div><div><dt>التبعيات</dt><dd dir="ltr">{diagnosis.dependencies.join("، ") || "No recorded dependencies"}</dd></div><div><dt>نتائج مرتبطة</dt><dd dir="ltr">{diagnosis.relatedFindingIds.join("، ") || "No related findings"}</dd></div><div><dt>المصدر</dt><dd dir="ltr">{diagnosis.detectedBy}</dd></div><div><dt>Finding ID</dt><dd dir="ltr">{diagnosis.findingId}</dd></div></dl></details>
               <div className="dkCleanSafety"><strong>ملخص الأمان</strong><span>Snapshot: {diagnosis.safetyChecks.snapshot ? "مطلوب" : "غير مطلوب"}</span><span>Manifest: {diagnosis.safetyChecks.manifest ? "مطلوب" : "غير مطلوب"}</span><span>Rollback: {diagnosis.safetyChecks.rollback ? "متاح" : "غير مطلوب"}</span><span>Validation: {diagnosis.validation.join(" · ")}</span><span>المخاطر: {diagnosis.estimatedRisk}</span><span>الوقت: {diagnosis.estimatedTime}</span></div>
-              <div className="dkCleanActions"><button className="is-secondary" onClick={() => void analyze()} disabled={Boolean(busy)}><Brain /> تحليل الدليل</button><button className="is-primary" title={selected?.recommendedActions.includes("repair") ? undefined : "Repair is not available for this finding type."} aria-label={selected?.recommendedActions.includes("repair") ? "Repair" : "Repair is not available for this finding type."} onClick={() => void previewRepair()} disabled={Boolean(busy) || !selected?.recommendedActions.includes("repair")}>{busy === "repair-preview" ? <LoaderCircle className="is-spinning" /> : <Wrench />} {busy === "repair-preview" ? "جارٍ إنشاء المعاينة..." : "إصلاح"}</button><button className="is-secondary" onClick={() => void restoreLatest()} disabled={!data?.manifests.some((entry) => entry.status !== "restored") || Boolean(busy)}><ArchiveRestore /> استعادة</button><button className="is-secondary" onClick={() => void execute("ignore")} disabled={Boolean(busy)}>تجاهل</button><button className="is-secondary" onClick={() => { setPlan(null); setRecommendation(null); setRepairRecipe(null); setRepairPreviewAccepted(false); setRepairExecution(null); setRepairExecutionAttempted(false); }} disabled={!plan && !recommendation && !repairRecipe}><X /> إلغاء</button></div>
+              <div className="dkCleanActions"><button className="is-secondary" onClick={() => void analyze()} disabled={Boolean(busy)}><Brain /> تحليل الدليل</button>{canAnalyzeRootCause(selected) && <button className="is-secondary" aria-label="Analyze Root Cause" onClick={() => void analyzeRootCause(selected.id)} disabled={Boolean(busy)}>{busy === `root-cause-${selected.id}` ? <LoaderCircle className="is-spinning" /> : <ScanSearch />} تحليل السبب</button>}<button className="is-primary" title={selected?.recommendedActions.includes("repair") ? undefined : "Repair is not available for this finding type."} aria-label={selected?.recommendedActions.includes("repair") ? "Repair" : "Repair is not available for this finding type."} onClick={() => void previewRepair()} disabled={Boolean(busy) || !selected?.recommendedActions.includes("repair")}>{busy === "repair-preview" ? <LoaderCircle className="is-spinning" /> : <Wrench />} {busy === "repair-preview" ? "جارٍ إنشاء المعاينة..." : "إصلاح"}</button><button className="is-secondary" onClick={() => void restoreLatest()} disabled={!data?.manifests.some((entry) => entry.status !== "restored") || Boolean(busy)}><ArchiveRestore /> استعادة</button><button className="is-secondary" onClick={() => void execute("ignore")} disabled={Boolean(busy)}>تجاهل</button><button className="is-secondary" onClick={() => { setPlan(null); setRecommendation(null); setRepairRecipe(null); setRepairPreviewAccepted(false); setRepairExecution(null); setRepairExecutionAttempted(false); }} disabled={!plan && !recommendation && !repairRecipe}><X /> إلغاء</button></div>
+              {rootCauseErrors[selected.id] && <p role="alert">تعذر تحليل السبب <button type="button" onClick={() => void analyzeRootCause(selected.id)}>أعد المحاولة</button></p>}
+              {rootCauseAnalyses[selected.id] && <section className="dkSecurityDiff" aria-label="تحليل السبب الجذري"><header><strong>تحليل السبب الجذري</strong><span>{new Date(rootCauseAnalyses[selected.id].analyzedAt).toLocaleString("ar")}</span></header><dl><div><dt>الملف</dt><dd dir="ltr">{rootCauseAnalyses[selected.id].filePath}</dd></div><div><dt>نوع التغيير</dt><dd>{rootCauseClassificationLabels[rootCauseAnalyses[selected.id].classification]}</dd></div><div><dt>التصنيف</dt><dd>{rootCauseAnalyses[selected.id].classification}</dd></div><div><dt>مستوى الثقة</dt><dd>{rootCauseAnalyses[selected.id].confidence}</dd></div><div><dt>التوصية</dt><dd>{rootCauseAnalyses[selected.id].recommendation}</dd></div><div><dt>وقت التحليل</dt><dd>{new Date(rootCauseAnalyses[selected.id].analyzedAt).toLocaleString("ar")}</dd></div></dl><h4>الأدلة</h4>{rootCauseAnalyses[selected.id].evidence.length ? <ul>{rootCauseAnalyses[selected.id].evidence.map((entry) => <li key={entry}>{entry}</li>)}</ul> : <p>لا توجد أدلة كافية لتحديد السبب حتى الآن.</p>}</section>}
             </div> : <p>اختر نتيجة لعرض التشخيص التفصيلي.</p>}</article>
           </div>
         </section>
@@ -417,7 +565,7 @@ export default function DekoCleanCenter() {
         </DekoAccordionSection>
       </div>}
 
-      {tab === "security" && <section id="dekoclean-radar-section" className="dkCleanPanel"><header><div><h2>الأمن والحماية</h2><p>موصلات تقارير محلية منظمة فقط؛ لا رفع سحابي ولا تنفيذ للملفات.</p></div><button type="button" onClick={() => void securityScan()} disabled={Boolean(busy)}>فحص تقارير الحماية</button></header>{connectors.map((connector) => <article className="dkCleanConnector" key={connector.id}><ShieldCheck /><div><strong>{connector.label}</strong><p>{connector.available ? "متصل" : "غير متاح"}</p><small>{connector.signaturesUpdatedAt ?? "لا توجد بيانات توقيع"}</small></div></article>)}{!connectors.some((connector) => connector.available) && <p>لم يتم العثور على أداة حماية متصلة. ما زال فحص سلامة المشروع متاحًا.</p>}<h3>التنبيهات الأمنية النشطة ({data?.securityFindings.length ?? 0})</h3><div className="dkSecurityFindingList">{data?.securityFindings.length ? data.securityFindings.map((finding) => <article className="dkCleanSecurityFinding" data-finding-id={finding.findingId ?? finding.id} key={finding.findingId ?? finding.id}><header><strong>{finding.title}</strong><span className={`severity-${finding.severity}`}>{finding.severity}</span></header><dl><div><dt>المسار</dt><dd dir="ltr">{finding.affectedFiles[0] ?? "غير متاح"}</dd></div><div><dt>المصدر</dt><dd>{finding.detector ?? finding.detectedBy ?? "غير متاح"}</dd></div><div><dt>Finding ID</dt><dd dir="ltr">{finding.findingId ?? finding.id}</dd></div><div><dt>Fingerprint</dt><dd dir="ltr">{finding.fingerprint ?? "غير متاح"}</dd></div><div><dt>أول ظهور</dt><dd>{finding.firstSeenAt ?? finding.detectedAt ?? "غير متاح"}</dd></div><div><dt>آخر ظهور</dt><dd>{finding.lastSeenAt ?? "غير متاح"}</dd></div><div><dt>التكرار</dt><dd>{finding.occurrenceCount ?? 1}</dd></div><div><dt>الفحص</dt><dd dir="ltr">{finding.scanIds?.at(-1) ?? "غير متاح"}</dd></div><div><dt>الدليل</dt><dd>{finding.evidence.join("، ") || "غير متاح"}</dd></div><div><dt>الإجراء</dt><dd>{finding.recommendedAction ?? "غير متاح"}</dd></div><div><dt>الحالة</dt><dd>{finding.lifecycle?.status ?? finding.status}</dd></div></dl><button type="button" onClick={() => openFindingPlan(finding.id, finding.recommendedAction)}>عرض التفاصيل</button></article>) : <p>لا توجد نتائج في هذا القسم حاليًا.</p>}</div></section>}
+      {tab === "security" && <section id="dekoclean-radar-section" className="dkCleanPanel"><header><div><h2>الأمن والحماية</h2><p>فحص فعلي وتنظيف محلي محدود؛ لا رفع سحابي ولا تعديل تلقائي للنتائج.</p></div><div className="dkCleanActions"><button type="button" aria-label="Local Simple Cleanup" onClick={() => void localSimpleCleanup()} disabled={Boolean(busy)}>التنظيف المحلي البسيط</button><button type="button" aria-label="Security Scan" onClick={() => void securityScan()} disabled={Boolean(busy)}>الفحص الأمني</button></div></header>{securityProgress && <p role="status">{securityProgress}</p>}{connectors.map((connector) => <article className="dkCleanConnector" key={connector.id}><ShieldCheck /><div><strong>{connector.label}</strong><p>{connector.available ? "متصل" : "غير متاح"}</p><small>{connector.signaturesUpdatedAt ?? "لا توجد بيانات توقيع"}</small></div></article>)}{!connectors.some((connector) => connector.available) && <p>لم يتم العثور على أداة حماية متصلة. ما زال فحص سلامة المشروع متاحًا.</p>}<h3>التنبيهات الأمنية النشطة ({data?.securityFindings.length ?? 0})</h3><div className="dkSecurityFindingList">{data?.securityFindings.length ? data.securityFindings.map((finding) => { const analysis = rootCauseAnalyses[finding.id]; return <article className="dkCleanSecurityFinding" data-finding-id={finding.findingId ?? finding.id} key={finding.findingId ?? finding.id}><header><strong>{finding.title}</strong><span className={`severity-${finding.severity}`}>{finding.severity}</span></header><dl><div><dt>المسار</dt><dd dir="ltr">{finding.affectedFiles[0] ?? "غير متاح"}</dd></div><div><dt>المصدر</dt><dd>{finding.detector ?? finding.detectedBy ?? "غير متاح"}</dd></div><div><dt>Finding ID</dt><dd dir="ltr">{finding.findingId ?? finding.id}</dd></div><div><dt>الحالة</dt><dd>{finding.lifecycle?.status ?? finding.status}</dd></div></dl><div className="dkCleanActions"><button type="button" onClick={() => openFindingPlan(finding.id, finding.recommendedAction)}>عرض التفاصيل</button><button type="button" aria-label="Analyze Root Cause" onClick={() => void analyzeRootCause(finding.id)} disabled={Boolean(busy)}>تحليل السبب</button></div>{analysis && <section className="dkRootCauseAnalysis" dir="rtl"><h4>تحليل السبب الجذري</h4><dl><div><dt>الملف</dt><dd dir="ltr">{analysis.filePath}</dd></div><div><dt>التصنيف</dt><dd>{analysis.classification}</dd></div><div><dt>مستوى الثقة</dt><dd>{analysis.confidence}</dd></div><div><dt>الأدلة</dt><dd>{analysis.evidence.join(" — ")}</dd></div><div><dt>التوصية</dt><dd>{analysis.recommendation}</dd></div><div><dt>وقت التحليل</dt><dd>{analysis.analyzedAt}</dd></div></dl></section>}</article>; }) : <p>لا توجد نتائج في هذا القسم حاليًا.</p>}</div></section>}
 
       {tab === "memory" && <section className="dkCleanPanel"><h2>ذاكرة المعالجات</h2><p>بيانات دفاعية مؤكدة فقط؛ لا محتوى تنفيذي ولا أسرار.</p><div className="dkCleanMemoryGrid">{data?.securityMemory.length ? data.securityMemory.map((entry) => <article key={entry.id}><strong>{entry.threatName ?? entry.confirmedTreatment}</strong><span>{entry.category ?? "finding"}</span><code>{entry.fileHashSha256 ? `${entry.fileHashSha256.slice(0, 12)}…` : "no hash"}</code><small>{entry.result} · {entry.confirmedAt ?? entry.createdAt}</small><div className="dkCleanActions"><button type="button" onClick={() => setMessage(entry.treatmentRecipe.description)}>عرض الوصفة</button><button type="button" disabled={!entry.enabled || Boolean(busy)} onClick={() => void disableMemory(entry.id)}>تعطيل الوصفة</button><button type="button" onClick={() => { setSelectedId(entry.detectionId ?? ""); setTab("overview"); openAccordion("findings"); }}>طلب مراجعة جديدة</button></div></article>) : <p>لا توجد وصفات مؤكدة بعد.</p>}</div></section>}
 

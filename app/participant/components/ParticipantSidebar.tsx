@@ -47,14 +47,16 @@ export default function ParticipantSidebar({
           return (
             <DkButton
               key={item.key}
-              href={item.href}
+              href={item.enabled ? item.href : undefined}
+              disabled={!item.enabled}
+              aria-label={t(item.labelKey)}
               icon={<Icon />}
               active={pathname === item.href}
               variant="transparent"
               size="md"
               onClick={onClose}
             >
-              {t(item.labelKey)}
+              {t(item.labelKey)}{!item.enabled && " · قريبًا"}
             </DkButton>
           );
         })}

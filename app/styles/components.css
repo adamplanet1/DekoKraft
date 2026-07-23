@@ -948,6 +948,27 @@
   white-space: normal;
 }
 
+.dk-dashboard-grid__badge {
+  display: inline-flex;
+  width: max-content;
+  margin-top: var(--dk-space-2);
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(49, 94, 234, 0.1);
+  color: var(--dk-color-primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.dk-dashboard-grid__card .dk-button:not(.dk-button--disabled) {
+  cursor: pointer;
+}
+
+.dk-dashboard-grid__card .dk-button:focus-visible {
+  outline: 3px solid rgba(49, 94, 234, 0.38);
+  outline-offset: 3px;
+}
+
 .dkCleanCardIndicators {
   display: flex;
   flex-wrap: wrap;
